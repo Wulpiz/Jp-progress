@@ -83,7 +83,6 @@
 </head>
 <body>
 
-  <!-- Modal UI Custom (Hanya Nama Goal) -->
   <div id="goal-modal">
     <div class="modal-content">
       <h3 id="modal-title">Tambah Goal</h3>
@@ -140,24 +139,36 @@
     let allGoals = [];
     let currentModalType = 'daily';
 
-    async function checkUser() {
-      const { data: { user } } = await clientApp.auth.getUser();
-      if (user) {
-        currentUser = user;
+    // Menggunakan onAuthStateChange agar deteksi session login Google jauh lebih stabil & realtime
+    clientApp.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        currentUser = session.user;
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-dashboard').style.display = 'block';
         fetchData();
         startClock();
+      } else {
+        currentUser = null;
+        document.getElementById('auth-screen').style.display = 'block';
+        document.getElementById('main-dashboard').style.display = 'none';
+      }
+    });
+
+    async function fetchData() {
+      if (!currentUser) return;
+      const { data, error } = await clientApp
+        .from('goals')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: true });
+        
+      if (!error) {
+        allGoals = data || [];
+        render();
       }
     }
 
-    async function fetchData() {
-      const { data } = await clientApp.from('goals').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: true });
-      allGoals = data || [];
-      render();
-    }
-
-    // --- MODAL LOGIC (Hanya Input Nama) ---
+    // --- MODAL LOGIC ---
     function openModal(type) {
       currentModalType = type;
       document.getElementById('modal-title').innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
@@ -171,8 +182,8 @@
     }
 
     async function submitModal() {
-      const text = document.getElementById('modal-text').value;
-      if(!text) return;
+      const text = document.getElementById('modal-text').value.trim();
+      if(!text || !currentUser) return;
 
       const { data, error } = await clientApp.from('goals').insert([{ 
         text: text, 
@@ -181,21 +192,41 @@
         checked: false
       }]).select();
 
-      if(!error) {
+      if(!error && data && data.length > 0) {
         allGoals.push(data[0]);
         closeModal();
         render();
       }
     }
 
-    async function toggleGoal(id, status) {
-      const { error } = await clientApp.from('goals').update({ checked: !status }).eq('id', id);
-      if(!error) fetchData();
+    async function toggleGoal(id, currentStatus) {
+      const newStatus = !currentStatus;
+      
+      // Update state lokal dulu agar UI terasa instan (Optimistic UI update)
+      const index = allGoals.findIndex(g => g.id === id);
+      if (index !== -1) {
+        allGoals[index].checked = newStatus;
+        render();
+      }
+
+      // Jalankan query ke database di background
+      const { error } = await clientApp.from('goals').update({ checked: newStatus }).eq('id', id);
+      if(error) {
+        // Jika gagal, kembalikan data dan fetch ulang dari server
+        fetchData();
+      }
     }
 
     async function deleteGoal(id) {
-        const { error } = await clientApp.from('goals').delete().eq('id', id);
-        if(!error) fetchData();
+      // Menghapus dari array lokal dulu (Optimistic UI update)
+      allGoals = allGoals.filter(g => g.id !== id);
+      render();
+
+      const { error } = await clientApp.from('goals').delete().eq('id', id);
+      if(error) {
+        // Jika gagal, kembalikan data semula dengan fetch ulang
+        fetchData();
+      }
     }
 
     function render() {
@@ -209,7 +240,7 @@
           <div class="goal-card">
             <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
             <div class="goal-info">
-              <div class="goal-text ${g.checked ? 'completed' : ''}">${g.text}</div>
+              <div class="goal-text ${g.checked ? 'completed' : ''}">${escapeHTML(g.text)}</div>
               <div class="goal-deadline">${deadlineLabel}</div>
             </div>
             <button class="btn-delete" onclick="deleteGoal('${g.id}')">🗑️</button>
@@ -227,21 +258,38 @@
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
       document.getElementById("progressFill").style.width = percent + "%";
       document.getElementById("percentText").innerText = percent + "%";
-      document.getElementById("streakDisplay").innerText = `🔥 ${localStorage.getItem('streak_' + currentUser.id) || 0} Hari`;
+      
+      const streakKey = currentUser ? 'streak_' + currentUser.id : 'streak_guest';
+      document.getElementById("streakDisplay").innerText = `🔥 ${localStorage.getItem(streakKey) || 0} Hari`;
     }
 
     function startClock() {
-      setInterval(() => {
+      const updateClock = () => {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false }).replace(/:/g, '.');
         document.getElementById('dateText').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      }, 1000);
+      };
+      updateClock(); // Jalankan sekali di awal tanpa menunggu 1 detik pertama
+      setInterval(updateClock, 1000);
     }
 
-    async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
-    async function logout() { await clientApp.auth.signOut(); location.reload(); }
+    // Fungsi pengaman XSS untuk mencegah rusaknya layout jika user memasukkan karakter aneh/HTML tag
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    async function loginWithGoogle() { 
+      await clientApp.auth.signInWithOAuth({ 
+        provider: 'google', 
+        options: { redirectTo: window.location.origin + window.location.pathname } 
+      }); 
+    }
     
-    checkUser();
+    async function logout() { 
+      await clientApp.auth.signOut(); 
+    }
   </script>
 </body>
 </html>
