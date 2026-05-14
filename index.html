@@ -17,6 +17,10 @@
       --glass: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.08);
       --accent-purple: #a855f7;
+      
+      /* --- VARIABEL WARNA BARU --- */
+      --accent-gold: #f59e0b; /* Warna emas amber untuk highlight (Monthly) */
+      --accent-gold-pale: #fbbf24; /* Warna emas yang lebih terang */
     }
 
     * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -226,10 +230,13 @@
     <div id="dailyQuestsList"></div>
     <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
 
-    <h2>🏆 Monthly Epic Goals</h2>
+    <h2 style="border-left-color: var(--accent-gold);">🏆 Monthly Epic Goals</h2>
+    
     <div class="progress-box">
       <div class="progress-label"><span>Monthly Progress</span><span id="monthlyPercent">0%</span></div>
-      <div class="progress-track"><div class="progress-fill" id="monthlyFill"></div></div>
+      <div class="progress-track">
+        <div class="progress-fill" id="monthlyFill" style="background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-pale));"></div>
+      </div>
     </div>
     <div class="stat-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
         <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
@@ -455,7 +462,9 @@
         let countdownBadgeHTML = '';
         
         if(g.type === 'monthly') {
-          borderStyle = 'style="border-left: 3px solid var(--accent-cyan)"';
+          // --- FIX DI SINI ---
+          // Garis vertikal Monthly Goal dilingkari merah kedua diganti warna emas
+          borderStyle = 'style="border-left: 3px solid var(--accent-gold)"';
           iconDeadline = '🗓️';
         } else if(g.type === 'side') {
           borderStyle = 'style="border-left: 3px solid var(--accent-purple)"';
@@ -555,15 +564,7 @@
     }
 
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
-    
-    // FITUR DIUPGRADE: Ditambahkan modal pop-up konfirmasi bawaan sebelum melakukan proses logout
-    async function logout() { 
-      if (confirm("Apakah kamu yakin ingin keluar dari akun?")) {
-        await clientApp.auth.signOut(); 
-        location.reload(); 
-      }
-    }
-    
+    async function logout() { await clientApp.auth.signOut(); location.reload(); }
     checkUser();
   </script>
 </body>
