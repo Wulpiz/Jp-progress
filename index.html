@@ -16,6 +16,7 @@
       --text-dim: #94a3b8;
       --glass: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.08);
+      --accent-purple: #a855f7; /* Warna aksen baru khusus Side Quest */
     }
 
     * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -127,11 +128,15 @@
       z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
     .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
-    .modal-content input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
-    .modal-actions { display: flex; gap: 10px; }
+    .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
+
+    /* Elemen Input Deadline Khusus Side Quest */
+    .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
+    .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
 
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
@@ -167,6 +172,12 @@
     <div class="modal-content">
       <h3 id="modal-title">Tambah Goal</h3>
       <input type="text" id="modal-text" placeholder="Masukkan nama goal..." onkeydown="if(event.key==='Enter') submitModal()">
+      
+      <div id="modal-deadline-block" class="deadline-container">
+        <label for="modal-deadline">Batas Waktu (Deadline)</label>
+        <input type="text" id="modal-deadline" placeholder="Contoh: 3 hari lagi, 25 Des, dll...">
+      </div>
+
       <div class="modal-actions">
         <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
         <button class="btn-modal btn-confirm" id="btn-submit-goal" onclick="submitModal()">Tambahkan</button>
@@ -219,6 +230,14 @@
     <div id="monthlyGoalsList"></div>
     <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
 
+    <h2 style="border-left-color: var(--accent-purple);">🔮 Side Quests</h2>
+    <div class="progress-box">
+      <div class="progress-label"><span>Side Progress</span><span id="sidePercent">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="sideFill" style="background: linear-gradient(90deg, var(--accent-purple), #f472b6);"></div></div>
+    </div>
+    <div id="sideQuestsList"></div>
+    <button onclick="openModal('side')" class="add-placeholder">+ Tambah Side Quest</button>
+
     <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; text-decoration: underline; font-size: 0.8rem; width:100%; margin-top:40px;">Logout Akun</button>
   </div>
 
@@ -231,7 +250,7 @@
     let allGoals = [];
     let dbStreak = 0;
     let currentModalType = 'daily';
-    let editingGoalId = null; // Menyimpan ID data yang sedang di-edit
+    let editingGoalId = null;
 
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
@@ -262,20 +281,37 @@
       render();
     }
 
-    function openModal(type, goalId = null, currentText = '') {
+    function openModal(type, goalId = null, currentText = '', currentDeadline = '') {
       currentModalType = type;
       editingGoalId = goalId;
 
       const titleEl = document.getElementById('modal-title');
       const textInput = document.getElementById('modal-text');
+      const deadlineInput = document.getElementById('modal-deadline');
+      const deadlineBlock = document.getElementById('modal-deadline-block');
       const submitBtn = document.getElementById('btn-submit-goal');
 
+      // Tampilkan input deadline hanya jika tipe adalah side quest
+      if (type === 'side') {
+        deadlineBlock.style.display = 'flex';
+        deadlineInput.value = currentDeadline;
+      } else {
+        deadlineBlock.style.display = 'none';
+        deadlineInput.value = '';
+      }
+
       if (editingGoalId) {
-        titleEl.innerText = type === 'daily' ? 'Edit Goal Harian' : 'Edit Goal Bulanan';
+        if(type === 'daily') titleEl.innerText = 'Edit Goal Harian';
+        else if(type === 'monthly') titleEl.innerText = 'Edit Goal Bulanan';
+        else titleEl.innerText = 'Edit Side Quest';
+        
         textInput.value = currentText;
         submitBtn.innerText = "Simpan Perubahan";
       } else {
-        titleEl.innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
+        if(type === 'daily') titleEl.innerText = 'Tambah Goal Harian';
+        else if(type === 'monthly') titleEl.innerText = 'Tambah Goal Bulanan';
+        else titleEl.innerText = 'Tambah Side Quest';
+
         textInput.value = '';
         submitBtn.innerText = "Tambahkan";
       }
@@ -287,20 +323,30 @@
     function closeModal() {
       document.getElementById('goal-modal').style.display = 'none';
       document.getElementById('modal-text').value = '';
+      document.getElementById('modal-deadline').value = '';
       editingGoalId = null;
     }
 
     async function submitModal() {
       const text = document.getElementById('modal-text').value.trim();
+      const customDeadline = document.getElementById('modal-deadline').value.trim();
       if(!text) return;
 
       const btn = document.getElementById('btn-submit-goal');
       btn.innerText = "Menyimpan...";
       btn.disabled = true;
 
+      // Atur teks deadline berdasarkan tipe quest
+      let deadlineText = 'Daily Reset';
+      if (currentModalType === 'monthly') deadlineText = 'End of Month';
+      else if (currentModalType === 'side') deadlineText = customDeadline || 'Tanpa Batas Waktu';
+
       if (editingGoalId) {
-        // Logika Update (Edit) Data
-        const { error } = await clientApp.from('goals').update({ text: text }).eq('id', editingGoalId);
+        const { error } = await clientApp.from('goals').update({ 
+          text: text,
+          deadline: deadlineText
+        }).eq('id', editingGoalId);
+        
         btn.disabled = false;
 
         if(!error) {
@@ -311,13 +357,12 @@
           btn.innerText = "Simpan Perubahan";
         }
       } else {
-        // Logika Tambah Baru (Sama seperti kode lamamu)
         const { data, error } = await clientApp.from('goals').insert([{ 
           text: text, 
           user_id: currentUser.id, 
           type: currentModalType, 
           checked: false,
-          deadline: currentModalType === 'daily' ? 'Daily Reset' : 'End of Month'
+          deadline: deadlineText
         }]).select();
 
         btn.disabled = false;
@@ -352,24 +397,39 @@
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
-      dList.innerHTML = ""; mList.innerHTML = "";
+      const sList = document.getElementById("sideQuestsList");
+      
+      dList.innerHTML = ""; mList.innerHTML = ""; 
+      if(sList) sList.innerHTML = "";
 
       allGoals.forEach((g) => {
-        // Ditambahkan div .action-buttons dan tombol edit (📝)
+        let borderStyle = '';
+        let iconDeadline = '⌛';
+        
+        if(g.type === 'monthly') {
+          borderStyle = 'style="border-left: 3px solid var(--accent-cyan)"';
+          iconDeadline = '🗓️';
+        } else if(g.type === 'side') {
+          borderStyle = 'style="border-left: 3px solid var(--accent-purple)"';
+          iconDeadline = '🎯';
+        }
+
         const item = `
-          <div class="quest-item" ${g.type === 'monthly' ? 'style="border-left: 3px solid var(--accent-cyan)"' : ''}>
+          <div class="quest-item" ${borderStyle}>
             <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
             <div class="goal-info">
               <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
-              <div class="goal-deadline">${g.type === 'daily' ? '⌛ Daily Reset' : '🗓️ End of Month'}</div>
+              <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
             </div>
             <div class="action-buttons">
-              <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">📝</button>
+              <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}', '${escapeHtml(g.deadline || '').replace(/'/g, "\\'")}')">📝</button>
               <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
             </div>
           </div>
         `;
+        
         if(g.type === 'monthly') mList.innerHTML += item;
+        else if(g.type === 'side') { if(sList) sList.innerHTML += item; }
         else dList.innerHTML += item;
       });
       updateProgress();
@@ -387,6 +447,15 @@
       const monthlyPercent = monthlyGoals.length === 0 ? 0 : Math.round((monthlyDone / monthlyGoals.length) * 100);
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
+
+      // Progress bar khusus untuk Side Quest
+      const sideGoals = allGoals.filter(g => g.type === 'side');
+      const sideDone = sideGoals.filter(g => g.checked).length;
+      const sidePercent = sideGoals.length === 0 ? 0 : Math.round((sideDone / sideGoals.length) * 100);
+      const sideFillEl = document.getElementById("sideFill");
+      const sidePercentEl = document.getElementById("sidePercent");
+      if(sideFillEl) sideFillEl.style.width = sidePercent + "%";
+      if(sidePercentEl) sidePercentEl.innerText = sidePercent + "%";
       
       const streakEl = document.getElementById("streakVal");
       streakEl.innerText = `🔥 ${dbStreak} Hari`;
@@ -398,7 +467,6 @@
       }
     }
 
-    // Timer logic ...
     function startTimers() {
       setInterval(() => {
         const now = new Date();
