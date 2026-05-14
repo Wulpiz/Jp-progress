@@ -16,7 +16,7 @@
       --text-dim: #94a3b8;
       --glass: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --accent-purple: #a855f7; /* Warna aksen baru khusus Side Quest */
+      --accent-purple: #a855f7;
     }
 
     * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -108,9 +108,14 @@
     .quest-item:hover { background: rgba(255,255,255,0.05); }
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
     .goal-info { flex: 1; min-width: 0; }
+    .quest-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
     .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
     .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+    
+    /* Gaya Teks Countdown untuk Side Quest di Samping Judul */
+    .side-countdown-live { font-size: 0.95rem; font-weight: 700; color: #facc15; background: rgba(250, 204, 21, 0.1); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(250, 204, 21, 0.2); }
+    .side-countdown-live.expired { color: var(--accent-red); background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
 
     /* Gaya untuk tombol edit dan hapus */
     .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
@@ -129,6 +134,10 @@
     }
     .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
     .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
+    
+    /* Aturan styling khusus input date bawaan browser agar mendukung tema gelap dashboard */
+    .modal-content input[type="date"] { color-scheme: dark; font-family: inherit; cursor: pointer; }
+    
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
@@ -175,7 +184,7 @@
       
       <div id="modal-deadline-block" class="deadline-container">
         <label for="modal-deadline">Batas Waktu (Deadline)</label>
-        <input type="text" id="modal-deadline" placeholder="Contoh: 3 hari lagi, 25 Des, dll...">
+        <input type="date" id="modal-deadline">
       </div>
 
       <div class="modal-actions">
@@ -291,10 +300,14 @@
       const deadlineBlock = document.getElementById('modal-deadline-block');
       const submitBtn = document.getElementById('btn-submit-goal');
 
-      // Tampilkan input deadline hanya jika tipe adalah side quest
       if (type === 'side') {
         deadlineBlock.style.display = 'flex';
-        deadlineInput.value = currentDeadline;
+        // Ambil string tanggal murni saja (YYYY-MM-DD) untuk value kalender HTML
+        if (currentDeadline && currentDeadline.match(/^\d{4}-\d{2}-\d{2}/)) {
+          deadlineInput.value = currentDeadline.substring(0, 10);
+        } else {
+          deadlineInput.value = '';
+        }
       } else {
         deadlineBlock.style.display = 'none';
         deadlineInput.value = '';
@@ -336,10 +349,12 @@
       btn.innerText = "Menyimpan...";
       btn.disabled = true;
 
-      // Atur teks deadline berdasarkan tipe quest
       let deadlineText = 'Daily Reset';
       if (currentModalType === 'monthly') deadlineText = 'End of Month';
-      else if (currentModalType === 'side') deadlineText = customDeadline || 'Tanpa Batas Waktu';
+      else if (currentModalType === 'side') {
+        // Jika user memilih tanggal dari kalender, simpan ke database dengan format standard tanggal dasar
+        deadlineText = customDeadline || 'Tanpa Batas Waktu';
+      }
 
       if (editingGoalId) {
         const { error } = await clientApp.from('goals').update({ 
@@ -394,6 +409,44 @@
       }
     }
 
+    // FITUR DIUPGRADE: Fungsi parsing helper untuk mendeteksi waktu countdown side quest secara live
+    function updateSideQuestCountdowns() {
+      const liveElements = document.querySelectorAll('.side-countdown-live');
+      liveElements.forEach(el => {
+        const rawDeadline = el.getAttribute('data-deadline');
+        if (!rawDeadline || rawDeadline === 'Tanpa Batas Waktu') {
+          el.innerText = 'Tanpa Batas Waktu';
+          return;
+        }
+
+        const targetDate = new Date(rawDeadline + "T23:59:59");
+        const now = new Date();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          el.innerText = 'Waktu Habis';
+          el.classList.add('expired');
+          return;
+        }
+
+        const totalHours = Math.floor(diff / 3600000);
+        
+        if (totalHours >= 24) {
+          // Jika sisa waktu masih di atas 24 jam, tampilkan hitungan sisa hari
+          const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
+          el.innerText = `${daysLeft + 1} Hari lagi`;
+          el.classList.remove('expired');
+        } else {
+          // Jika sisa waktu kurang dari 24 jam, tampilkan format live timer HH:MM:SS
+          const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+          const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+          const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+          el.innerText = `${h}:${m}:${s} lagi`;
+          el.classList.remove('expired');
+        }
+      });
+    }
+
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
@@ -405,6 +458,7 @@
       allGoals.forEach((g) => {
         let borderStyle = '';
         let iconDeadline = '⌛';
+        let countdownBadgeHTML = ''; // Kontainer penampung di area lingkaran merah gambar kedua
         
         if(g.type === 'monthly') {
           borderStyle = 'style="border-left: 3px solid var(--accent-cyan)"';
@@ -412,13 +466,18 @@
         } else if(g.type === 'side') {
           borderStyle = 'style="border-left: 3px solid var(--accent-purple)"';
           iconDeadline = '🎯';
+          // FITUR BARU: Menaruh elemen badge countdown dinamis di samping judul Side Quest (Lingkaran Merah Gambar 2)
+          countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
         }
 
         const item = `
           <div class="quest-item" ${borderStyle}>
             <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
             <div class="goal-info">
-              <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
+              <div class="quest-title-row">
+                <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
+                ${countdownBadgeHTML}
+              </div>
               <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
             </div>
             <div class="action-buttons">
@@ -433,6 +492,8 @@
         else dList.innerHTML += item;
       });
       updateProgress();
+      // Jalankan fungsi hitung mundur secara instan setelah data ter-render ke layar
+      if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
     }
 
     function updateProgress() {
@@ -448,7 +509,6 @@
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
 
-      // Progress bar khusus untuk Side Quest
       const sideGoals = allGoals.filter(g => g.type === 'side');
       const sideDone = sideGoals.filter(g => g.checked).length;
       const sidePercent = sideGoals.length === 0 ? 0 : Math.round((sideDone / sideGoals.length) * 100);
@@ -491,6 +551,9 @@
         const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
         const mEl = document.getElementById("monthlyTimer");
         mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
+
+        // Perbarui setiap elemen hitung mundur live milik Side Quest tiap detiknya secara real-time
+        updateSideQuestCountdowns();
       }, 1000);
     }
 
