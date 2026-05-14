@@ -1,352 +1,319 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Japanese Focus - Hardcore Mode</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --accent-blue: #3b82f6;
-      --accent-cyan: #2dd4bf;
-      --text-main: #f8fafc;
-      --text-dim: #94a3b8;
-      --glass-border: rgba(255, 255, 255, 0.1);
-    }
+<script>
+  const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
 
-    * { box-sizing: border-box; transition: all 0.2s ease; }
+  const clientApp = window.supabase.createClient(SB_URL, SB_KEY);
 
-    body {
-      margin: 0; min-height: 100vh;
-      background: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Inter', system-ui, sans-serif;
-      display: flex; justify-content: center; padding: 40px 20px;
-    }
+  let currentUser = null;
+  let allGoals = [];
+  let currentModalType = 'daily';
+  let clockInterval = null;
 
-    .container { 
-      display: none; width: 100%; max-width: 800px; 
-      background: var(--card-bg); border-radius: 40px; padding: 60px 50px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    }
+  // =========================
+  // AUTH
+  // =========================
+  async function checkUser() {
+    const {
+      data: { session }
+    } = await clientApp.auth.getSession();
 
-    /* --- HEADER --- */
-    .hero-section { text-align: center; margin-bottom: 50px; }
-    .hero-title { font-size: 5rem; font-weight: 900; margin: 0; letter-spacing: -2px; }
-    .hero-subtitle { color: var(--accent-blue); font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
+    if (session?.user) {
+      currentUser = session.user;
 
-    .meta-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
-    .time-large { font-size: 2.2rem; font-weight: 800; line-height: 1; }
-    .date-small { color: var(--text-dim); margin-top: 5px; font-weight: 500; }
-    .streak-badge { background: #334155; padding: 10px 20px; border-radius: 99px; color: #fbbf24; font-weight: 700; border: 1px solid #475569; }
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('main-dashboard').style.display = 'block';
 
-    /* --- PROGRESS --- */
-    .progress-container { margin-top: 40px; }
-    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; }
-    .progress-track { height: 8px; background: #334155; border-radius: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+      await fetchData();
 
-    /* --- GOALS --- */
-    h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin: 40px 0 20px; }
-    
-    .goal-card {
-      background: #273549; border-radius: 20px; padding: 20px; margin-bottom: 15px;
-      display: flex; align-items: center; gap: 20px; border: 1px solid transparent;
-    }
-    .checkbox { width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue); }
-    .goal-info { flex: 1; }
-    .goal-text { font-size: 1.1rem; font-weight: 600; }
-    .goal-text.completed { text-decoration: line-through; opacity: 0.4; }
-    .goal-deadline { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
-
-    /* --- CUSTOM MODAL UI --- */
-    #goal-modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
-      z-index: 1000; align-items: center; justify-content: center;
-    }
-    .modal-content { background: #1e293b; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
-    .modal-content input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; outline: none; font-size: 1rem; }
-    .modal-actions { display: flex; gap: 10px; }
-    .btn-modal { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
-    .btn-confirm { background: var(--accent-blue); color: white; }
-    .btn-cancel { background: #334155; color: var(--text-dim); }
-
-    .add-placeholder { background: none; border: 1px dashed #475569; color: var(--text-dim); width: 100%; padding: 15px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: 600; text-align: center; }
-    .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
-    .btn-delete:hover { opacity: 1; }
-  </style>
-</head>
-<body>
-
-  <!-- Modal UI Custom -->
-  <div id="goal-modal">
-    <div class="modal-content">
-      <h3 id="modal-title">Tambah Goal</h3>
-      <input type="text" id="modal-text" placeholder="Masukkan nama goal...">
-      <div class="modal-actions">
-        <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
-        <button class="btn-modal btn-confirm" onclick="submitModal()">Tambahkan</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Auth Screen -->
-  <div id="auth-screen" style="text-align: center; align-self: center; background: #1e293b; padding: 60px; border-radius: 40px;">
-    <h1 style="font-size: 4rem; margin:0;">まず日本語。</h1>
-    <p style="color: var(--accent-blue); margin-bottom: 40px;">Lakukan sekarang atau lupakan selamanya.</p>
-    <button onclick="loginWithGoogle()" style="background:white; color:black; padding:15px 30px; border-radius:15px; font-weight:800; border:none; cursor:pointer;">Masuk dengan Google</button>
-  </div>
-
-  <!-- Dashboard -->
-  <div class="container" id="main-dashboard">
-    <div class="hero-section">
-      <h1 class="hero-title">まず日本語。</h1>
-      <p class="hero-subtitle">Lakukanlah sekarang dan paksa diri sendiri, jadikan itu sebagai kebiasaan</p>
-    </div>
-
-    <div class="meta-row">
-      <div>
-        <div class="time-large" id="clock">00.00.00</div>
-        <div class="date-small" id="dateText">Memuat tanggal...</div>
-      </div>
-      <div class="streak-badge" id="streakDisplay">🔥 0 Hari</div>
-    </div>
-
-    <div class="progress-container">
-      <div class="progress-label"><span>Progress Sekarang</span><span id="percentText">0%</span></div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    </div>
-
-    <h2>Daily Quests</h2>
-    <div id="dailyList"></div>
-    <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
-
-    <h2>Monthly Goals</h2>
-    <div id="monthlyList"></div>
-    <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
-
-    <button onclick="logout()" style="display:block; margin: 50px auto 0; background:none; border:none; color:var(--text-dim); cursor:pointer; text-decoration: underline;">Logout</button>
-  </div>
-
-  <script>
-    const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
-    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
-
-    const clientApp = window.supabase.createClient(SB_URL, SB_KEY);
-
-    let currentUser = null;
-    let allGoals = [];
-    let currentModalType = 'daily';
-    let clockInterval = null;
-
-    // =========================
-    // AUTH
-    // =========================
-    async function checkUser() {
-      const { data: { session } } = await clientApp.auth.getSession();
-
-      if (session?.user) {
-        currentUser = session.user;
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-dashboard').style.display = 'block';
-        await fetchData();
-        if (!clockInterval) startClock();
+      if (!clockInterval) {
+        startClock();
       }
     }
+  }
 
-    async function loginWithGoogle() {
-      await clientApp.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-      });
-    }
-
-    async function logout() {
-      await clientApp.auth.signOut();
-      location.reload();
-    }
-
-    // =========================
-    // FETCH DATA
-    // =========================
-    async function fetchData() {
-      if (!currentUser) return;
-      const { data, error } = await clientApp
-        .from('goals')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error(error);
-        return;
+  async function loginWithGoogle() {
+    await clientApp.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.href
       }
-      allGoals = data || [];
-      render();
-    }
-
-    // =========================
-    // MODAL
-    // =========================
-    function openModal(type) {
-      currentModalType = type;
-      document.getElementById('modal-title').innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
-      document.getElementById('goal-modal').style.display = 'flex';
-      const input = document.getElementById('modal-text');
-      input.value = '';
-      setTimeout(() => { input.focus(); }, 50);
-    }
-
-    function closeModal() {
-      document.getElementById('goal-modal').style.display = 'none';
-      document.getElementById('modal-text').value = '';
-    }
-
-    window.addEventListener('click', (e) => {
-      const modal = document.getElementById('goal-modal');
-      if (e.target === modal) closeModal();
     });
+  }
 
-    async function submitModal() {
-      const input = document.getElementById('modal-text');
-      const text = input.value.trim();
-      if (!text) return;
+  async function logout() {
+    await clientApp.auth.signOut();
+    location.reload();
+  }
 
-      const { data, error } = await clientApp
-        .from('goals')
-        .insert([{
+  // =========================
+  // FETCH DATA
+  // =========================
+  async function fetchData() {
+    if (!currentUser) return;
+
+    const { data, error } = await clientApp
+      .from('goals')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    allGoals = data || [];
+    render();
+  }
+
+  // =========================
+  // MODAL
+  // =========================
+  function openModal(type) {
+    currentModalType = type;
+
+    document.getElementById('modal-title').innerText =
+      type === 'daily'
+        ? 'Tambah Goal Harian'
+        : 'Tambah Goal Bulanan';
+
+    document.getElementById('goal-modal').style.display = 'flex';
+
+    const input = document.getElementById('modal-text');
+    input.value = '';
+
+    setTimeout(() => {
+      input.focus();
+    }, 50);
+  }
+
+  function closeModal() {
+    document.getElementById('goal-modal').style.display = 'none';
+    document.getElementById('modal-text').value = '';
+  }
+
+  window.addEventListener('click', (e) => {
+    const modal = document.getElementById('goal-modal');
+
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  async function submitModal() {
+    const input = document.getElementById('modal-text');
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    const { data, error } = await clientApp
+      .from('goals')
+      .insert([
+        {
           text: text,
           user_id: currentUser.id,
           type: currentModalType,
           checked: false
-        }])
-        .select();
+        }
+      ])
+      .select();
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-      if (data && data.length > 0) {
-        allGoals.push(data[0]);
-      }
+    if (data && data.length > 0) {
+      allGoals.push(data[0]);
+    }
+
+    closeModal();
+    render();
+  }
+
+  // ENTER KEY
+  document.addEventListener('keydown', (e) => {
+    const modalVisible =
+      document.getElementById('goal-modal').style.display === 'flex';
+
+    if (modalVisible && e.key === 'Enter') {
+      submitModal();
+    }
+
+    if (modalVisible && e.key === 'Escape') {
       closeModal();
-      render();
+    }
+  });
+
+  // =========================
+  // GOALS
+  // =========================
+  async function toggleGoal(id, status) {
+    const newStatus = !status;
+
+    const { error } = await clientApp
+      .from('goals')
+      .update({ checked: newStatus })
+      .eq('id', id);
+
+    if (error) {
+      console.error(error);
+      return;
     }
 
-    // ENTER & ESC KEY
-    document.addEventListener('keydown', (e) => {
-      const modalVisible = document.getElementById('goal-modal').style.display === 'flex';
-      if (modalVisible) {
-        if (e.key === 'Enter') submitModal();
-        if (e.key === 'Escape') closeModal();
-      }
-    });
+    const target = allGoals.find(g => g.id === id);
 
-    // =========================
-    // GOALS ACTIONS
-    // =========================
-    async function toggleGoal(id, status) {
-      const newStatus = !status;
-      const { error } = await clientApp.from('goals').update({ checked: newStatus }).eq('id', id);
-      if (error) {
-        console.error(error);
-        return;
-      }
-      const target = allGoals.find(g => g.id === id);
-      if (target) target.checked = newStatus;
-      render();
+    if (target) {
+      target.checked = newStatus;
     }
 
-    async function deleteGoal(id) {
-      const { error } = await clientApp.from('goals').delete().eq('id', id);
-      if (error) {
-        console.error(error);
-        return;
-      }
-      allGoals = allGoals.filter(g => g.id !== id);
-      render();
+    render();
+  }
+
+  async function deleteGoal(id) {
+    const { error } = await clientApp
+      .from('goals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error(error);
+      return;
     }
 
-    // =========================
-    // RENDER
-    // =========================
-    function render() {
-      const dList = document.getElementById('dailyList');
-      const mList = document.getElementById('monthlyList');
-      dList.innerHTML = '';
-      mList.innerHTML = '';
+    allGoals = allGoals.filter(g => g.id !== id);
 
-      allGoals.forEach((g) => {
-        const deadlineLabel = g.type === 'daily' ? '⌛ Daily Reset' : '🗓️ End of Month';
-        const wrapper = document.createElement('div');
-        wrapper.className = 'goal-card';
-        wrapper.innerHTML = `
-          <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''}>
-          <div class="goal-info">
-            <div class="goal-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</div>
-            <div class="goal-deadline">${deadlineLabel}</div>
+    render();
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+  function render() {
+    const dList = document.getElementById('dailyList');
+    const mList = document.getElementById('monthlyList');
+
+    dList.innerHTML = '';
+    mList.innerHTML = '';
+
+    allGoals.forEach((g) => {
+      const deadlineLabel =
+        g.type === 'daily'
+          ? '⌛ Daily Reset'
+          : '🗓️ End of Month';
+
+      const wrapper = document.createElement('div');
+
+      wrapper.className = 'goal-card';
+
+      wrapper.innerHTML = `
+        <input
+          type="checkbox"
+          class="checkbox"
+          ${g.checked ? 'checked' : ''}
+        >
+
+        <div class="goal-info">
+          <div class="goal-text ${g.checked ? 'completed' : ''}">
+            ${escapeHtml(g.text)}
           </div>
-          <button class="btn-delete">🗑️</button>
-        `;
 
-        const checkbox = wrapper.querySelector('.checkbox');
-        checkbox.addEventListener('change', () => toggleGoal(g.id, g.checked));
+          <div class="goal-deadline">
+            ${deadlineLabel}
+          </div>
+        </div>
 
-        const deleteBtn = wrapper.querySelector('.btn-delete');
-        deleteBtn.addEventListener('click', () => deleteGoal(g.id));
+        <button class="btn-delete">🗑️</button>
+      `;
 
-        if (g.type === 'monthly') mList.appendChild(wrapper);
-        else dList.appendChild(wrapper);
+      const checkbox = wrapper.querySelector('.checkbox');
+      checkbox.addEventListener('change', () => {
+        toggleGoal(g.id, g.checked);
       });
 
-      updateProgress();
-    }
+      const deleteBtn = wrapper.querySelector('.btn-delete');
+      deleteBtn.addEventListener('click', () => {
+        deleteGoal(g.id);
+      });
 
-    function updateProgress() {
-      const total = allGoals.length;
-      const done = allGoals.filter(g => g.checked).length;
-      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-
-      document.getElementById('progressFill').style.width = percent + '%';
-      document.getElementById('percentText').innerText = percent + '%';
-      document.getElementById('streakDisplay').innerText = `🔥 ${localStorage.getItem('streak_' + currentUser.id) || 0} Hari`;
-    }
-
-    // =========================
-    // CLOCK
-    // =========================
-    function startClock() {
-      updateClock();
-      clockInterval = setInterval(updateClock, 1000);
-    }
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false }).replace(/:/g, '.');
-      document.getElementById('dateText').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.innerText = text;
-      return div.innerHTML;
-    }
-
-    // =========================
-    // INIT
-    // =========================
-    checkUser();
-
-    clientApp.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        currentUser = session.user;
-        checkUser();
+      if (g.type === 'monthly') {
+        mList.appendChild(wrapper);
+      } else {
+        dList.appendChild(wrapper);
       }
     });
-  </script>
-</body>
-</html>
+
+    updateProgress();
+  }
+
+  // =========================
+  // PROGRESS
+  // =========================
+  function updateProgress() {
+    const total = allGoals.length;
+
+    const done = allGoals.filter(g => g.checked).length;
+
+    const percent =
+      total === 0
+        ? 0
+        : Math.round((done / total) * 100);
+
+    document.getElementById('progressFill').style.width =
+      percent + '%';
+
+    document.getElementById('percentText').innerText =
+      percent + '%';
+
+    document.getElementById('streakDisplay').innerText =
+      `🔥 ${localStorage.getItem('streak_' + currentUser.id) || 0} Hari`;
+  }
+
+  // =========================
+  // CLOCK
+  // =========================
+  function startClock() {
+    updateClock();
+
+    clockInterval = setInterval(updateClock, 1000);
+  }
+
+  function updateClock() {
+    const now = new Date();
+
+    document.getElementById('clock').innerText =
+      now
+        .toLocaleTimeString('id-ID', {
+          hour12: false
+        })
+        .replace(/:/g, '.');
+
+    document.getElementById('dateText').innerText =
+      now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+  }
+
+  // =========================
+  // SECURITY
+  // =========================
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+  }
+
+  // =========================
+  // INIT
+  // =========================
+  checkUser();
+
+  clientApp.auth.onAuthStateChange((_event, session) => {
+    if (session?.user) {
+      checkUser();
+    }
+  });
+</script>
