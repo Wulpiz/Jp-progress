@@ -31,7 +31,6 @@
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
 
-    /* --- EFEK SHINING ANIMASI UNTUK JUDUL --- */
     .hero-title {
       font-size: 4.5rem;
       font-weight: 900;
@@ -39,13 +38,7 @@
       letter-spacing: -3px;
       position: relative;
       display: inline-block;
-      background: linear-gradient(
-        to right, 
-        #ffffff 20%, 
-        #3b82f6 40%, 
-        #2dd4bf 60%, 
-        #ffffff 80%
-      );
+      background: linear-gradient(to right, #ffffff 20%, #3b82f6 40%, #2dd4bf 60%, #ffffff 80%);
       background-size: 200% auto;
       color: #000;
       background-clip: text;
@@ -54,9 +47,7 @@
       animation: shine 3s linear infinite;
     }
 
-    @keyframes shine {
-      to { background-position: 200% center; }
-    }
+    @keyframes shine { to { background-position: 200% center; } }
 
     #auth-screen { 
       background: var(--glass); 
@@ -90,16 +81,13 @@
     .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); }
     .timer-critical { color: var(--accent-red) !important; animation: blink 1s infinite; }
 
-    /* Class Dinamis untuk Streak */
     .streak-zero { color: var(--text-dim) !important; filter: grayscale(100%); opacity: 0.6; }
     .streak-active { color: #facc15 !important; filter: grayscale(0%); opacity: 1; }
 
-    /* Progress Track */
     .progress-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; }
     .progress-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
     .progress-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
     
-    /* --- MINOR FIX: ANIMASI PROGRESS FILL DIJADIKAN LEBIH SMOOTH --- */
     .progress-fill { 
       height: 100%; 
       width: 0%; 
@@ -110,24 +98,43 @@
 
     h2 { border-left: 4px solid var(--accent-blue); padding-left: 15px; margin: 40px 0 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
 
+    /* GAYA BARU UNTUK LONG PRESS REORDER */
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
       margin-bottom: 12px; border: 1px solid var(--glass-border);
       display: flex; align-items: center; gap: 15px;
+      cursor: grab; /* Indikator bahwa item bisa dipegang */
+      user-select: none;
+      -webkit-user-select: none;
     }
     .quest-item:hover { background: rgba(255,255,255,0.05); }
+    .quest-item:active { cursor: grabbing; }
+    
+    /* Efek visual saat item sedang diseret */
+    .quest-item.dragging {
+      opacity: 0.4;
+      border: 1px dashed var(--accent-cyan);
+      background: rgba(45, 212, 191, 0.05);
+    }
+    
+    /* Efek visual area drop target yang valid */
+    .quest-list-container.drag-over {
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 16px;
+    }
+
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
-    .goal-info { flex: 1; min-width: 0; }
+    .goal-info { flex: 1; min-width: 0; pointer-events: none; } /* Mencegah seleksi teks mengganggu drag */
+    .checkbox, .action-buttons button { pointer-events: auto; } /* Tombol tetap aktif kliknya */
+    
     .quest-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
     .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
     .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
     
-    /* Gaya Teks Countdown untuk Side Quest di Samping Judul */
     .side-countdown-live { font-size: 0.95rem; font-weight: 700; color: #facc15; background: rgba(250, 204, 21, 0.1); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(250, 204, 21, 0.2); }
     .side-countdown-live.expired { color: var(--accent-red); background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
 
-    /* Gaya untuk tombol edit dan hapus */
     .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
     .btn-edit, .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
     .btn-edit:hover { opacity: 1; transform: scale(1.1); color: var(--accent-cyan); }
@@ -136,7 +143,6 @@
     .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; margin-top: 5px; font-weight: 600; text-align: center; }
     .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.03); }
 
-    /* Modal */
     #goal-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(2, 6, 23, 0.7); backdrop-filter: blur(15px);
@@ -144,7 +150,6 @@
     }
     .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
     .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
-    
     .modal-content input[type="date"] { color-scheme: dark; font-family: inherit; cursor: pointer; }
     
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
@@ -152,14 +157,12 @@
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
 
-    /* Elemen Input Deadline Khusus Side Quest */
     .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
     .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
 
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
 
-    /* RESPONSIVITAS HP */
     @media (max-width: 768px) {
       body { padding: 12px; }
       .hero-title { font-size: 2.8rem; letter-spacing: -1.5px; }
@@ -174,13 +177,6 @@
       .quest-text { font-size: 0.95rem; }
       .add-placeholder { padding: 14px; font-size: 0.9rem; border-radius: 12px; }
       .modal-content { padding: 25px 20px; border-radius: 20px; }
-      .container > .stat-card[style*="display: flex"] { flex-direction: column !important; gap: 6px; text-align: center; align-items: center !important; }
-      .container > .stat-card[style*="display: flex"] span { text-align: center !important; }
-    }
-
-    @media (max-width: 360px) {
-      .hero-title { font-size: 2.2rem; }
-      .stat-value { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -233,7 +229,7 @@
       <div class="progress-label"><span>Daily Progress</span><span id="dailyPercent">0%</span></div>
       <div class="progress-track"><div class="progress-fill" id="dailyFill"></div></div>
     </div>
-    <div id="dailyQuestsList"></div>
+    <div id="dailyQuestsList" class="quest-list-container" data-type="daily"></div>
     <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
 
     <h2 style="border-left-color: var(--accent-gold);">🏆 Monthly Epic Goals</h2>
@@ -247,7 +243,7 @@
         <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
         <span id="monthlyTimer" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem;">00 Hari</span>
     </div>
-    <div id="monthlyGoalsList"></div>
+    <div id="monthlyGoalsList" class="quest-list-container" data-type="monthly"></div>
     <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
 
     <h2 style="border-left-color: var(--accent-purple);">🔮 Side Quests</h2>
@@ -257,7 +253,7 @@
         <div class="progress-fill" id="sideFill" style="background: linear-gradient(90deg, var(--accent-purple), #f472b6); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); will-change: width;"></div>
       </div>
     </div>
-    <div id="sideQuestsList"></div>
+    <div id="sideQuestsList" class="quest-list-container" data-type="side"></div>
     <button onclick="openModal('side')" class="add-placeholder">+ Tambah Side Quest</button>
 
     <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; text-decoration: underline; font-size: 0.8rem; width:100%; margin-top:40px;">Logout Akun</button>
@@ -274,6 +270,10 @@
     let currentModalType = 'daily';
     let editingGoalId = null;
 
+    // Variabel pembantu untuk fitur Long Press Reorder
+    let longPressTimeout = null;
+    let dragSrcElement = null;
+
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
@@ -283,6 +283,7 @@
         await fetchOrCreateProfile();
         fetchData();
         startTimers();
+        setupDragAndDropEvents();
       }
     }
 
@@ -298,7 +299,13 @@
     }
 
     async function fetchData() {
-      const { data } = await clientApp.from('goals').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: true });
+      // Mengurutkan berdasarkan kolom position secara ascending
+      const { data } = await clientApp.from('goals')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('position', { ascending: true })
+        .order('created_at', { ascending: true });
+        
       allGoals = data || [];
       render();
     }
@@ -383,12 +390,17 @@
           btn.innerText = "Simpan Perubahan";
         }
       } else {
+        // Menghitung posisi urutan terakhir untuk kategori ini agar ditaruh paling bawah waktu dibuat baru
+        const sameTypeGoals = allGoals.filter(g => g.type === currentModalType);
+        const nextPosition = sameTypeGoals.length > 0 ? Math.max(...sameTypeGoals.map(g => g.position || 0)) + 10 : 10;
+
         const { data, error } = await clientApp.from('goals').insert([{ 
           text: text, 
           user_id: currentUser.id, 
           type: currentModalType, 
           checked: false,
-          deadline: deadlineText
+          deadline: deadlineText,
+          position: nextPosition
         }]).select();
 
         btn.disabled = false;
@@ -396,7 +408,7 @@
         if(!error) {
           allGoals.push(data[0]);
           closeModal();
-          render();
+          fetchData(); // Dipanggil kembali agar urutan position tersinkronisasi rapi
         } else {
           alert("Gagal menyimpan: " + error.message);
           btn.innerText = "Tambahkan";
@@ -455,6 +467,132 @@
       });
     }
 
+    /* MANAJEMEN EVENT LONG PRESS UNTUK DRAG AND DROP */
+    function makeDraggableOnLongPress(element) {
+      // Event untuk Komputer / Mouse
+      element.addEventListener('mousedown', (e) => startLongPressTimer(e, element));
+      element.addEventListener('mouseup', clearLongPressTimer);
+      element.addEventListener('mouseleave', clearLongPressTimer);
+
+      // Event untuk HP / Touch Screen
+      element.addEventListener('touchstart', (e) => startLongPressTimer(e, element), { passive: true });
+      element.addEventListener('touchend', clearLongPressTimer);
+      element.addEventListener('touchmove', clearLongPressTimer);
+
+      // Setup Event Drag standar HTML5
+      element.addEventListener('dragstart', handleDragStart);
+      element.addEventListener('dragend', handleDragEnd);
+    }
+
+    function startLongPressTimer(e, element) {
+      // Jika menekan checkbox atau tombol aksi, jangan aktifkan fitur drag urutan
+      if (e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
+        return;
+      }
+      clearLongPressTimer();
+      longPressTimeout = setTimeout(() => {
+        element.setAttribute('draggable', 'true');
+        element.classList.add('ready-to-drag');
+        // Memicu feedback getaran jika didukung oleh HP/perangkat mobile
+        if (navigator.vibrate) navigator.vibrate(50);
+      }, 500); // Harus ditekan tahan selama 500ms (setengah detik)
+    }
+
+    function clearLongPressTimer() {
+      if (longPressTimeout) clearTimeout(longPressTimeout);
+    }
+
+    function handleDragStart(e) {
+      if (this.getAttribute('draggable') !== 'true') {
+        e.preventDefault();
+        return;
+      }
+      dragSrcElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      this.removeAttribute('draggable');
+      this.classList.remove('ready-to-drag');
+      
+      document.querySelectorAll('.quest-list-container').forEach(container => {
+        container.classList.remove('drag-over');
+      });
+      dragSrcElement = null;
+    }
+
+    function setupDragAndDropEvents() {
+      const containers = document.querySelectorAll('.quest-list-container');
+      
+      containers.forEach(container => {
+        container.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          if (!dragSrcElement) return;
+          
+          // Validasi guardrail utama: Cegah pemindahan antar kategori tipe goal yang berbeda
+          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
+            e.dataTransfer.dropEffect = 'none';
+            return;
+          }
+          
+          e.dataTransfer.dropEffect = 'move';
+          this.classList.add('drag-over');
+          
+          // Kalkulasi penempatan secara real-time (apakah di atas, tengah, atau bawah item lain)
+          const afterElement = getDragAfterElement(this, e.clientY);
+          if (afterElement == null) {
+            this.appendChild(dragSrcElement);
+          } else {
+            this.insertBefore(dragSrcElement, afterElement);
+          }
+        });
+
+        container.addEventListener('dragleave', function() {
+          this.classList.remove('drag-over');
+        });
+
+        container.addEventListener('drop', async function(e) {
+          e.preventDefault();
+          this.classList.remove('drag-over');
+          
+          if (!dragSrcElement) return;
+          
+          // Lakukan double check validasi tipe kategori kembali
+          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
+            return;
+          }
+
+          // Dapatkan susunan urutan ID yang baru dari DOM
+          const items = Array.from(this.querySelectorAll('.quest-item'));
+          const updates = items.map((item, index) => {
+            return clientApp.from('goals').update({ position: index * 10 }).eq('id', item.getAttribute('data-id'));
+          });
+
+          // Simpan seluruh perubahan urutan baru ke database Supabase secara paralel
+          await Promise.all(updates);
+          fetchData(); // Sinkronisasi urutan global terbaru dari database
+        });
+      });
+    }
+
+    // Fungsi pembantu untuk mengukur koordinat elemen terdekat saat diseret di tengah/atas/bawah
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.quest-item:not(.dragging)')];
+      
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
@@ -477,26 +615,34 @@
           countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
         }
 
-        const item = `
-          <div class="quest-item" ${borderStyle}>
-            <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
-            <div class="goal-info">
-              <div class="quest-title-row">
-                <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
-                ${countdownBadgeHTML}
-              </div>
-              <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
+        // Tag elemen ditambahkan data-id dan data-type untuk mendukung filter reorder
+        const item = document.createElement('div');
+        item.className = 'quest-item';
+        item.setAttribute('data-id', g.id);
+        item.setAttribute('data-type', g.type);
+        if (borderStyle) item.style.borderLeft = borderStyle.split('solid ')[1].replace('"', '');
+
+        item.innerHTML = `
+          <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
+          <div class="goal-info">
+            <div class="quest-title-row">
+              <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
+              ${countdownBadgeHTML}
             </div>
-            <div class="action-buttons">
-              <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}', '${escapeHtml(g.deadline || '').replace(/'/g, "\\'")}')">📝</button>
-              <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
-            </div>
+            <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}', '${escapeHtml(g.deadline || '').replace(/'/g, "\\'")}')">📝</button>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
           </div>
         `;
         
-        if(g.type === 'monthly') mList.innerHTML += item;
-        else if(g.type === 'side') { if(sList) sList.innerHTML += item; }
-        else dList.innerHTML += item;
+        // Daftarkan listener Long Press ke item yang baru saja di-render
+        makeDraggableOnLongPress(item);
+
+        if(g.type === 'monthly') mList.appendChild(item);
+        else if(g.type === 'side') { if(sList) sList.appendChild(item); }
+        else dList.appendChild(item);
       });
       updateProgress();
       if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
