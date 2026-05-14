@@ -51,8 +51,6 @@
       margin-top: 20px;
     }
 
-    .google-btn:hover { transform: scale(1.05); }
-
     .container {
       display: none;
       width: 100%;
@@ -93,7 +91,6 @@
     .input-group { display: flex; gap: 12px; margin-top: 40px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 20px; border: 1px solid var(--glass-border); }
     #newGoalInput { flex: 1; background: transparent; border: none; padding-left: 10px; color: white; outline: none; }
     .add-btn { background: var(--accent-blue); border: none; color: white; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 700; }
-    
     .logout-btn { margin-top: 20px; background: transparent; color: var(--text-dim); border: none; cursor: pointer; text-decoration: underline; font-size: 0.8rem; }
   </style>
 </head>
@@ -109,7 +106,7 @@
   </div>
 
   <div class="container" id="main-dashboard">
-    <h1>まず日本語.</h1>
+    <h1>まず日本語。</h1>
     <div class="subtitle" id="user-info">Memuat data...</div>
     
     <div class="info-bar">
@@ -138,15 +135,17 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const S_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
+    
+    // Menggunakan nama variabel unik agar tidak bentrok
+    const sbClient = supabase.createClient(S_URL, S_KEY);
 
     let goals = [];
     let currentUser = null;
 
     async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sbClient.auth.getUser();
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
@@ -158,25 +157,22 @@
     }
 
     async function loginWithGoogle() {
-      await supabase.auth.signInWithOAuth({ 
+      await sbClient.auth.signInWithOAuth({ 
         provider: 'google',
         options: { 
-          // Link ini disesuaikan dengan alamat GitHub Pages kamu agar Google tahu kemana harus balik
           redirectTo: 'https://wulpiz.github.io/Jp-progress/',
-          queryParams: {
-            prompt: 'select_account'
-          }
+          queryParams: { prompt: 'select_account' }
         }
       });
     }
 
     async function logout() {
-      await supabase.auth.signOut();
+      await sbClient.auth.signOut();
       location.reload();
     }
 
     async function fetchGoals() {
-      const { data, error } = await supabase
+      const { data, error } = await sbClient
         .from('goals')
         .select('*')
         .order('created_at', { ascending: true });
@@ -184,7 +180,7 @@
     }
 
     function setupRealtime() {
-      supabase.channel('custom-all-channel')
+      sbClient.channel('custom-all-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, () => {
           fetchGoals();
         }).subscribe();
@@ -193,7 +189,7 @@
     async function addGoal() {
       const input = document.getElementById("newGoalInput");
       if (!input.value || !currentUser) return;
-      await supabase.from('goals').insert([{ 
+      await sbClient.from('goals').insert([{ 
         text: input.value, 
         user_id: currentUser.id, 
         deadline: new Date().toISOString().split('T')[0] 
@@ -202,11 +198,11 @@
     }
 
     async function toggleGoal(id, currentStatus) {
-      await supabase.from('goals').update({ checked: !currentStatus }).eq('id', id);
+      await sbClient.from('goals').update({ checked: !currentStatus }).eq('id', id);
     }
 
     async function deleteGoal(id) {
-      if(confirm("Hapus goal?")) await supabase.from('goals').delete().eq('id', id);
+      if(confirm("Hapus goal?")) await sbClient.from('goals').delete().eq('id', id);
     }
 
     function render() {
@@ -226,7 +222,7 @@
           </div>
           <div class="edit-panel" id="panel-${index}">
             <div class="panel-footer">
-              <button style="color: #ef4444; background: none; border: none; cursor:pointer; padding: 10px 0" onclick="deleteGoal('${goal.id}')">Hapus Permanen</button>
+              <button style="color: #ef4444; background: none; border: none; cursor:pointer" onclick="deleteGoal('${goal.id}')">Hapus Permanen</button>
             </div>
           </div>
         `;
@@ -256,5 +252,4 @@
     checkUser();
   </script>
 </body>
-                                                                       </html>
-  
+</html>
