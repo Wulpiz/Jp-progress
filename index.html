@@ -16,246 +16,103 @@
       --glass-border: rgba(255, 255, 255, 0.12);
     }
 
-    * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    * { box-sizing: border-box; transition: all 0.2s ease; }
 
     body {
-      margin: 0;
-      min-height: 100vh;
+      margin: 0; min-height: 100vh;
       background: radial-gradient(circle at 0% 0%, #1e293b 0%, #0f172a 100%);
       color: var(--text-main);
-      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-      display: flex;
-      justify-content: center;
-      padding: 60px 20px;
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex; justify-content: center; padding: 40px 20px;
     }
 
     /* Auth Screen */
-    #auth-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      max-width: 400px;
-    }
-
+    #auth-screen { text-align: center; max-width: 400px; margin-top: 100px; }
     .google-btn {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: white;
-      color: #1f2937;
-      padding: 14px 28px;
-      border-radius: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      margin-top: 30px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 12px; background: white; color: #1f2937;
+      padding: 14px 28px; border-radius: 16px; font-weight: 700; cursor: pointer; border: none;
     }
-    .google-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
 
     /* Main Container */
     .container {
-      display: none; /* Muncul setelah login */
-      width: 100%;
-      max-width: 850px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 32px;
-      padding: 50px;
-      backdrop-filter: blur(25px);
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      display: none; width: 100%; max-width: 800px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 32px; padding: 40px; backdrop-filter: blur(20px);
     }
 
-    h1 {
-      margin: 0;
-      text-align: center;
-      font-size: clamp(40px, 6vw, 64px);
-      font-weight: 800;
-      letter-spacing: -2px;
-      background: linear-gradient(to bottom right, #ffffff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: var(--accent-blue);
-      margin-top: 12px;
-      font-size: 1.1rem;
-      font-weight: 500;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* Header Info */
-    .info-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 40px 0 20px 0;
-    }
-
-    #clock { color: var(--text-main); font-size: 1rem; line-height: 1.5; }
-
-    #streak {
-      background: rgba(250, 204, 21, 0.1);
-      padding: 8px 18px;
-      border-radius: 99px;
-      color: #facc15;
-      font-weight: 700;
-      border: 1px solid rgba(250, 204, 21, 0.2);
-    }
+    h1 { text-align: center; font-size: 3rem; margin: 0; letter-spacing: -2px; }
+    .subtitle { text-align: center; color: var(--accent-blue); margin-bottom: 30px; }
 
     /* Progress Section */
-    .progress-section { margin-bottom: 40px; }
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .progress-bar {
-      height: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--glass-border);
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-    }
+    .progress-bar { height: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin: 10px 0 30px; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
 
-    /* Goal Items */
+    /* Goal Item */
     .goal-item {
-      background: rgba(255, 255, 255, 0.02);
-      padding: 20px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px;
+      margin-bottom: 12px; border: 1px solid var(--glass-border);
     }
-    .goal-item:hover { background: rgba(255, 255, 255, 0.05); transform: translateY(-2px); }
-
-    .goal-main { display: flex; align-items: center; gap: 20px; }
-    .goal-content { flex: 1; }
-    .goal-text { font-size: 1.2rem; font-weight: 500; }
-    .checked { text-decoration: line-through; color: var(--text-dim); opacity: 0.4; }
-    .deadline-label { font-size: 0.85rem; color: var(--text-dim); margin-top: 6px; }
-
-    .settings-btn {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--glass-border);
-      color: var(--text-main);
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .settings-btn:hover { background: var(--accent-blue); transform: rotate(90deg); }
-
+    .goal-main { display: flex; align-items: center; gap: 15px; }
+    .goal-text { flex: 1; font-size: 1.1rem; }
+    .checked { text-decoration: line-through; opacity: 0.5; color: var(--accent-cyan); }
+    
     /* Edit Panel */
-    .edit-panel {
-      max-height: 0; overflow: hidden; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .edit-panel.active {
-      max-height: 400px; opacity: 1;
-      margin-top: 20px; padding-top: 20px;
-      border-top: 1px solid var(--glass-border);
-    }
+    .edit-panel { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--glass-border); }
+    .edit-panel.active { display: block; }
+    .edit-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
 
-    .edit-grid { display: grid; gap: 15px; }
+    /* Input New Goal */
+    .input-section { 
+      background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; 
+      margin-top: 30px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .input-row { display: flex; gap: 10px; }
     input[type="text"], input[type="date"] {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--glass-border);
-      color: white; padding: 12px; border-radius: 12px; outline: none; width: 100%;
+      background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border);
+      color: white; padding: 12px; border-radius: 10px; outline: none;
     }
+    .add-btn { background: var(--accent-blue); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+    .save-btn { background: #22c55e; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-right: 10px; }
+    .del-btn { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
 
-    .delete-link {
-      color: #ef4444; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2); padding: 8px 16px; border-radius: 8px;
-      cursor: pointer; margin-top: 15px; display: inline-block;
-    }
-
-    /* Input Group */
-    .input-group {
-      display: flex; gap: 12px; margin-top: 40px;
-      background: rgba(255, 255, 255, 0.03); padding: 10px;
-      border-radius: 20px; border: 1px solid var(--glass-border);
-    }
-    #newGoalInput { flex: 1; background: transparent; border: none; padding-left: 10px; color: white; outline: none; }
-    .add-btn {
-      background: var(--accent-blue); border: none; color: white;
-      padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 700;
-    }
-
-    .logout-btn {
-      margin-top: 40px; background: transparent; color: var(--text-dim);
-      border: none; cursor: pointer; text-decoration: underline;
-      display: block; width: 100%; text-align: center;
-    }
-
-    input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent-blue); cursor: pointer; }
-
-    @media (max-width: 600px) {
-      .container { padding: 30px 20px; }
-      .info-bar { flex-direction: column; gap: 15px; align-items: flex-start; }
-    }
+    #streak { color: #facc15; font-weight: bold; text-align: right; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- Screen Login -->
   <div id="auth-screen">
     <h1>まず日本語。</h1>
-    <p class="subtitle">Lakukanlah sekarang dan paksa diri sendiri, jadikan itu sebagai kebiasaan.</p>
-    <button class="google-btn" onclick="loginWithGoogle()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-      Masuk dengan Google
-    </button>
+    <p style="color: var(--text-dim)">Lakukan sekarang, atau lupakan selamanya.</p>
+    <button class="google-btn" onclick="loginWithGoogle()">Masuk dengan Google</button>
   </div>
 
-  <!-- Dashboard Utama -->
   <div class="container" id="main-dashboard">
+    <div id="streak">🔥 0 Hari</div>
     <h1>まず日本語。</h1>
-    <div class="subtitle">Lakukanlah sekarang dan paksa diri sendiri, jadikan itu sebagai kebiasaan.</div>
-    
-    <div class="info-bar">
-      <div id="clock"></div>
-      <div id="streak">🔥 0 Hari</div>
-    </div>
+    <div class="subtitle">Fokus pada proses, hasil akan mengikuti.</div>
 
     <div class="progress-section">
-      <div class="progress-header">
-        <span>Progress Sekarang</span>
+      <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+        <span>Target Tercapai</span>
         <span id="progressPercent">0%</span>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     </div>
 
     <div id="goalsList"></div>
 
-    <div class="input-group">
-      <input type="text" id="newGoalInput" placeholder="Ketik rencana belajarmu hari ini...">
-      <button class="add-btn" onclick="addGoal()">Tambah Goal</button>
+    <div class="input-section">
+      <div class="input-row">
+        <input type="text" id="newGoalInput" placeholder="Apa goal belajarmu hari ini?" style="flex: 2;">
+        <input type="date" id="newGoalDate" style="flex: 1;">
+      </div>
+      <button class="add-btn" onclick="addGoal()">Tambah Goal Baru</button>
     </div>
 
-    <button class="logout-btn" onclick="logout()">Logout Akun</button>
+    <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:30px; width:100%">Logout Akun</button>
   </div>
 
   <script>
-    // Konfigurasi Supabase
     const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = supabase.createClient(SB_URL, SB_KEY);
@@ -263,120 +120,104 @@
     let goals = [];
     let currentUser = null;
 
-    // --- AUTH LOGIC ---
+    // --- SINKRONISASI DATA ---
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-dashboard').style.display = 'block';
-        fetchGoals();
-        setupRealtime();
+        fetchData();
         loadStreak();
       }
     }
 
-    async function loginWithGoogle() {
-      await clientApp.auth.signInWithOAuth({ 
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-      });
+    async function fetchData() {
+      const { data } = await clientApp.from('goals').select('*').order('created_at', { ascending: true });
+      goals = data || [];
+      render();
     }
 
-    async function logout() {
-      await clientApp.auth.signOut();
-      location.reload();
-    }
-
-    // --- DATA LOGIC ---
-    async function fetchGoals() {
-      const { data, error } = await clientApp
-        .from('goals')
-        .select('*')
-        .order('created_at', { ascending: true });
-      if (!error) { 
-        goals = data; 
-        render(); 
-      }
-    }
-
-    function setupRealtime() {
-      clientApp.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, () => {
-        fetchGoals();
-      }).subscribe();
-    }
-
+    // --- CRUD ACTIONS ---
     async function addGoal() {
-      const input = document.getElementById("newGoalInput");
-      if (!input.value || !currentUser) return;
-      await clientApp.from('goals').insert([{ 
-        text: input.value, 
-        user_id: currentUser.id, 
-        deadline: new Date().toISOString().split('T')[0] 
-      }]);
-      input.value = "";
+      const text = document.getElementById("newGoalInput").value;
+      const date = document.getElementById("newGoalDate").value;
+      if (!text || !date) return alert("Isi teks dan batas waktunya dulu ya!");
+
+      const { data, error } = await clientApp.from('goals').insert([{ 
+        text: text, 
+        deadline: date, 
+        user_id: currentUser.id 
+      }]).select();
+
+      if (!error) {
+        goals.push(data[0]); // Langsung masukkan ke array lokal
+        render(); // Langsung gambar ulang tanpa refresh
+        document.getElementById("newGoalInput").value = "";
+      }
     }
 
     async function toggleGoal(id, currentStatus) {
-      const { error } = await clientApp.from('goals').update({ checked: !currentStatus }).eq('id', id);
-      if(!error) updateStreakLogic(!currentStatus);
-    }
-
-    async function updateGoalText(id, newText) {
-      await clientApp.from('goals').update({ text: newText }).eq('id', id);
-    }
-
-    async function updateGoalDate(id, newDate) {
-      await clientApp.from('goals').update({ deadline: newDate }).eq('id', id);
-    }
-
-    async function deleteGoal(id) {
-      if(confirm("Hapus goal ini?")) await clientApp.from('goals').delete().eq('id', id);
-    }
-
-    // --- STREAK LOGIC (Cloud + Local Mix) ---
-    function loadStreak() {
-      const streak = localStorage.getItem(`streak_${currentUser.id}`) || 0;
-      document.getElementById("streak").innerText = `🔥 ${streak} Hari`;
-    }
-
-    function updateStreakLogic(isChecking) {
-      if (!isChecking) return;
+      // Update lokal dulu biar instan
+      const goal = goals.find(g => g.id === id);
+      goal.checked = !currentStatus;
+      render();
       
-      const today = new Date().toDateString();
-      const lastDate = localStorage.getItem(`lastDate_${currentUser.id}`);
-      let streak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 0;
+      // Update ke database di background
+      await clientApp.from('goals').update({ checked: !currentStatus }).eq('id', id);
+      if(!currentStatus) updateStreakLogic();
+    }
 
-      if (lastDate !== today) {
-        streak++;
-        localStorage.setItem(`streak_${currentUser.id}`, streak);
-        localStorage.setItem(`lastDate_${currentUser.id}`, today);
-        loadStreak();
+    async function updateGoal(id, index) {
+      const newText = document.getElementById(`edit-text-${index}`).value;
+      const newDate = document.getElementById(`edit-date-${index}`).value;
+      
+      const { error } = await clientApp.from('goals').update({ 
+        text: newText, 
+        deadline: newDate 
+      }).eq('id', id);
+
+      if (!error) {
+        goals[index].text = newText;
+        goals[index].deadline = newDate;
+        alert("Goal berhasil diperbarui!");
+        render();
       }
     }
 
-    // --- RENDER LOGIC ---
+    async function deleteGoal(id) {
+      if(!confirm("Hapus goal ini?")) return;
+      const { error } = await clientApp.from('goals').delete().eq('id', id);
+      if(!error) {
+        goals = goals.filter(g => g.id !== id);
+        render();
+      }
+    }
+
+    // --- UI RENDER ---
     function render() {
       const list = document.getElementById("goalsList");
       list.innerHTML = "";
-      goals.forEach((goal, index) => {
+      
+      goals.forEach((goal, i) => {
         const item = document.createElement("div");
         item.className = "goal-item";
         item.innerHTML = `
           <div class="goal-main">
             <input type="checkbox" ${goal.checked ? "checked" : ""} onchange="toggleGoal('${goal.id}', ${goal.checked})">
-            <div class="goal-content">
-              <div class="goal-text ${goal.checked ? 'checked' : ''}">${goal.text}</div>
-              <div class="deadline-label">⏳ Deadline: ${goal.deadline}</div>
+            <div class="goal-text ${goal.checked ? 'checked' : ''}">
+              ${goal.text}
+              <div style="font-size:0.75rem; color:var(--text-dim)">Deadline: ${goal.deadline}</div>
             </div>
-            <button class="settings-btn" onclick="toggleEditPanel(${index})">⚙️</button>
+            <button onclick="document.getElementById('edit-${i}').classList.toggle('active')" style="background:none; border:none; cursor:pointer">⚙️</button>
           </div>
-          <div class="edit-panel" id="panel-${index}">
-            <div class="edit-grid">
-              <input type="text" value="${goal.text}" onchange="updateGoalText('${goal.id}', this.value)">
-              <input type="date" value="${goal.deadline}" onchange="updateGoalDate('${goal.id}', this.value)">
-            </div>
-            <button class="delete-link" onclick="deleteGoal('${goal.id}')">Hapus Goal Permanen</button>
+          <div class="edit-panel" id="edit-${i}">
+            <label style="font-size:0.8rem">Ganti Judul:</label>
+            <input type="text" class="edit-input" id="edit-text-${i}" value="${goal.text}">
+            <label style="font-size:0.8rem">Ganti Batas Waktu:</label>
+            <input type="date" class="edit-input" id="edit-date-${i}" value="${goal.deadline}">
+            <button class="save-btn" onclick="updateGoal('${goal.id}', ${i})">Simpan Perubahan</button>
+            <button class="del-btn" onclick="deleteGoal('${goal.id}')">Hapus</button>
           </div>
         `;
         list.appendChild(item);
@@ -384,27 +225,36 @@
       updateProgress();
     }
 
-    function toggleEditPanel(index) {
-      const panel = document.getElementById(`panel-${index}`);
-      panel.classList.toggle('active');
-    }
-
     function updateProgress() {
+      const total = goals.length;
       const done = goals.filter(g => g.checked).length;
-      const percent = goals.length === 0 ? 0 : Math.round((done / goals.length) * 100);
-      document.getElementById("progressFill").style.width = percent + "%";
+      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+      
+      const fill = document.getElementById("progressFill");
+      fill.style.width = percent + "%";
       document.getElementById("progressPercent").innerText = percent + "%";
     }
 
-    function updateClock() {
-      const now = new Date();
-      const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const date = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      document.getElementById("clock").innerHTML = `<span style="font-size: 1.4rem; font-weight: 800;">${time}</span><br>${date}`;
+    // --- STREAK & AUTH (Same as before) ---
+    function loadStreak() {
+      const s = localStorage.getItem(`streak_${currentUser.id}`) || 0;
+      document.getElementById("streak").innerText = `🔥 ${s} Hari`;
     }
 
-    setInterval(updateClock, 1000);
-    updateClock();
+    function updateStreakLogic() {
+      const today = new Date().toDateString();
+      if (localStorage.getItem(`lastDate_${currentUser.id}`) !== today) {
+        let s = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 0;
+        s++;
+        localStorage.setItem(`streak_${currentUser.id}`, s);
+        localStorage.setItem(`lastDate_${currentUser.id}`, today);
+        loadStreak();
+      }
+    }
+
+    async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google' }); }
+    async function logout() { await clientApp.auth.signOut(); location.reload(); }
+
     checkUser();
   </script>
 </body>
