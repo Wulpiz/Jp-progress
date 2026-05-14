@@ -96,36 +96,42 @@
       will-change: width;
     }
 
-    h2 { border-left: 4px solid var(--accent-blue); padding-left: 15px; margin: 40px 0 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+    h2 { padding-left: 15px; margin: 40px 0 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+    h2.title-daily { border-left: 4px solid var(--accent-blue); }
+    h2.title-monthly { border-left: 4px solid var(--accent-gold); }
+    h2.title-side { border-left: 4px solid var(--accent-purple); }
 
-    /* GAYA BARU UNTUK LONG PRESS REORDER */
+    /* BASE STYLE QUEST ITEM DENGAN REORDER */
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
       margin-bottom: 12px; border: 1px solid var(--glass-border);
       display: flex; align-items: center; gap: 15px;
-      cursor: grab; /* Indikator bahwa item bisa dipegang */
+      cursor: grab;
       user-select: none;
       -webkit-user-select: none;
     }
     .quest-item:hover { background: rgba(255,255,255,0.05); }
     .quest-item:active { cursor: grabbing; }
     
-    /* Efek visual saat item sedang diseret */
+    /* VARIANT WARNA GARIS KIRI UTK MASING-MASING KATEGORI */
+    .quest-item.type-daily { border-left: 4px solid var(--accent-blue); }
+    .quest-item.type-monthly { border-left: 4px solid var(--accent-gold); }
+    .quest-item.type-side { border-left: 4px solid var(--accent-purple); }
+    
     .quest-item.dragging {
       opacity: 0.4;
       border: 1px dashed var(--accent-cyan);
       background: rgba(45, 212, 191, 0.05);
     }
     
-    /* Efek visual area drop target yang valid */
     .quest-list-container.drag-over {
       background: rgba(255, 255, 255, 0.01);
       border-radius: 16px;
     }
 
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
-    .goal-info { flex: 1; min-width: 0; pointer-events: none; } /* Mencegah seleksi teks mengganggu drag */
-    .checkbox, .action-buttons button { pointer-events: auto; } /* Tombol tetap aktif kliknya */
+    .goal-info { flex: 1; min-width: 0; pointer-events: none; }
+    .checkbox, .action-buttons button { pointer-events: auto; }
     
     .quest-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
@@ -224,7 +230,7 @@
       </div>
     </div>
 
-    <h2>⚔️ Daily Quests</h2>
+    <h2 class="title-daily">⚔️ Daily Quests</h2>
     <div class="progress-box">
       <div class="progress-label"><span>Daily Progress</span><span id="dailyPercent">0%</span></div>
       <div class="progress-track"><div class="progress-fill" id="dailyFill"></div></div>
@@ -232,7 +238,7 @@
     <div id="dailyQuestsList" class="quest-list-container" data-type="daily"></div>
     <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
 
-    <h2 style="border-left-color: var(--accent-gold);">🏆 Monthly Epic Goals</h2>
+    <h2 class="title-monthly">🏆 Monthly Epic Goals</h2>
     <div class="progress-box">
       <div class="progress-label"><span>Monthly Progress</span><span id="monthlyPercent">0%</span></div>
       <div class="progress-track">
@@ -246,7 +252,7 @@
     <div id="monthlyGoalsList" class="quest-list-container" data-type="monthly"></div>
     <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
 
-    <h2 style="border-left-color: var(--accent-purple);">🔮 Side Quests</h2>
+    <h2 class="title-side">🔮 Side Quests</h2>
     <div class="progress-box">
       <div class="progress-label"><span>Side Progress</span><span id="sidePercent">0%</span></div>
       <div class="progress-track">
@@ -270,7 +276,6 @@
     let currentModalType = 'daily';
     let editingGoalId = null;
 
-    // Variabel pembantu untuk fitur Long Press Reorder
     let longPressTimeout = null;
     let dragSrcElement = null;
 
@@ -299,7 +304,6 @@
     }
 
     async function fetchData() {
-      // Mengurutkan berdasarkan kolom position secara ascending
       const { data } = await clientApp.from('goals')
         .select('*')
         .eq('user_id', currentUser.id)
@@ -390,7 +394,6 @@
           btn.innerText = "Simpan Perubahan";
         }
       } else {
-        // Menghitung posisi urutan terakhir untuk kategori ini agar ditaruh paling bawah waktu dibuat baru
         const sameTypeGoals = allGoals.filter(g => g.type === currentModalType);
         const nextPosition = sameTypeGoals.length > 0 ? Math.max(...sameTypeGoals.map(g => g.position || 0)) + 10 : 10;
 
@@ -408,7 +411,7 @@
         if(!error) {
           allGoals.push(data[0]);
           closeModal();
-          fetchData(); // Dipanggil kembali agar urutan position tersinkronisasi rapi
+          fetchData();
         } else {
           alert("Gagal menyimpan: " + error.message);
           btn.innerText = "Tambahkan";
@@ -467,25 +470,20 @@
       });
     }
 
-    /* MANAJEMEN EVENT LONG PRESS UNTUK DRAG AND DROP */
     function makeDraggableOnLongPress(element) {
-      // Event untuk Komputer / Mouse
       element.addEventListener('mousedown', (e) => startLongPressTimer(e, element));
       element.addEventListener('mouseup', clearLongPressTimer);
       element.addEventListener('mouseleave', clearLongPressTimer);
 
-      // Event untuk HP / Touch Screen
       element.addEventListener('touchstart', (e) => startLongPressTimer(e, element), { passive: true });
       element.addEventListener('touchend', clearLongPressTimer);
       element.addEventListener('touchmove', clearLongPressTimer);
 
-      // Setup Event Drag standar HTML5
       element.addEventListener('dragstart', handleDragStart);
       element.addEventListener('dragend', handleDragEnd);
     }
 
     function startLongPressTimer(e, element) {
-      // Jika menekan checkbox atau tombol aksi, jangan aktifkan fitur drag urutan
       if (e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
         return;
       }
@@ -493,9 +491,8 @@
       longPressTimeout = setTimeout(() => {
         element.setAttribute('draggable', 'true');
         element.classList.add('ready-to-drag');
-        // Memicu feedback getaran jika didukung oleh HP/perangkat mobile
         if (navigator.vibrate) navigator.vibrate(50);
-      }, 500); // Harus ditekan tahan selama 500ms (setengah detik)
+      }, 500);
     }
 
     function clearLongPressTimer() {
@@ -532,7 +529,6 @@
           e.preventDefault();
           if (!dragSrcElement) return;
           
-          // Validasi guardrail utama: Cegah pemindahan antar kategori tipe goal yang berbeda
           if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
             e.dataTransfer.dropEffect = 'none';
             return;
@@ -541,7 +537,6 @@
           e.dataTransfer.dropEffect = 'move';
           this.classList.add('drag-over');
           
-          // Kalkulasi penempatan secara real-time (apakah di atas, tengah, atau bawah item lain)
           const afterElement = getDragAfterElement(this, e.clientY);
           if (afterElement == null) {
             this.appendChild(dragSrcElement);
@@ -560,25 +555,21 @@
           
           if (!dragSrcElement) return;
           
-          // Lakukan double check validasi tipe kategori kembali
           if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
             return;
           }
 
-          // Dapatkan susunan urutan ID yang baru dari DOM
           const items = Array.from(this.querySelectorAll('.quest-item'));
           const updates = items.map((item, index) => {
             return clientApp.from('goals').update({ position: index * 10 }).eq('id', item.getAttribute('data-id'));
           });
 
-          // Simpan seluruh perubahan urutan baru ke database Supabase secara paralel
           await Promise.all(updates);
-          fetchData(); // Sinkronisasi urutan global terbaru dari database
+          fetchData();
         });
       });
     }
 
-    // Fungsi pembantu untuk mengukur koordinat elemen terdekat saat diseret di tengah/atas/bawah
     function getDragAfterElement(container, y) {
       const draggableElements = [...container.querySelectorAll('.quest-item:not(.dragging)')];
       
@@ -602,25 +593,21 @@
       if(sList) sList.innerHTML = "";
 
       allGoals.forEach((g) => {
-        let borderStyle = '';
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
         
         if(g.type === 'monthly') {
-          borderStyle = 'style="border-left: 3px solid var(--accent-gold)"';
           iconDeadline = '🗓️';
         } else if(g.type === 'side') {
-          borderStyle = 'style="border-left: 3px solid var(--accent-purple)"';
           iconDeadline = '🎯';
           countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
         }
 
-        // Tag elemen ditambahkan data-id dan data-type untuk mendukung filter reorder
         const item = document.createElement('div');
-        item.className = 'quest-item';
+        // KEBENALAN FIX: Menambahkan class penentu warna (type-daily, type-monthly, type-side)
+        item.className = `quest-item type-${g.type}`;
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
-        if (borderStyle) item.style.borderLeft = borderStyle.split('solid ')[1].replace('"', '');
 
         item.innerHTML = `
           <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
@@ -637,7 +624,6 @@
           </div>
         `;
         
-        // Daftarkan listener Long Press ke item yang baru saja di-render
         makeDraggableOnLongPress(item);
 
         if(g.type === 'monthly') mList.appendChild(item);
