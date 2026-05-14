@@ -36,7 +36,6 @@
       letter-spacing: -3px;
       position: relative;
       display: inline-block;
-      /* Background gradient untuk efek cahaya */
       background: linear-gradient(
         to right, 
         #ffffff 20%, 
@@ -53,9 +52,7 @@
     }
 
     @keyframes shine {
-      to {
-        background-position: 200% center;
-      }
+      to { background-position: 200% center; }
     }
 
     #auth-screen { background: var(--glass); backdrop-filter: blur(30px); padding: 60px 40px; border-radius: 40px; border: 1px solid var(--glass-border); text-align: center; max-width: 500px; width: 100%; }
@@ -70,6 +67,10 @@
     .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
     .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); }
     .timer-critical { color: var(--accent-red) !important; animation: blink 1s infinite; }
+
+    /* Class Dinamis untuk Streak */
+    .streak-zero { color: var(--text-dim) !important; filter: grayscale(100%); opacity: 0.6; }
+    .streak-active { color: #facc15 !important; filter: grayscale(0%); opacity: 1; }
 
     /* Progress Track */
     .progress-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; }
@@ -116,7 +117,6 @@
 </head>
 <body>
 
-  <!-- Modal Tambah Goal -->
   <div id="goal-modal">
     <div class="modal-content">
       <h3 id="modal-title">Tambah Goal</h3>
@@ -128,7 +128,6 @@
     </div>
   </div>
 
-  <!-- Screen Login -->
   <div id="auth-screen">
     <h1 class="hero-title">まず日本語。</h1>
     <p style="color: var(--accent-blue); margin-bottom:30px;">Daily Quest: Win or Lose Everything.</p>
@@ -137,7 +136,6 @@
     </button>
   </div>
 
-  <!-- Dashboard Utama -->
   <div class="container" id="main-dashboard">
     <div class="hero-section">
       <h1 class="hero-title">まず日本語。</h1>
@@ -151,7 +149,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Current Streak</div>
-        <div class="stat-value" id="streakVal" style="color: #facc15;">🔥 0 Hari</div>
+        <div class="stat-value" id="streakVal">🔥 0 Hari</div>
       </div>
     </div>
 
@@ -295,8 +293,17 @@
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
       
-      const streak = localStorage.getItem(`streak_${currentUser.id}`) || 0;
-      document.getElementById("streakVal").innerText = `🔥 ${streak} Hari`;
+      // LOGIK STREAK BARU
+      let streak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 0;
+      const streakEl = document.getElementById("streakVal");
+      
+      streakEl.innerText = `🔥 ${streak} Hari`;
+      
+      if (streak === 0) {
+        streakEl.className = "stat-value streak-zero"; // Menjadi Abu-abu jika 0
+      } else {
+        streakEl.className = "stat-value streak-active"; // Menjadi Berwarna jika >= 1
+      }
     }
 
     function startTimers() {
@@ -310,6 +317,13 @@
         
         const timerEl = document.getElementById("dailyTimer");
         timerEl.innerText = `${h}:${m}:${s}`;
+        
+        // KONDISI RESET HARIAN (Tepat Jam 00:00:00)
+        if (h === "00" && m === "00" && s === "00") {
+            localStorage.setItem(`streak_${currentUser.id}`, 0); // Kembalikan streak ke 0 saat reset harian
+            updateProgress();
+        }
+
         if (diff < 3600000) timerEl.classList.add('timer-critical');
 
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
