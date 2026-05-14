@@ -55,9 +55,28 @@
       to { background-position: 200% center; }
     }
 
-    #auth-screen { background: var(--glass); backdrop-filter: blur(30px); padding: 60px 40px; border-radius: 40px; border: 1px solid var(--glass-border); text-align: center; max-width: 500px; width: 100%; }
+    #auth-screen { 
+      background: var(--glass); 
+      backdrop-filter: blur(30px); 
+      padding: 60px 40px; 
+      border-radius: 40px; 
+      border: 1px solid var(--glass-border); 
+      text-align: center; 
+      max-width: 500px; 
+      width: 100%; 
+    }
 
-    .container { display: none; width: 100%; max-width: 900px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 32px; padding: 40px; backdrop-filter: blur(25px); position: relative; }
+    .container { 
+      display: none; 
+      width: 100%; 
+      max-width: 900px; 
+      background: var(--glass); 
+      border: 1px solid var(--glass-border); 
+      border-radius: 32px; 
+      padding: 40px; 
+      backdrop-filter: blur(25px); 
+      position: relative; 
+    }
 
     .hero-section { text-align: center; margin-bottom: 40px; }
     .hero-subtitle { color: var(--accent-blue); font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
@@ -87,8 +106,8 @@
     }
     .quest-item:hover { background: rgba(255,255,255,0.05); }
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
-    .goal-info { flex: 1; min-width: 0; }
-    .quest-text { font-size: 1.05rem; font-weight: 500; word-break: break-word; }
+    .goal-info { flex: 1; min-width: 0; } /* min-width mencegah text panjang merusak layout */
+    .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
     .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
     .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
 
@@ -114,33 +133,95 @@
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
 
-    /* --- OPTIMASI RESPONSIVITAS (HP & TABLET) --- */
+    /* ==========================================================================
+       OPTIMASI RESPONSIVITAS HP (MEDIA QUERIES)
+       ========================================================================== */
     @media (max-width: 768px) {
-      body { padding: 12px; }
-      .hero-title { font-size: 2.8rem; letter-spacing: -1px; }
-      #auth-screen { padding: 40px 20px; border-radius: 24px; }
-      .container { padding: 20px; border-radius: 24px; }
-      .hero-section { margin-bottom: 25px; }
-      .hero-subtitle { font-size: 0.95rem; }
-      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
-      .stat-card { padding: 15px; border-radius: 16px; }
-      .stat-value { font-size: 1.5rem; }
-      .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
-      .quest-text { font-size: 0.95rem; }
-      .modal-content { padding: 30px 20px; border-radius: 20px; }
-      
-      /* Khusus card timer bulanan agar rapi di HP */
+      body {
+        padding: 12px;
+      }
+
+      .hero-title {
+        font-size: 2.8rem; /* Mengecilkan judul di HP agar tidak patah berantakan */
+        letter-spacing: -1.5px;
+      }
+
+      .hero-subtitle {
+        font-size: 0.95rem;
+        padding: 0 10px;
+      }
+
+      #auth-screen {
+        padding: 40px 20px;
+        border-radius: 24px;
+      }
+
+      .container {
+        padding: 20px 16px; /* Mengurangi padding box utama agar konten lebih luas */
+        border-radius: 24px;
+      }
+
+      .header-info {
+        grid-template-columns: 1fr; /* Stat Card diubah jadi susunan atas-bawah di HP */
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        padding: 15px;
+        border-radius: 16px;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        margin: 30px 0 15px;
+        font-size: 1.05rem;
+      }
+
+      .quest-item {
+        padding: 14px;
+        gap: 12px;
+        border-radius: 12px;
+      }
+
+      .quest-text {
+        font-size: 0.95rem; /* Ukuran font teks goal disesuaikan untuk HP */
+      }
+
+      .add-placeholder {
+        padding: 14px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+      }
+
+      .modal-content {
+        padding: 25px 20px;
+        border-radius: 20px;
+      }
+
+      /* Baris penunjuk sisa bulan dibuat flex vertikal tipis di HP */
       .container > .stat-card[style*="display: flex"] {
-        flex-direction: column;
-        gap: 8px;
-        align-items: center !important;
+        flex-direction: column !important;
+        gap: 6px;
         text-align: center;
+        align-items: center !important;
+      }
+      .container > .stat-card[style*="display: flex"] span {
+        text-align: center !important;
       }
     }
 
     @media (max-width: 360px) {
-      .hero-title { font-size: 2.2rem; }
-      .stat-value { font-size: 1.3rem; }
+      /* Optimasi khusus untuk HP dengan layar ekstra kecil (seperti iPhone SE lama) */
+      .hero-title {
+        font-size: 2.2rem;
+      }
+      .stat-value {
+        font-size: 1.3rem;
+      }
     }
   </style>
 </head>
@@ -212,6 +293,7 @@
 
     let currentUser = null;
     let allGoals = [];
+    let dbStreak = 0;
     let currentModalType = 'daily';
 
     async function checkUser() {
@@ -220,8 +302,21 @@
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-dashboard').style.display = 'block';
+        await fetchOrCreateProfile();
         fetchData();
         startTimers();
+      }
+    }
+
+    // Ambil atau buat profil streak di database cloud
+    async function fetchOrCreateProfile() {
+      let { data: profile, error } = await clientApp.from('user_profiles').select('streak').eq('user_id', currentUser.id).single();
+      
+      if (error && error.code === 'PGRST116') { // Jika profil belum ada di DB
+        const { data: newProfile } = await clientApp.from('user_profiles').insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
+        dbStreak = newProfile ? newProfile.streak : 0;
+      } else if (profile) {
+        dbStreak = profile.streak;
       }
     }
 
@@ -322,16 +417,14 @@
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
       
-      // LOGIK STREAK BARU
-      let streak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 0;
+      // LOGIK CLOUD STREAK BARU
       const streakEl = document.getElementById("streakVal");
+      streakEl.innerText = `🔥 ${dbStreak} Hari`;
       
-      streakEl.innerText = `🔥 ${streak} Hari`;
-      
-      if (streak === 0) {
-        streakEl.className = "stat-value streak-zero"; // Menjadi Abu-abu jika 0
+      if (dbStreak === 0) {
+        streakEl.className = "stat-value streak-zero";
       } else {
-        streakEl.className = "stat-value streak-active"; // Menjadi Berwarna jika >= 1
+        streakEl.className = "stat-value streak-active";
       }
     }
 
@@ -347,9 +440,9 @@
         const timerEl = document.getElementById("dailyTimer");
         timerEl.innerText = `${h}:${m}:${s}`;
         
-        // KONDISI RESET HARIAN (Tepat Jam 00:00:00)
+        // Pemicu tampilan lokal saat jam 00:00:00
         if (h === "00" && m === "00" && s === "00") {
-            localStorage.setItem(`streak_${currentUser.id}`, 0); // Kembalikan streak ke 0 saat reset harian
+            dbStreak = 0;
             updateProgress();
         }
 
