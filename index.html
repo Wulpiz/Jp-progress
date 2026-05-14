@@ -106,16 +106,19 @@
     }
     .quest-item:hover { background: rgba(255,255,255,0.05); }
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
-    .goal-info { flex: 1; min-width: 0; } /* min-width mencegah text panjang merusak layout */
+    .goal-info { flex: 1; min-width: 0; }
     .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
     .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
     .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
 
+    /* Gaya untuk tombol edit dan hapus */
+    .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-edit, .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
+    .btn-edit:hover { opacity: 1; transform: scale(1.1); color: var(--accent-cyan); }
+    .btn-delete:hover { opacity: 1; transform: scale(1.1); color: var(--accent-red); }
+
     .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; margin-top: 5px; font-weight: 600; text-align: center; }
     .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.03); }
-
-    .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; flex-shrink: 0; }
-    .btn-delete:hover { opacity: 1; transform: scale(1.1); color: var(--accent-red); }
 
     /* Modal */
     #goal-modal {
@@ -133,95 +136,28 @@
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
 
-    /* ==========================================================================
-       OPTIMASI RESPONSIVITAS HP (MEDIA QUERIES)
-       ========================================================================== */
+    /* RESPONSIVITAS HP */
     @media (max-width: 768px) {
-      body {
-        padding: 12px;
-      }
-
-      .hero-title {
-        font-size: 2.8rem; /* Mengecilkan judul di HP agar tidak patah berantakan */
-        letter-spacing: -1.5px;
-      }
-
-      .hero-subtitle {
-        font-size: 0.95rem;
-        padding: 0 10px;
-      }
-
-      #auth-screen {
-        padding: 40px 20px;
-        border-radius: 24px;
-      }
-
-      .container {
-        padding: 20px 16px; /* Mengurangi padding box utama agar konten lebih luas */
-        border-radius: 24px;
-      }
-
-      .header-info {
-        grid-template-columns: 1fr; /* Stat Card diubah jadi susunan atas-bawah di HP */
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-
-      .stat-card {
-        padding: 15px;
-        border-radius: 16px;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-      }
-
-      h2 {
-        margin: 30px 0 15px;
-        font-size: 1.05rem;
-      }
-
-      .quest-item {
-        padding: 14px;
-        gap: 12px;
-        border-radius: 12px;
-      }
-
-      .quest-text {
-        font-size: 0.95rem; /* Ukuran font teks goal disesuaikan untuk HP */
-      }
-
-      .add-placeholder {
-        padding: 14px;
-        font-size: 0.9rem;
-        border-radius: 12px;
-      }
-
-      .modal-content {
-        padding: 25px 20px;
-        border-radius: 20px;
-      }
-
-      /* Baris penunjuk sisa bulan dibuat flex vertikal tipis di HP */
-      .container > .stat-card[style*="display: flex"] {
-        flex-direction: column !important;
-        gap: 6px;
-        text-align: center;
-        align-items: center !important;
-      }
-      .container > .stat-card[style*="display: flex"] span {
-        text-align: center !important;
-      }
+      body { padding: 12px; }
+      .hero-title { font-size: 2.8rem; letter-spacing: -1.5px; }
+      .hero-subtitle { font-size: 0.95rem; padding: 0 10px; }
+      #auth-screen { padding: 40px 20px; border-radius: 24px; }
+      .container { padding: 20px 16px; border-radius: 24px; }
+      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+      .stat-card { padding: 15px; border-radius: 16px; }
+      .stat-value { font-size: 1.5rem; }
+      h2 { margin: 30px 0 15px; font-size: 1.05rem; }
+      .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
+      .quest-text { font-size: 0.95rem; }
+      .add-placeholder { padding: 14px; font-size: 0.9rem; border-radius: 12px; }
+      .modal-content { padding: 25px 20px; border-radius: 20px; }
+      .container > .stat-card[style*="display: flex"] { flex-direction: column !important; gap: 6px; text-align: center; align-items: center !important; }
+      .container > .stat-card[style*="display: flex"] span { text-align: center !important; }
     }
 
     @media (max-width: 360px) {
-      /* Optimasi khusus untuk HP dengan layar ekstra kecil (seperti iPhone SE lama) */
-      .hero-title {
-        font-size: 2.2rem;
-      }
-      .stat-value {
-        font-size: 1.3rem;
-      }
+      .hero-title { font-size: 2.2rem; }
+      .stat-value { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -295,6 +231,7 @@
     let allGoals = [];
     let dbStreak = 0;
     let currentModalType = 'daily';
+    let editingGoalId = null; // Menyimpan ID data yang sedang di-edit
 
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
@@ -308,11 +245,10 @@
       }
     }
 
-    // Ambil atau buat profil streak di database cloud
     async function fetchOrCreateProfile() {
       let { data: profile, error } = await clientApp.from('user_profiles').select('streak').eq('user_id', currentUser.id).single();
       
-      if (error && error.code === 'PGRST116') { // Jika profil belum ada di DB
+      if (error && error.code === 'PGRST116') {
         const { data: newProfile } = await clientApp.from('user_profiles').insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
         dbStreak = newProfile ? newProfile.streak : 0;
       } else if (profile) {
@@ -326,16 +262,32 @@
       render();
     }
 
-    function openModal(type) {
+    function openModal(type, goalId = null, currentText = '') {
       currentModalType = type;
-      document.getElementById('modal-title').innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
+      editingGoalId = goalId;
+
+      const titleEl = document.getElementById('modal-title');
+      const textInput = document.getElementById('modal-text');
+      const submitBtn = document.getElementById('btn-submit-goal');
+
+      if (editingGoalId) {
+        titleEl.innerText = type === 'daily' ? 'Edit Goal Harian' : 'Edit Goal Bulanan';
+        textInput.value = currentText;
+        submitBtn.innerText = "Simpan Perubahan";
+      } else {
+        titleEl.innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
+        textInput.value = '';
+        submitBtn.innerText = "Tambahkan";
+      }
+
       document.getElementById('goal-modal').style.display = 'flex';
-      setTimeout(() => document.getElementById('modal-text').focus(), 100);
+      setTimeout(() => textInput.focus(), 100);
     }
 
     function closeModal() {
       document.getElementById('goal-modal').style.display = 'none';
       document.getElementById('modal-text').value = '';
+      editingGoalId = null;
     }
 
     async function submitModal() {
@@ -346,23 +298,38 @@
       btn.innerText = "Menyimpan...";
       btn.disabled = true;
 
-      const { data, error } = await clientApp.from('goals').insert([{ 
-        text: text, 
-        user_id: currentUser.id, 
-        type: currentModalType, 
-        checked: false,
-        deadline: currentModalType === 'daily' ? 'Daily Reset' : 'End of Month'
-      }]).select();
+      if (editingGoalId) {
+        // Logika Update (Edit) Data
+        const { error } = await clientApp.from('goals').update({ text: text }).eq('id', editingGoalId);
+        btn.disabled = false;
 
-      btn.innerText = "Tambahkan";
-      btn.disabled = false;
-
-      if(!error) {
-        allGoals.push(data[0]);
-        closeModal();
-        render();
+        if(!error) {
+          closeModal();
+          fetchData();
+        } else {
+          alert("Gagal mengubah: " + error.message);
+          btn.innerText = "Simpan Perubahan";
+        }
       } else {
-        alert("Gagal menyimpan: " + error.message);
+        // Logika Tambah Baru (Sama seperti kode lamamu)
+        const { data, error } = await clientApp.from('goals').insert([{ 
+          text: text, 
+          user_id: currentUser.id, 
+          type: currentModalType, 
+          checked: false,
+          deadline: currentModalType === 'daily' ? 'Daily Reset' : 'End of Month'
+        }]).select();
+
+        btn.disabled = false;
+
+        if(!error) {
+          allGoals.push(data[0]);
+          closeModal();
+          render();
+        } else {
+          alert("Gagal menyimpan: " + error.message);
+          btn.innerText = "Tambahkan";
+        }
       }
     }
 
@@ -388,6 +355,7 @@
       dList.innerHTML = ""; mList.innerHTML = "";
 
       allGoals.forEach((g) => {
+        // Ditambahkan div .action-buttons dan tombol edit (📝)
         const item = `
           <div class="quest-item" ${g.type === 'monthly' ? 'style="border-left: 3px solid var(--accent-cyan)"' : ''}>
             <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
@@ -395,7 +363,10 @@
               <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
               <div class="goal-deadline">${g.type === 'daily' ? '⌛ Daily Reset' : '🗓️ End of Month'}</div>
             </div>
-            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text)}')">🗑️</button>
+            <div class="action-buttons">
+              <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">📝</button>
+              <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
+            </div>
           </div>
         `;
         if(g.type === 'monthly') mList.innerHTML += item;
@@ -417,7 +388,6 @@
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
       
-      // LOGIK CLOUD STREAK BARU
       const streakEl = document.getElementById("streakVal");
       streakEl.innerText = `🔥 ${dbStreak} Hari`;
       
@@ -428,6 +398,7 @@
       }
     }
 
+    // Timer logic ...
     function startTimers() {
       setInterval(() => {
         const now = new Date();
@@ -440,7 +411,6 @@
         const timerEl = document.getElementById("dailyTimer");
         timerEl.innerText = `${h}:${m}:${s}`;
         
-        // Pemicu tampilan lokal saat jam 00:00:00
         if (h === "00" && m === "00" && s === "00") {
             dbStreak = 0;
             updateProgress();
