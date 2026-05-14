@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Japanese Focus - Zen Mode</title>
+  <title>Japanese Focus - Hardcore Mode</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -25,231 +25,259 @@
 
     body {
       margin: 0; min-height: 100vh;
-      background: #020617;
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
       color: var(--text-main);
       font-family: 'Inter', system-ui, sans-serif;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
     }
 
-    /* --- HOMEPAGE / ZEN MODE STYLE --- */
-    #homepage-screen {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 30px;
-      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-      position: fixed;
-      width: 100%;
-      top: 0; left: 0;
-      z-index: 2000;
-    }
-
-    .zen-reminder {
-      font-size: 0.9rem;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 5px;
-      margin-bottom: 20px;
-      font-weight: 800;
-    }
-
-    .zen-quote {
-      font-size: 2rem;
-      font-weight: 300;
-      font-style: italic;
-      max-width: 800px;
-      line-height: 1.5;
-      margin-bottom: 50px;
-      color: #fff;
-    }
-
-    .btn-enter {
-      padding: 18px 45px;
-      background: transparent;
-      border: 1px solid var(--accent-blue);
-      color: var(--accent-blue);
-      border-radius: 50px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: 1px;
-    }
-
-    .btn-enter:hover {
-      background: var(--accent-blue);
-      color: white;
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
-    }
-
-    /* --- DASHBOARD & GENERAL STYLE --- */
-    #main-dashboard { display: none; padding: 40px 20px; max-width: 900px; margin: 0 auto; }
-    
     .hero-title {
-      font-size: 4.5rem; font-weight: 900; margin: 0; letter-spacing: -3px;
+      font-size: 4.5rem;
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: -3px;
+      position: relative;
+      display: inline-block;
       background: linear-gradient(to right, #ffffff 20%, #3b82f6 40%, #2dd4bf 60%, #ffffff 80%);
-      background-size: 200% auto; color: transparent; -webkit-background-clip: text;
-      animation: shine 3s linear infinite; text-align: center;
+      background-size: 200% auto;
+      color: #000;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 3s linear infinite;
     }
+
     @keyframes shine { to { background-position: 200% center; } }
 
-    .header-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
-    .stat-card { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); text-align: center; }
-    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); }
+    #auth-screen { 
+      background: var(--glass); 
+      backdrop-filter: blur(30px); 
+      padding: 60px 40px; 
+      border-radius: 40px; 
+      border: 1px solid var(--glass-border); 
+      text-align: center; 
+      max-width: 500px; 
+      width: 100%; 
+    }
 
-    /* DASHBOARD ELEMENTS */
+    .container { 
+      display: none; 
+      width: 100%; 
+      max-width: 900px; 
+      background: var(--glass); 
+      border: 1px solid var(--glass-border); 
+      border-radius: 32px; 
+      padding: 40px; 
+      backdrop-filter: blur(25px); 
+      position: relative; 
+    }
+
+    .hero-section { text-align: center; margin-bottom: 40px; }
+    .hero-subtitle { color: var(--accent-blue); font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
+
+    .header-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); text-align: center; }
+    .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); }
+    .timer-critical { color: var(--accent-red) !important; animation: blink 1s infinite; }
+
+    .streak-zero { color: var(--text-dim) !important; filter: grayscale(100%); opacity: 0.6; }
+    .streak-active { color: #facc15 !important; filter: grayscale(0%); opacity: 1; }
+
+    .progress-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+    .progress-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+    
+    .progress-fill { 
+      height: 100%; 
+      width: 0%; 
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); 
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+      will-change: width;
+    }
+
     h2 { padding-left: 15px; margin: 40px 0 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
     h2.title-daily { border-left: 4px solid var(--accent-blue); }
     h2.title-monthly { border-left: 4px solid var(--accent-gold); }
     h2.title-side { border-left: 4px solid var(--accent-purple); }
 
+    /* BASE STYLE QUEST ITEM DENGAN REORDER */
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
       margin-bottom: 12px; border: 1px solid var(--glass-border);
-      display: flex; align-items: center; gap: 15px; cursor: grab;
+      display: flex; align-items: center; gap: 15px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
     }
+    .quest-item:hover { background: rgba(255,255,255,0.05); }
+    .quest-item:active { cursor: grabbing; }
+    
+    /* VARIANT WARNA GARIS KIRI UTK MASING-MASING KATEGORI */
     .quest-item.type-daily { border-left: 4px solid var(--accent-blue); }
     .quest-item.type-monthly { border-left: 4px solid var(--accent-gold); }
     .quest-item.type-side { border-left: 4px solid var(--accent-purple); }
-    .quest-item.dragging { opacity: 0.4; border: 1px dashed var(--accent-cyan); }
-
-    .progress-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; }
-    .progress-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); transition: width 0.8s ease; }
-
-    .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; text-align: center; font-weight: 600; margin-bottom: 20px; }
     
-    #auth-screen { display: none; text-align: center; padding: 100px 20px; }
-    .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 20px auto; }
+    .quest-item.dragging {
+      opacity: 0.4;
+      border: 1px dashed var(--accent-cyan);
+      background: rgba(45, 212, 191, 0.05);
+    }
+    
+    .quest-list-container.drag-over {
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 16px;
+    }
 
-    /* Modal Style */
+    .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
+    .goal-info { flex: 1; min-width: 0; pointer-events: none; }
+    .checkbox, .action-buttons button { pointer-events: auto; }
+    
+    .quest-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .quest-text { font-size: 1.05rem; font-weight: 500; word-wrap: break-word; word-break: break-word; }
+    .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
+    .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+    
+    .side-countdown-live { font-size: 0.95rem; font-weight: 700; color: #facc15; background: rgba(250, 204, 21, 0.1); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(250, 204, 21, 0.2); }
+    .side-countdown-live.expired { color: var(--accent-red); background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+
+    .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-edit, .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
+    .btn-edit:hover { opacity: 1; transform: scale(1.1); color: var(--accent-cyan); }
+    .btn-delete:hover { opacity: 1; transform: scale(1.1); color: var(--accent-red); }
+
+    .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; margin-top: 5px; font-weight: 600; text-align: center; }
+    .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.03); }
+
     #goal-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(15px);
-      z-index: 3000; align-items: center; justify-content: center; padding: 20px;
+      background: rgba(2, 6, 23, 0.7); backdrop-filter: blur(15px);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
-    .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; }
-    .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--glass-border); background: #000; color: #fff; }
-
-    .side-countdown-live { font-weight: 700; color: #facc15; background: rgba(250, 204, 21, 0.1); padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; }
+    .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+    .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
+    .modal-content input[type="date"] { color-scheme: dark; font-family: inherit; cursor: pointer; }
     
-    @media (max-width: 600px) {
-      .hero-title { font-size: 2.5rem; }
-      .zen-quote { font-size: 1.3rem; }
-      .header-info { grid-template-columns: 1fr; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+    .btn-confirm { background: var(--accent-blue); color: white; }
+    .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
+
+    .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
+    .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
+
+    @keyframes blink { 50% { opacity: 0.5; } }
+    .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .hero-title { font-size: 2.8rem; letter-spacing: -1.5px; }
+      .hero-subtitle { font-size: 0.95rem; padding: 0 10px; }
+      #auth-screen { padding: 40px 20px; border-radius: 24px; }
+      .container { padding: 20px 16px; border-radius: 24px; }
+      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+      .stat-card { padding: 15px; border-radius: 16px; }
+      .stat-value { font-size: 1.5rem; }
+      h2 { margin: 30px 0 15px; font-size: 1.05rem; }
+      .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
+      .quest-text { font-size: 0.95rem; }
+      .add-placeholder { padding: 14px; font-size: 0.9rem; border-radius: 12px; }
+      .modal-content { padding: 25px 20px; border-radius: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- SCREEN 1: HOMEPAGE (ZEN) -->
-  <div id="homepage-screen">
-    <div class="zen-reminder" id="zen-reminder-text">LOADING...</div>
-    <div class="zen-quote" id="zen-quote-text">"Pikirkan tujuanmu, tarik napas, lalu mulai."</div>
-    <button class="btn-enter" onclick="enterDashboard()">LIHAT PROGRESS GOAL</button>
+  <div id="goal-modal">
+    <div class="modal-content">
+      <h3 id="modal-title">Tambah Goal</h3>
+      <input type="text" id="modal-text" placeholder="Masukkan nama goal..." onkeydown="if(event.key==='Enter') submitModal()">
+      
+      <div id="modal-deadline-block" class="deadline-container">
+        <label for="modal-deadline">Batas Waktu (Deadline)</label>
+        <input type="date" id="modal-deadline">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
+        <button class="btn-modal btn-confirm" id="btn-submit-goal" onclick="submitModal()">Tambahkan</button>
+      </div>
+    </div>
   </div>
 
-  <!-- SCREEN 2: AUTH -->
   <div id="auth-screen">
-    <h1 class="hero-title">Masuk Dulu.</h1>
+    <h1 class="hero-title">まず日本語。</h1>
+    <p style="color: var(--accent-blue); margin-bottom:30px;">Daily Quest: Win or Lose Everything.</p>
     <button class="google-btn" onclick="loginWithGoogle()">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Masuk dengan Google
     </button>
   </div>
 
-  <!-- SCREEN 3: DASHBOARD -->
-  <div id="main-dashboard">
-    <button onclick="backToHome()" style="background:none; border:none; color:var(--accent-cyan); cursor:pointer; margin-bottom: 20px; font-weight:600;">← Kembali ke Beranda</button>
-    
+  <div class="container" id="main-dashboard">
     <div class="hero-section">
       <h1 class="hero-title">まず日本語。</h1>
+      <p class="hero-subtitle">Lakukanlah sekarang dan paksa diri sendiri, jadikan itu sebagai kebiasaan</p>
     </div>
 
     <div class="header-info">
-      <div class="stat-card"><div class="stat-label">Daily Reset In</div><div class="stat-value" id="dailyTimer">00:00:00</div></div>
-      <div class="stat-card"><div class="stat-label">Current Streak</div><div class="stat-value" id="streakVal">🔥 0 Hari</div></div>
+      <div class="stat-card">
+        <div class="stat-label">Daily Reset In</div>
+        <div class="stat-value" id="dailyTimer">00:00:00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value" id="streakVal">🔥 0 Hari</div>
+      </div>
     </div>
 
-    <!-- DAILY -->
     <h2 class="title-daily">⚔️ Daily Quests</h2>
     <div class="progress-box">
-      <div class="progress-label">Daily Progress <span id="dailyPercent">0%</span></div>
+      <div class="progress-label"><span>Daily Progress</span><span id="dailyPercent">0%</span></div>
       <div class="progress-track"><div class="progress-fill" id="dailyFill"></div></div>
     </div>
     <div id="dailyQuestsList" class="quest-list-container" data-type="daily"></div>
     <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
 
-    <!-- MONTHLY -->
     <h2 class="title-monthly">🏆 Monthly Epic Goals</h2>
     <div class="progress-box">
-      <div class="progress-label">Monthly Progress <span id="monthlyPercent">0%</span></div>
-      <div class="progress-track"><div class="progress-fill" id="monthlyFill" style="background: var(--accent-gold);"></div></div>
+      <div class="progress-label"><span>Monthly Progress</span><span id="monthlyPercent">0%</span></div>
+      <div class="progress-track">
+        <div class="progress-fill" id="monthlyFill" style="background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-pale)); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); will-change: width;"></div>
+      </div>
+    </div>
+    <div class="stat-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
+        <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
+        <span id="monthlyTimer" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem;">00 Hari</span>
     </div>
     <div id="monthlyGoalsList" class="quest-list-container" data-type="monthly"></div>
     <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
 
-    <!-- SIDE -->
     <h2 class="title-side">🔮 Side Quests</h2>
-    <div id="sideQuestsList" class="quest-list-container" data-type="side"></div>
-    <button onclick="openModal('side')" class="add-placeholder">+ Tambah Side Quest</button>
-    
-    <button onclick="logout()" style="width:100%; margin-top:50px; background:none; border:none; color:var(--text-dim); cursor:pointer; text-decoration:underline;">Logout Akun</button>
-  </div>
-
-  <!-- MODAL -->
-  <div id="goal-modal">
-    <div class="modal-content">
-      <h3 id="modal-title">Tambah Goal</h3>
-      <input type="text" id="modal-text" placeholder="Nama Goal...">
-      <div id="modal-deadline-block" style="display:none; text-align:left;">
-        <label style="font-size:0.7rem; color:var(--text-dim);">DEADLINE</label>
-        <input type="date" id="modal-deadline">
-      </div>
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button onclick="closeModal()" style="flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer;">Batal</button>
-        <button id="btn-submit-goal" onclick="submitModal()" style="flex:1; padding:10px; border-radius:10px; border:none; background:var(--accent-blue); color:white; cursor:pointer; font-weight:700;">Simpan</button>
+    <div class="progress-box">
+      <div class="progress-label"><span>Side Progress</span><span id="sidePercent">0%</span></div>
+      <div class="progress-track">
+        <div class="progress-fill" id="sideFill" style="background: linear-gradient(90deg, var(--accent-purple), #f472b6); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); will-change: width;"></div>
       </div>
     </div>
+    <div id="sideQuestsList" class="quest-list-container" data-type="side"></div>
+    <button onclick="openModal('side')" class="add-placeholder">+ Tambah Side Quest</button>
+
+    <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; text-decoration: underline; font-size: 0.8rem; width:100%; margin-top:40px;">Logout Akun</button>
   </div>
 
   <script>
-    // ==========================================
-    // 1. KONFIGURASI (Ubah Kalimat Di Sini)
-    // ==========================================
-    const CONFIG = {
-      reminder: "SISTEM PENUNJANG DISIPLIN",
-      quote: "Bahasa Jepang bukan tentang siapa yang paling pintar, tapi siapa yang paling konsisten bertahan setiap hari.",
-      // PASTE KREDENSIAL SUPABASE KAMU DI SINI
-      SB_URL: 'https://ifdgmtzdgyldobeparjy.supabase.co',
-      SB_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw'
-    };
+    const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
+    const clientApp = supabase.createClient(SB_URL, SB_KEY);
 
-    document.getElementById('zen-reminder-text').innerText = CONFIG.reminder;
-    document.getElementById('zen-quote-text').innerText = `"${CONFIG.quote}"`;
-
-    // ==========================================
-    // 2. SISTEM NAVIGASI
-    // ==========================================
-    function enterDashboard() {
-      document.getElementById('homepage-screen').style.display = 'none';
-      checkUser();
-    }
-
-    function backToHome() {
-      document.getElementById('main-dashboard').style.display = 'none';
-      document.getElementById('homepage-screen').style.display = 'flex';
-    }
-
-    // ==========================================
-    // 3. LOGIKA CORE (SUPABASE & GOALS)
-    // ==========================================
-    const clientApp = supabase.createClient(CONFIG.SB_URL, CONFIG.SB_KEY);
     let currentUser = null;
     let allGoals = [];
+    let dbStreak = 0;
     let currentModalType = 'daily';
     let editingGoalId = null;
-    let longPressTimeout, dragSrcElement;
+
+    let longPressTimeout = null;
+    let dragSrcElement = null;
 
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
@@ -257,48 +285,138 @@
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-dashboard').style.display = 'block';
+        await fetchOrCreateProfile();
         fetchData();
         startTimers();
         setupDragAndDropEvents();
-      } else {
-        document.getElementById('auth-screen').style.display = 'block';
+      }
+    }
+
+    async function fetchOrCreateProfile() {
+      let { data: profile, error } = await clientApp.from('user_profiles').select('streak').eq('user_id', currentUser.id).single();
+      
+      if (error && error.code === 'PGRST116') {
+        const { data: newProfile } = await clientApp.from('user_profiles').insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
+        dbStreak = newProfile ? newProfile.streak : 0;
+      } else if (profile) {
+        dbStreak = profile.streak;
       }
     }
 
     async function fetchData() {
-      const { data } = await clientApp.from('goals').select('*').eq('user_id', currentUser.id).order('position', { ascending: true });
+      const { data } = await clientApp.from('goals')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('position', { ascending: true })
+        .order('created_at', { ascending: true });
+        
       allGoals = data || [];
       render();
     }
 
-    function render() {
-      const lists = { daily: document.getElementById("dailyQuestsList"), monthly: document.getElementById("monthlyGoalsList"), side: document.getElementById("sideQuestsList") };
-      Object.values(lists).forEach(l => l.innerHTML = "");
+    function openModal(type, goalId = null, currentText = '', currentDeadline = '') {
+      currentModalType = type;
+      editingGoalId = goalId;
 
-      allGoals.forEach(g => {
-        const item = document.createElement('div');
-        item.className = `quest-item type-${g.type}`;
-        item.setAttribute('data-id', g.id);
-        item.setAttribute('data-type', g.type);
-        
-        let extraBadge = g.type === 'side' ? `<span class="side-countdown-live" data-deadline="${g.deadline}">...</span>` : '';
+      const titleEl = document.getElementById('modal-title');
+      const textInput = document.getElementById('modal-text');
+      const deadlineInput = document.getElementById('modal-deadline');
+      const deadlineBlock = document.getElementById('modal-deadline-block');
+      const submitBtn = document.getElementById('btn-submit-goal');
 
-        item.innerHTML = `
-          <input type="checkbox" style="width:20px; height:20px;" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
-          <div style="flex:1;">
-            <div style="font-weight:600; ${g.checked ? 'text-decoration:line-through; opacity:0.4;' : ''}">${g.text} ${extraBadge}</div>
-            <div style="font-size:0.7rem; color:var(--text-dim);">${g.deadline || ''}</div>
-          </div>
-          <div style="display:flex; gap:10px; opacity:0.5;">
-            <button onclick="openModal('${g.type}', '${g.id}', '${g.text}', '${g.deadline}')" style="background:none; border:none; color:white; cursor:pointer;">📝</button>
-            <button onclick="deleteGoal('${g.id}')" style="background:none; border:none; color:white; cursor:pointer;">🗑️</button>
-          </div>
-        `;
+      if (type === 'side') {
+        deadlineBlock.style.display = 'flex';
+        if (currentDeadline && currentDeadline.match(/^\d{4}-\d{2}-\d{2}/)) {
+          deadlineInput.value = currentDeadline.substring(0, 10);
+        } else {
+          deadlineInput.value = '';
+        }
+      } else {
+        deadlineBlock.style.display = 'none';
+        deadlineInput.value = '';
+      }
+
+      if (editingGoalId) {
+        if(type === 'daily') titleEl.innerText = 'Edit Goal Harian';
+        else if(type === 'monthly') titleEl.innerText = 'Edit Goal Bulanan';
+        else titleEl.innerText = 'Edit Side Quest';
         
-        setupLongPress(item);
-        if (lists[g.type]) lists[g.type].appendChild(item);
-      });
-      updateProgressBars();
+        textInput.value = currentText;
+        submitBtn.innerText = "Simpan Perubahan";
+      } else {
+        if(type === 'daily') titleEl.innerText = 'Tambah Goal Harian';
+        else if(type === 'monthly') titleEl.innerText = 'Tambah Goal Bulanan';
+        else titleEl.innerText = 'Tambah Side Quest';
+
+        textInput.value = '';
+        submitBtn.innerText = "Tambahkan";
+      }
+
+      document.getElementById('goal-modal').style.display = 'flex';
+      setTimeout(() => textInput.focus(), 100);
+    }
+
+    function closeModal() {
+      document.getElementById('goal-modal').style.display = 'none';
+      document.getElementById('modal-text').value = '';
+      document.getElementById('modal-deadline').value = '';
+      editingGoalId = null;
+    }
+
+    async function submitModal() {
+      const text = document.getElementById('modal-text').value.trim();
+      const customDeadline = document.getElementById('modal-deadline').value.trim();
+      if(!text) return;
+
+      const btn = document.getElementById('btn-submit-goal');
+      btn.innerText = "Menyimpan...";
+      btn.disabled = true;
+
+      let deadlineText = 'Daily Reset';
+      if (currentModalType === 'monthly') deadlineText = 'End of Month';
+      else if (currentModalType === 'side') {
+        deadlineText = customDeadline || 'Tanpa Batas Waktu';
+      }
+
+      if (editingGoalId) {
+        const { error } = await clientApp.from('goals').update({ 
+          text: text,
+          deadline: deadlineText
+        }).eq('id', editingGoalId);
+        
+        btn.disabled = false;
+
+        if(!error) {
+          closeModal();
+          fetchData();
+        } else {
+          alert("Gagal mengubah: " + error.message);
+          btn.innerText = "Simpan Perubahan";
+        }
+      } else {
+        const sameTypeGoals = allGoals.filter(g => g.type === currentModalType);
+        const nextPosition = sameTypeGoals.length > 0 ? Math.max(...sameTypeGoals.map(g => g.position || 0)) + 10 : 10;
+
+        const { data, error } = await clientApp.from('goals').insert([{ 
+          text: text, 
+          user_id: currentUser.id, 
+          type: currentModalType, 
+          checked: false,
+          deadline: deadlineText,
+          position: nextPosition
+        }]).select();
+
+        btn.disabled = false;
+
+        if(!error) {
+          allGoals.push(data[0]);
+          closeModal();
+          fetchData();
+        } else {
+          alert("Gagal menyimpan: " + error.message);
+          btn.innerText = "Tambahkan";
+        }
+      }
     }
 
     async function toggleGoal(id, status) {
@@ -306,114 +424,290 @@
       fetchData();
     }
 
-    async function deleteGoal(id) {
-      if(confirm("Hapus goal ini?")) {
-        await clientApp.from('goals').delete().eq('id', id);
-        fetchData();
+    async function deleteGoal(id, text) {
+      if (confirm(`Apakah kamu yakin ingin menghapus goal: "${text}"?`)) {
+        const { error } = await clientApp.from('goals').delete().eq('id', id);
+        if(!error) {
+            fetchData();
+        } else {
+            alert("Gagal menghapus data.");
+        }
       }
     }
 
-    // Modal Logic
-    function openModal(type, id=null, text='', deadline='') {
-      currentModalType = type;
-      editingGoalId = id;
-      document.getElementById('modal-text').value = text;
-      document.getElementById('modal-deadline-block').style.display = type === 'side' ? 'block' : 'none';
-      document.getElementById('goal-modal').style.display = 'flex';
+    function updateSideQuestCountdowns() {
+      const liveElements = document.querySelectorAll('.side-countdown-live');
+      liveElements.forEach(el => {
+        const rawDeadline = el.getAttribute('data-deadline');
+        if (!rawDeadline || rawDeadline === 'Tanpa Batas Waktu') {
+          el.innerText = 'Tanpa Batas Waktu';
+          return;
+        }
+
+        const targetDate = new Date(rawDeadline + "T23:59:59");
+        const now = new Date();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          el.innerText = 'Waktu Habis';
+          el.classList.add('expired');
+          return;
+        }
+
+        const totalHours = Math.floor(diff / 3600000);
+        
+        if (totalHours >= 24) {
+          const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
+          el.innerText = `${daysLeft + 1} Hari lagi`;
+          el.classList.remove('expired');
+        } else {
+          const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+          const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+          const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+          el.innerText = `${h}:${m}:${s} lagi`;
+          el.classList.remove('expired');
+        }
+      });
     }
 
-    function closeModal() { document.getElementById('goal-modal').style.display = 'none'; }
+    function makeDraggableOnLongPress(element) {
+      element.addEventListener('mousedown', (e) => startLongPressTimer(e, element));
+      element.addEventListener('mouseup', clearLongPressTimer);
+      element.addEventListener('mouseleave', clearLongPressTimer);
 
-    async function submitModal() {
-      const text = document.getElementById('modal-text').value;
-      const dl = document.getElementById('modal-deadline').value;
-      if(!text) return;
+      element.addEventListener('touchstart', (e) => startLongPressTimer(e, element), { passive: true });
+      element.addEventListener('touchend', clearLongPressTimer);
+      element.addEventListener('touchmove', clearLongPressTimer);
 
-      const payload = { 
-        text, 
-        user_id: currentUser.id, 
-        type: currentModalType, 
-        deadline: currentModalType === 'side' ? dl : (currentModalType === 'monthly' ? 'End of Month' : 'Daily Reset') 
-      };
+      element.addEventListener('dragstart', handleDragStart);
+      element.addEventListener('dragend', handleDragEnd);
+    }
 
-      if(editingGoalId) {
-        await clientApp.from('goals').update(payload).eq('id', editingGoalId);
-      } else {
-        await clientApp.from('goals').insert([payload]);
+    function startLongPressTimer(e, element) {
+      if (e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
+        return;
       }
-      closeModal();
-      fetchData();
+      clearLongPressTimer();
+      longPressTimeout = setTimeout(() => {
+        element.setAttribute('draggable', 'true');
+        element.classList.add('ready-to-drag');
+        if (navigator.vibrate) navigator.vibrate(50);
+      }, 500);
     }
 
-    // Drag & Drop / Reorder
-    function setupLongPress(el) {
-      const start = () => longPressTimeout = setTimeout(() => { el.setAttribute('draggable', 'true'); el.style.background = "rgba(45,212,191,0.1)"; }, 500);
-      const stop = () => { clearTimeout(longPressTimeout); };
-      el.onmousedown = start; el.onmouseup = stop; el.ontouchstart = start; el.ontouchend = stop;
-      el.ondragstart = function() { dragSrcElement = this; this.classList.add('dragging'); };
-      el.ondragend = function() { this.classList.remove('dragging'); this.removeAttribute('draggable'); this.style.background = ""; };
+    function clearLongPressTimer() {
+      if (longPressTimeout) clearTimeout(longPressTimeout);
+    }
+
+    function handleDragStart(e) {
+      if (this.getAttribute('draggable') !== 'true') {
+        e.preventDefault();
+        return;
+      }
+      dragSrcElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      this.removeAttribute('draggable');
+      this.classList.remove('ready-to-drag');
+      
+      document.querySelectorAll('.quest-list-container').forEach(container => {
+        container.classList.remove('drag-over');
+      });
+      dragSrcElement = null;
     }
 
     function setupDragAndDropEvents() {
-      document.querySelectorAll('.quest-list-container').forEach(container => {
-        container.ondragover = e => {
+      const containers = document.querySelectorAll('.quest-list-container');
+      
+      containers.forEach(container => {
+        container.addEventListener('dragover', function(e) {
           e.preventDefault();
-          if(!dragSrcElement || dragSrcElement.dataset.type !== container.dataset.type) return;
-          const afterEl = [...container.querySelectorAll('.quest-item:not(.dragging)')].reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = e.clientY - box.top - box.height/2;
-            return (offset < 0 && offset > closest.offset) ? { offset, element: child } : closest;
-          }, { offset: Number.NEGATIVE_INFINITY }).element;
-          afterEl ? container.insertBefore(dragSrcElement, afterEl) : container.appendChild(dragSrcElement);
-        };
-        container.ondrop = async () => {
-          const updates = [...container.querySelectorAll('.quest-item')].map((el, i) => clientApp.from('goals').update({ position: i*10 }).eq('id', el.dataset.id));
+          if (!dragSrcElement) return;
+          
+          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
+            e.dataTransfer.dropEffect = 'none';
+            return;
+          }
+          
+          e.dataTransfer.dropEffect = 'move';
+          this.classList.add('drag-over');
+          
+          const afterElement = getDragAfterElement(this, e.clientY);
+          if (afterElement == null) {
+            this.appendChild(dragSrcElement);
+          } else {
+            this.insertBefore(dragSrcElement, afterElement);
+          }
+        });
+
+        container.addEventListener('dragleave', function() {
+          this.classList.remove('drag-over');
+        });
+
+        container.addEventListener('drop', async function(e) {
+          e.preventDefault();
+          this.classList.remove('drag-over');
+          
+          if (!dragSrcElement) return;
+          
+          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
+            return;
+          }
+
+          const items = Array.from(this.querySelectorAll('.quest-item'));
+          const updates = items.map((item, index) => {
+            return clientApp.from('goals').update({ position: index * 10 }).eq('id', item.getAttribute('data-id'));
+          });
+
           await Promise.all(updates);
-        };
+          fetchData();
+        });
       });
     }
 
-    function updateProgressBars() {
-      ['daily', 'monthly'].forEach(t => {
-        const items = allGoals.filter(g => g.type === t);
-        const done = items.filter(g => g.checked).length;
-        const pc = items.length ? Math.round((done/items.length)*100) : 0;
-        document.getElementById(`${t}Fill`).style.width = pc+'%';
-        document.getElementById(`${t}Percent`).innerText = pc+'%';
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.quest-item:not(.dragging)')];
+      
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function render() {
+      const dList = document.getElementById("dailyQuestsList");
+      const mList = document.getElementById("monthlyGoalsList");
+      const sList = document.getElementById("sideQuestsList");
+      
+      dList.innerHTML = ""; mList.innerHTML = ""; 
+      if(sList) sList.innerHTML = "";
+
+      allGoals.forEach((g) => {
+        let iconDeadline = '⌛';
+        let countdownBadgeHTML = '';
+        
+        if(g.type === 'monthly') {
+          iconDeadline = '🗓️';
+        } else if(g.type === 'side') {
+          iconDeadline = '🎯';
+          countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
+        }
+
+        const item = document.createElement('div');
+        // KEBENALAN FIX: Menambahkan class penentu warna (type-daily, type-monthly, type-side)
+        item.className = `quest-item type-${g.type}`;
+        item.setAttribute('data-id', g.id);
+        item.setAttribute('data-type', g.type);
+
+        item.innerHTML = `
+          <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
+          <div class="goal-info">
+            <div class="quest-title-row">
+              <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
+              ${countdownBadgeHTML}
+            </div>
+            <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}', '${escapeHtml(g.deadline || '').replace(/'/g, "\\'")}')">📝</button>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
+          </div>
+        `;
+        
+        makeDraggableOnLongPress(item);
+
+        if(g.type === 'monthly') mList.appendChild(item);
+        else if(g.type === 'side') { if(sList) sList.appendChild(item); }
+        else dList.appendChild(item);
       });
+      updateProgress();
+      if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
+    }
+
+    function updateProgress() {
+      const dailyGoals = allGoals.filter(g => g.type === 'daily');
+      const dailyDone = dailyGoals.filter(g => g.checked).length;
+      const dailyPercent = dailyGoals.length === 0 ? 0 : Math.round((dailyDone / dailyGoals.length) * 100);
+      document.getElementById("dailyFill").style.width = dailyPercent + "%";
+      document.getElementById("dailyPercent").innerText = dailyPercent + "%";
+
+      const monthlyGoals = allGoals.filter(g => g.type === 'monthly');
+      const monthlyDone = monthlyGoals.filter(g => g.checked).length;
+      const monthlyPercent = monthlyGoals.length === 0 ? 0 : Math.round((monthlyDone / monthlyGoals.length) * 100);
+      document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
+      document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
+
+      const sideGoals = allGoals.filter(g => g.type === 'side');
+      const sideDone = sideGoals.filter(g => g.checked).length;
+      const sidePercent = sideGoals.length === 0 ? 0 : Math.round((sideDone / sideGoals.length) * 100);
+      const sideFillEl = document.getElementById("sideFill");
+      const sidePercentEl = document.getElementById("sidePercent");
+      if(sideFillEl) sideFillEl.style.width = sidePercent + "%";
+      if(sidePercentEl) sidePercentEl.innerText = sidePercent + "%";
+      
+      const streakEl = document.getElementById("streakVal");
+      streakEl.innerText = `🔥 ${dbStreak} Hari`;
+      
+      if (dbStreak === 0) {
+        streakEl.className = "stat-value streak-zero";
+      } else {
+        streakEl.className = "stat-value streak-active";
+      }
     }
 
     function startTimers() {
       setInterval(() => {
         const now = new Date();
-        const diff = new Date().setHours(24,0,0,0) - now;
-        const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-        const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-        const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-        document.getElementById("dailyTimer").innerText = `${h}:${m}:${s}`;
+        const midnight = new Date().setHours(24, 0, 0, 0);
+        const diff = midnight - now;
+        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
         
-        document.querySelectorAll('.side-countdown-live').forEach(el => {
-          const target = new Date(el.dataset.deadline + "T23:59:59");
-          const sDiff = target - now;
-          if(sDiff < 0) el.innerText = "Waktu Habis";
-          else {
-            const d = Math.floor(sDiff/(1000*60*60*24));
-            el.innerText = d > 0 ? `${d+1} Hari lagi` : "Sisa Jam";
-          }
-        });
+        const timerEl = document.getElementById("dailyTimer");
+        timerEl.innerText = `${h}:${m}:${s}`;
+        
+        if (h === "00" && m === "00" && s === "00") {
+            dbStreak = 0;
+            updateProgress();
+        }
+
+        if (diff < 3600000) timerEl.classList.add('timer-critical');
+
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const mDiff = endOfMonth - now;
+        const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
+        const mEl = document.getElementById("monthlyTimer");
+        mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
+
+        updateSideQuestCountdowns();
       }, 1000);
     }
 
-    async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google' }); }
-    async function logout() { await clientApp.auth.signOut(); location.reload(); }
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
 
-    // Mulai dari pengecekan awal (untuk session)
-    (async () => {
-      const { data: { session } } = await clientApp.auth.getSession();
-      if(session) {
-        // Jika sudah login, homepage tetap tampil dulu (sesuai permintaanmu)
+    async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
+    async function logout() { 
+      if (confirm("Apakah kamu yakin ingin keluar dari akun?")) {
+        await clientApp.auth.signOut(); 
+        location.reload(); 
       }
-    })();
+    }
+    checkUser();
   </script>
 </body>
-</html>
+</html>  
