@@ -28,13 +28,10 @@
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
 
-    /* Auth Screen */
     #auth-screen { background: var(--glass); backdrop-filter: blur(30px); padding: 60px 40px; border-radius: 40px; border: 1px solid var(--glass-border); text-align: center; max-width: 500px; width: 100%; }
 
-    /* Container */
     .container { display: none; width: 100%; max-width: 900px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 32px; padding: 40px; backdrop-filter: blur(25px); position: relative; }
 
-    /* Hero Section */
     .hero-section { text-align: center; margin-bottom: 40px; }
     .hero-title { font-size: 4.5rem; font-weight: 900; margin: 0; letter-spacing: -3px; }
     .hero-subtitle { color: var(--accent-blue); font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
@@ -46,14 +43,13 @@
     .timer-critical { color: var(--accent-red) !important; animation: blink 1s infinite; }
 
     /* Progress Track */
-    .progress-container { margin: 30px 0; }
-    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; }
-    .progress-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid var(--glass-border); }
-    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+    .progress-box { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+    .progress-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
     h2 { border-left: 4px solid var(--accent-blue); padding-left: 15px; margin: 40px 0 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* Quest / Goal Styles */
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
       margin-bottom: 12px; border: 1px solid var(--glass-border);
@@ -66,32 +62,27 @@
     .completed { opacity: 0.3; text-decoration: line-through; color: var(--accent-cyan); }
     .goal-deadline { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
 
-    /* Add Button Placeholders */
     .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; margin-top: 5px; font-weight: 600; text-align: center; }
     .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.03); }
 
     .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
-    .btn-delete:hover { opacity: 1; transform: scale(1.1); }
+    .btn-delete:hover { opacity: 1; transform: scale(1.1); color: var(--accent-red); }
 
-    /* --- CUSTOM MODAL UI (Sesuai Script 2 & Background Script 1) --- */
+    /* Modal */
     #goal-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(2, 6, 23, 0.7); backdrop-filter: blur(15px);
       z-index: 1000; align-items: center; justify-content: center;
     }
-    .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-    .modal-content h3 { margin-top: 0; font-size: 1.3rem; }
+    .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
     .modal-content input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
-    .modal-content input:focus { border-color: var(--accent-blue); }
     .modal-actions { display: flex; gap: 10px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
-    .btn-confirm:active { transform: scale(0.96); }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
 
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
-    .google-btn:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
@@ -132,16 +123,19 @@
       </div>
     </div>
 
-    <div class="progress-container">
-      <div class="progress-label"><span>Progress Sesi Ini</span><span id="percentText">0%</span></div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    </div>
-
     <h2>⚔️ Daily Quests</h2>
+    <div class="progress-box">
+      <div class="progress-label"><span>Daily Progress</span><span id="dailyPercent">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="dailyFill"></div></div>
+    </div>
     <div id="dailyQuestsList"></div>
     <button onclick="openModal('daily')" class="add-placeholder">+ Tambah Goal Harian</button>
 
     <h2>🏆 Monthly Epic Goals</h2>
+    <div class="progress-box">
+      <div class="progress-label"><span>Monthly Progress</span><span id="monthlyPercent">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="monthlyFill"></div></div>
+    </div>
     <div class="stat-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
         <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
         <span id="monthlyTimer" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem;">00 Hari</span>
@@ -161,7 +155,6 @@
     let allGoals = [];
     let currentModalType = 'daily';
 
-    // --- INITIALIZATION ---
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
@@ -173,14 +166,12 @@
       }
     }
 
-    // --- FETCH DATA FROM DATABASE ---
     async function fetchData() {
       const { data } = await clientApp.from('goals').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: true });
       allGoals = data || [];
       render();
     }
 
-    // --- MODAL ENGINE ---
     function openModal(type) {
       currentModalType = type;
       document.getElementById('modal-title').innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
@@ -192,12 +183,6 @@
       document.getElementById('goal-modal').style.display = 'none';
       document.getElementById('modal-text').value = '';
     }
-
-    // Klik di luar area modal untuk close
-    window.addEventListener('click', (e) => {
-      const modal = document.getElementById('goal-modal');
-      if (e.target === modal) closeModal();
-    });
 
     async function submitModal() {
       const text = document.getElementById('modal-text').value.trim();
@@ -227,23 +212,23 @@
       }
     }
 
-    // Shortcut ESC Key untuk close modal
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    // --- DATA ACTIONS ---
     async function toggleGoal(id, status) {
       await clientApp.from('goals').update({ checked: !status }).eq('id', id);
       fetchData();
     }
 
-    async function deleteGoal(id) {
-      await clientApp.from('goals').delete().eq('id', id);
-      fetchData();
+    async function deleteGoal(id, text) {
+      // Fitur Konfirmasi Hapus
+      if (confirm(`Apakah kamu yakin ingin menghapus goal: "${text}"?`)) {
+        const { error } = await clientApp.from('goals').delete().eq('id', id);
+        if(!error) {
+            fetchData();
+        } else {
+            alert("Gagal menghapus data.");
+        }
+      }
     }
 
-    // --- RENDER ENGINE ---
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
@@ -257,7 +242,7 @@
               <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
               <div class="goal-deadline">${g.type === 'daily' ? '⌛ Daily Reset' : '🗓️ End of Month'}</div>
             </div>
-            <button class="btn-delete" onclick="deleteGoal('${g.id}')">🗑️</button>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text)}')">🗑️</button>
           </div>
         `;
         if(g.type === 'monthly') mList.innerHTML += item;
@@ -267,23 +252,27 @@
     }
 
     function updateProgress() {
-      const total = allGoals.length;
-      const done = allGoals.filter(g => g.checked).length;
-      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-      document.getElementById("progressFill").style.width = percent + "%";
-      document.getElementById("percentText").innerText = percent + "%";
+      // Progress Harian
+      const dailyGoals = allGoals.filter(g => g.type === 'daily');
+      const dailyDone = dailyGoals.filter(g => g.checked).length;
+      const dailyPercent = dailyGoals.length === 0 ? 0 : Math.round((dailyDone / dailyGoals.length) * 100);
+      document.getElementById("dailyFill").style.width = dailyPercent + "%";
+      document.getElementById("dailyPercent").innerText = dailyPercent + "%";
+
+      // Progress Bulanan
+      const monthlyGoals = allGoals.filter(g => g.type === 'monthly');
+      const monthlyDone = monthlyGoals.filter(g => g.checked).length;
+      const monthlyPercent = monthlyGoals.length === 0 ? 0 : Math.round((monthlyDone / monthlyGoals.length) * 100);
+      document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
+      document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
       
-      // Ambil data streak dari localStorage
       const streak = localStorage.getItem(`streak_${currentUser.id}`) || 0;
       document.getElementById("streakVal").innerText = `🔥 ${streak} Hari`;
     }
 
-    // --- HARDCORE REALTIME TIMERS ---
     function startTimers() {
       setInterval(() => {
         const now = new Date();
-        
-        // 1. Daily Countdown
         const midnight = new Date().setHours(24, 0, 0, 0);
         const diff = midnight - now;
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
@@ -292,23 +281,13 @@
         
         const timerEl = document.getElementById("dailyTimer");
         timerEl.innerText = `${h}:${m}:${s}`;
-        if (diff < 3600000) {
-          timerEl.classList.add('timer-critical');
-        } else {
-          timerEl.classList.remove('timer-critical');
-        }
+        if (diff < 3600000) timerEl.classList.add('timer-critical');
 
-        // 2. Monthly Countdown
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
         const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
-        
         const mEl = document.getElementById("monthlyTimer");
-        if (daysLeft > 0) {
-          mEl.innerText = `${daysLeft} Hari lagi`;
-        } else {
-          mEl.innerText = `${h}:${m}:${s}`;
-        }
+        mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
       }, 1000);
     }
 
@@ -320,7 +299,6 @@
 
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
     async function logout() { await clientApp.auth.signOut(); location.reload(); }
-    
     checkUser();
   </script>
 </body>
