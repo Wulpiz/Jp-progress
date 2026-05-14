@@ -32,7 +32,7 @@
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
     }
 
-    /* --- HEADER (Persis Screenshot (117).png) --- */
+    /* --- HEADER --- */
     .hero-section { text-align: center; margin-bottom: 50px; }
     .hero-title { font-size: 5rem; font-weight: 900; margin: 0; letter-spacing: -2px; }
     .hero-subtitle { color: var(--accent-blue); font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
@@ -42,14 +42,14 @@
     .date-small { color: var(--text-dim); margin-top: 5px; font-weight: 500; }
     .streak-badge { background: #334155; padding: 10px 20px; border-radius: 99px; color: #fbbf24; font-weight: 700; border: 1px solid #475569; }
 
-    /* --- PROGRESS BAR --- */
+    /* --- PROGRESS --- */
     .progress-container { margin-top: 40px; }
     .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; }
     .progress-track { height: 8px; background: #334155; border-radius: 10px; overflow: hidden; }
     .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
 
-    /* --- GOAL LISTS --- */
-    h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin: 40px 0 20px; }
+    /* --- GOALS --- */
+    h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin: 40px 0 20px; }
     
     .goal-card {
       background: #273549; border-radius: 20px; padding: 20px; margin-bottom: 15px;
@@ -59,45 +59,35 @@
     .goal-info { flex: 1; }
     .goal-text { font-size: 1.1rem; font-weight: 600; }
     .goal-text.completed { text-decoration: line-through; opacity: 0.4; }
-    .goal-deadline { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
-    .btn-settings { background: #334155; border: none; padding: 10px; border-radius: 12px; cursor: pointer; color: white; }
+    .goal-deadline { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; display: flex; align-items: center; gap: 5px; }
 
-    /* --- CUSTOM MODAL UI (Pengganti Prompt Browser) --- */
+    /* --- MODAL --- */
     #goal-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
       z-index: 1000; align-items: center; justify-content: center;
     }
-    .modal-content {
-      background: #1e293b; border: 1px solid var(--glass-border); padding: 40px;
-      border-radius: 30px; width: 90%; max-width: 400px; text-align: center;
-    }
-    .modal-content h3 { margin-top: 0; }
-    .modal-content input {
-      width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
-      border: 1px solid #475569; background: #0f172a; color: white; outline: none;
-    }
-    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-content { background: #1e293b; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+    .modal-content input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; outline: none; font-size: 1rem; }
+    .modal-actions { display: flex; gap: 10px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: #334155; color: var(--text-dim); }
 
-    /* --- AUTH --- */
-    #auth-screen { text-align: center; align-self: center; background: #1e293b; padding: 60px; border-radius: 40px; }
-    .btn-google { background: white; color: black; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
-
     .add-placeholder { background: none; border: 1px dashed #475569; color: var(--text-dim); width: 100%; padding: 15px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: 600; }
-    .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.05); }
+
+    .btn-delete { background: none; border: none; cursor: pointer; opacity: 0.3; font-size: 1.1rem; }
+    .btn-delete:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Modal UI Custom -->
+  <!-- Modal UI Custom (Hanya Nama Goal) -->
   <div id="goal-modal">
     <div class="modal-content">
       <h3 id="modal-title">Tambah Goal</h3>
-      <input type="text" id="modal-text" placeholder="Nama goal (contoh: Anki)">
-      <input type="text" id="modal-deadline" placeholder="Deadline (contoh: 24:00 atau 25 Mei)">
+      <input type="text" id="modal-text" placeholder="Masukkan nama goal...">
       <div class="modal-actions">
         <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
         <button class="btn-modal btn-confirm" onclick="submitModal()">Tambahkan</button>
@@ -105,10 +95,10 @@
     </div>
   </div>
 
-  <div id="auth-screen">
+  <div id="auth-screen" style="text-align: center; align-self: center; background: #1e293b; padding: 60px; border-radius: 40px;">
     <h1 style="font-size: 4rem; margin:0;">まず日本語。</h1>
     <p style="color: var(--accent-blue); margin-bottom: 40px;">Lakukan sekarang atau lupakan selamanya.</p>
-    <button onclick="loginWithGoogle()" class="btn-google">Masuk dengan Google</button>
+    <button onclick="loginWithGoogle()" style="background:white; color:black; padding:15px 30px; border-radius:15px; font-weight:800; border:none; cursor:pointer;">Masuk dengan Google</button>
   </div>
 
   <div class="container" id="main-dashboard">
@@ -167,31 +157,28 @@
       render();
     }
 
-    // --- MODAL LOGIC ---
+    // --- MODAL LOGIC (Hanya Input Nama) ---
     function openModal(type) {
       currentModalType = type;
       document.getElementById('modal-title').innerText = type === 'daily' ? 'Tambah Goal Harian' : 'Tambah Goal Bulanan';
-      document.getElementById('modal-deadline').placeholder = type === 'daily' ? 'Contoh: 24:00' : 'Contoh: 31 Mei';
       document.getElementById('goal-modal').style.display = 'flex';
+      document.getElementById('modal-text').focus();
     }
 
     function closeModal() {
       document.getElementById('goal-modal').style.display = 'none';
       document.getElementById('modal-text').value = '';
-      document.getElementById('modal-deadline').value = '';
     }
 
     async function submitModal() {
       const text = document.getElementById('modal-text').value;
-      const deadline = document.getElementById('modal-deadline').value;
-      
-      if(!text) return alert("Nama goal tidak boleh kosong!");
+      if(!text) return;
 
       const { data, error } = await clientApp.from('goals').insert([{ 
         text: text, 
         user_id: currentUser.id, 
         type: currentModalType, 
-        deadline: deadline || (currentModalType === 'daily' ? '24:00' : 'Akhir Bulan')
+        checked: false
       }]).select();
 
       if(!error) {
@@ -206,19 +193,26 @@
       if(!error) fetchData();
     }
 
+    async function deleteGoal(id) {
+        const { error } = await clientApp.from('goals').delete().eq('id', id);
+        if(!error) fetchData();
+    }
+
     function render() {
       const dList = document.getElementById("dailyList");
       const mList = document.getElementById("monthlyList");
       dList.innerHTML = ""; mList.innerHTML = "";
 
       allGoals.forEach((g) => {
+        const deadlineLabel = g.type === 'daily' ? '⌛ Daily Reset' : '🗓️ End of Month';
         const item = `
           <div class="goal-card">
             <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
             <div class="goal-info">
               <div class="goal-text ${g.checked ? 'completed' : ''}">${g.text}</div>
-              <div class="goal-deadline">⌛ Deadline: ${g.deadline}</div>
+              <div class="goal-deadline">${deadlineLabel}</div>
             </div>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}')">🗑️</button>
           </div>
         `;
         if(g.type === 'monthly') mList.innerHTML += item;
