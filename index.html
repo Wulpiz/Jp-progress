@@ -135,7 +135,6 @@
     .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
     .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
     
-    /* Aturan styling khusus input date bawaan browser agar mendukung tema gelap dashboard */
     .modal-content input[type="date"] { color-scheme: dark; font-family: inherit; cursor: pointer; }
     
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
@@ -302,7 +301,6 @@
 
       if (type === 'side') {
         deadlineBlock.style.display = 'flex';
-        // Ambil string tanggal murni saja (YYYY-MM-DD) untuk value kalender HTML
         if (currentDeadline && currentDeadline.match(/^\d{4}-\d{2}-\d{2}/)) {
           deadlineInput.value = currentDeadline.substring(0, 10);
         } else {
@@ -352,7 +350,6 @@
       let deadlineText = 'Daily Reset';
       if (currentModalType === 'monthly') deadlineText = 'End of Month';
       else if (currentModalType === 'side') {
-        // Jika user memilih tanggal dari kalender, simpan ke database dengan format standard tanggal dasar
         deadlineText = customDeadline || 'Tanpa Batas Waktu';
       }
 
@@ -409,7 +406,6 @@
       }
     }
 
-    // FITUR DIUPGRADE: Fungsi parsing helper untuk mendeteksi waktu countdown side quest secara live
     function updateSideQuestCountdowns() {
       const liveElements = document.querySelectorAll('.side-countdown-live');
       liveElements.forEach(el => {
@@ -432,12 +428,10 @@
         const totalHours = Math.floor(diff / 3600000);
         
         if (totalHours >= 24) {
-          // Jika sisa waktu masih di atas 24 jam, tampilkan hitungan sisa hari
           const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
           el.innerText = `${daysLeft + 1} Hari lagi`;
           el.classList.remove('expired');
         } else {
-          // Jika sisa waktu kurang dari 24 jam, tampilkan format live timer HH:MM:SS
           const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
           const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
           const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
@@ -458,7 +452,7 @@
       allGoals.forEach((g) => {
         let borderStyle = '';
         let iconDeadline = '⌛';
-        let countdownBadgeHTML = ''; // Kontainer penampung di area lingkaran merah gambar kedua
+        let countdownBadgeHTML = '';
         
         if(g.type === 'monthly') {
           borderStyle = 'style="border-left: 3px solid var(--accent-cyan)"';
@@ -466,7 +460,6 @@
         } else if(g.type === 'side') {
           borderStyle = 'style="border-left: 3px solid var(--accent-purple)"';
           iconDeadline = '🎯';
-          // FITUR BARU: Menaruh elemen badge countdown dinamis di samping judul Side Quest (Lingkaran Merah Gambar 2)
           countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
         }
 
@@ -492,7 +485,6 @@
         else dList.innerHTML += item;
       });
       updateProgress();
-      // Jalankan fungsi hitung mundur secara instan setelah data ter-render ke layar
       if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
     }
 
@@ -552,7 +544,6 @@
         const mEl = document.getElementById("monthlyTimer");
         mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
 
-        // Perbarui setiap elemen hitung mundur live milik Side Quest tiap detiknya secara real-time
         updateSideQuestCountdowns();
       }, 1000);
     }
@@ -564,7 +555,15 @@
     }
 
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
-    async function logout() { await clientApp.auth.signOut(); location.reload(); }
+    
+    // FITUR DIUPGRADE: Ditambahkan modal pop-up konfirmasi bawaan sebelum melakukan proses logout
+    async function logout() { 
+      if (confirm("Apakah kamu yakin ingin keluar dari akun?")) {
+        await clientApp.auth.signOut(); 
+        location.reload(); 
+      }
+    }
+    
     checkUser();
   </script>
 </body>
