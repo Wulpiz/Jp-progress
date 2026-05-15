@@ -6,59 +6,6 @@
   <title>Japanese Focus - Hardcore Mode</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Style Tambahan untuk Homepage */
-    #landing-page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 80vh;
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .quote-container {
-      margin-bottom: 40px;
-      padding: 20px;
-    }
-
-    .reminder-text {
-      font-size: 1.2rem;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .motivation-text {
-      font-size: 2.5rem;
-      font-weight: 800;
-      line-height: 1.2;
-      background: linear-gradient(to bottom, #fff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
-    }
-
-    .btn-enter {
-      background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
-      color: white;
-      padding: 18px 40px;
-      border-radius: 50px;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      font-size: 1.1rem;
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-    }
-
-    .btn-enter:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
-    }
-    
     :root {
       --bg-dark: #020617;
       --card-bg: #1e293b;
@@ -762,32 +709,6 @@
       }
     }
     checkUser();
-
-    // Fungsi untuk menampilkan Dashboard
-    function showDashboard() {
-      document.getElementById('landing-page').style.display = 'none';
-      document.getElementById('main-dashboard').style.display = 'block';
-    }
-
-    // Fungsi tambahan untuk memodifikasi fungsi checkUser yang sudah ada
-    // Cari fungsi checkUser() yang lama, dan tambahkan baris berikut di dalamnya:
-    
-    async function checkUser() {
-      const { data: { user } } = await clientApp.auth.getUser();
-      if (user) {
-        currentUser = user;
-        document.getElementById('auth-screen').style.display = 'none';
-        
-        // UBAH BAGIAN INI: Awal masuk tampilkan landing page, bukan dashboard
-        document.getElementById('landing-page').style.display = 'flex'; 
-        document.getElementById('main-dashboard').style.display = 'none';
-        
-        await fetchOrCreateProfile();
-        fetchData();
-        startTimers();
-        setupDragAndDropEvents();
-      }
-    }
   </script>
 </body>
 </html>
