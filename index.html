@@ -6,6 +6,59 @@
   <title>Japanese Focus - Hardcore Mode</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* Style Tambahan untuk Homepage */
+    #landing-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 80vh;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .quote-container {
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+
+    .reminder-text {
+      font-size: 1.2rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .motivation-text {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(to bottom, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .btn-enter {
+      background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      padding: 18px 40px;
+      border-radius: 50px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-enter:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
+    }
+    
     :root {
       --bg-dark: #020617;
       --card-bg: #1e293b;
@@ -212,6 +265,28 @@
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Masuk dengan Google
     </button>
   </div>
+
+  <div class="container"> <!-- Container tetap sebagai pembungkus utama -->
+    
+    <!-- SECTION 1: HOMEPAGE / LANDING PAGE -->
+    <div id="landing-page" style="display: none;">
+      <div class="quote-container">
+        <p class="reminder-text">Pengingat Hari Ini</p>
+        <h1 class="motivation-text">"Waktu akan terus berjalan, baik kamu menggunakannya atau tidak."</h1>
+        <p style="color: var(--text-dim); font-style: italic;">Jangan biarkan penyesalan masa depan membunuhmu perlahan.</p>
+      </div>
+      <button class="btn-enter" onclick="showDashboard()">Buka Quest Log →</button>
+    </div>
+
+    <!-- SECTION 2: DASHBOARD (Isi file lama kamu bungkus di sini) -->
+    <div id="main-dashboard" style="display: none;">
+      <div class="hero-section">
+        <h1 class="hero-title">まず日本語。</h1>
+        <p class="hero-subtitle">Lakukanlah sekarang dan paksa diri sendiri, jadikan itu sebagai kebiasaan</p>
+      </div>
+
+      <!-- Sisa kode dashboard kamu (stat-card, daily quest, dll) tetap di bawah sini... -->
+      <!-- Pastikan tidak menghapus kode yang sudah ada -->
 
   <div class="container" id="main-dashboard">
     <div class="hero-section">
@@ -708,6 +783,32 @@
       }
     }
     checkUser();
+
+    // Fungsi untuk menampilkan Dashboard
+    function showDashboard() {
+      document.getElementById('landing-page').style.display = 'none';
+      document.getElementById('main-dashboard').style.display = 'block';
+    }
+
+    // Fungsi tambahan untuk memodifikasi fungsi checkUser yang sudah ada
+    // Cari fungsi checkUser() yang lama, dan tambahkan baris berikut di dalamnya:
+    
+    async function checkUser() {
+      const { data: { user } } = await clientApp.auth.getUser();
+      if (user) {
+        currentUser = user;
+        document.getElementById('auth-screen').style.display = 'none';
+        
+        // UBAH BAGIAN INI: Awal masuk tampilkan landing page, bukan dashboard
+        document.getElementById('landing-page').style.display = 'flex'; 
+        document.getElementById('main-dashboard').style.display = 'none';
+        
+        await fetchOrCreateProfile();
+        fetchData();
+        startTimers();
+        setupDragAndDropEvents();
+      }
+    }
   </script>
 </body>
-</html>  
+</html> 
