@@ -340,7 +340,8 @@
     let dbStreak = 0;
     let currentModalType = 'daily';
     let editingGoalId = null;
-
+    let touchStartX = 0;
+    let touchStartY = 0;
     let longPressTimeout = null;
     let dragSrcElement = null;
 
@@ -535,17 +536,35 @@
       });
     }
 
-    function makeDraggableOnLongPress(element) {
-      element.addEventListener('mousedown', (e) => startLongPressTimer(e, element));
-      element.addEventListener('mouseup', clearLongPressTimer);
-      element.addEventListener('mouseleave', clearLongPressTimer);
+    function makeDraggableOnLongPress(el) {
+      // Untuk Desktop
+      el.addEventListener('mousedown', (e) => startLongPressTimer(e, el));
+      el.addEventListener('mouseup', clearLongPressTimer);
+      el.addEventListener('mouseleave', clearLongPressTimer);
 
-      element.addEventListener('touchstart', (e) => startLongPressTimer(e, element), { passive: true });
-      element.addEventListener('touchend', clearLongPressTimer);
-      element.addEventListener('touchmove', clearLongPressTimer);
+      // Untuk Mobile (Dengan Toleransi)
+      el.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        startLongPressTimer(e, el);
+      }, { passive: true });
 
-      element.addEventListener('dragstart', handleDragStart);
-      element.addEventListener('dragend', handleDragEnd);
+      el.addEventListener('touchmove', (e) => {
+        const touchMoveX = e.touches[0].clientX;
+        const touchMoveY = e.touches[0].clientY;
+        
+        // Hitung selisih gerakan jari
+        const diffX = Math.abs(touchMoveX - touchStartX);
+        const diffY = Math.abs(touchMoveY - touchStartY);
+
+        // Toleransi 10 pixel. Jika gerak lebih dari 10px, baru batalkan (clear) timer.
+        if (diffX > 10 || diffY > 10) {
+          clearLongPressTimer();
+        }
+      }, { passive: true });
+
+      el.addEventListener('touchend', clearLongPressTimer);
+      el.addEventListener('touchcancel', clearLongPressTimer);
     }
 
     function startLongPressTimer(e, element) {
