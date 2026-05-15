@@ -588,21 +588,24 @@
         e.preventDefault();
         return;
       }
-      dragSrcElement = this;
+      dragSrcElement = this; // Pastikan variabel global ini terisi
       this.classList.add('dragging');
+      
+      // Penting untuk Firefox & Chrome agar drag-and-drop aktif
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+      e.dataTransfer.setData('text/html', this.innerHTML);
     }
 
     function handleDragEnd(e) {
       this.classList.remove('dragging');
-      this.removeAttribute('draggable');
+      this.removeAttribute('draggable'); // Reset status setelah selesai
       this.classList.remove('ready-to-drag');
       
       document.querySelectorAll('.quest-list-container').forEach(container => {
         container.classList.remove('drag-over');
       });
-      dragSrcElement = null;
+      // Jangan langsung null-kan dragSrcElement di sini, 
+      // biarkan event 'drop' selesai memprosesnya dulu
     }
 
     function setupDragAndDropEvents() {
@@ -610,18 +613,18 @@
       
       containers.forEach(container => {
         container.addEventListener('dragover', function(e) {
-          e.preventDefault();
+          e.preventDefault(); // WAJIB agar bisa drop
+          
           if (!dragSrcElement) return;
           
+          // Validasi agar tidak bisa pindah antar kategori (Daily ke Monthly dsb)
           if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
-            e.dataTransfer.dropEffect = 'none';
             return;
           }
           
-          e.dataTransfer.dropEffect = 'move';
           this.classList.add('drag-over');
-          
           const afterElement = getDragAfterElement(this, e.clientY);
+          
           if (afterElement == null) {
             this.appendChild(dragSrcElement);
           } else {
@@ -629,27 +632,21 @@
           }
         });
 
-        container.addEventListener('dragleave', function() {
-          this.classList.remove('drag-over');
-        });
-
         container.addEventListener('drop', async function(e) {
           e.preventDefault();
-          this.classList.remove('drag-over');
-          
           if (!dragSrcElement) return;
-          
-          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
-            return;
-          }
 
+          // Simpan urutan baru ke Supabase
           const items = Array.from(this.querySelectorAll('.quest-item'));
           const updates = items.map((item, index) => {
-            return clientApp.from('goals').update({ position: index * 10 }).eq('id', item.getAttribute('data-id'));
+            return clientApp.from('goals')
+              .update({ position: index * 10 })
+              .eq('id', item.getAttribute('data-id'));
           });
 
           await Promise.all(updates);
-          fetchData();
+          fetchData(); // Refresh data agar urutan sinkron dengan DB
+          dragSrcElement = null; // Baru di-null-kan di sini
         });
       });
     }
@@ -709,6 +706,11 @@
         `;
         
         makeDraggableOnLongPress(item);
+
+        // Di dalam fungsi render(), tambahkan ini:
+        makeDraggableOnLongPress(item);
+        item.addEventListener('dragstart', handleDragStart); // Tambahkan ini
+        item.addEventListener('dragend', handleDragEnd);     // Tambahkan ini
 
         if(g.type === 'monthly') mList.appendChild(item);
         else if(g.type === 'side') { if(sList) sList.appendChild(item); }
