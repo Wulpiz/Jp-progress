@@ -39,44 +39,57 @@
       position: relative;
       display: inline-block;
       line-height: 1.1;
-      
-      /* MATIKAN TRANSISI SUPAYA TIDAK ADA GARIS HITAM SAAT LOOPING */
-      transition: none !important; 
-      
-      /* WARNA DASAR ABU-ABU PERAK SIMETRIS DENGAN KILATAN HOLOGRAM TIPIS DI TENGAH */
-      background: linear-gradient(135deg, 
-        #94a3b8 0%, 
-        #94a3b8 40%,
-        #3b82f6 47%, 
-        #2dd4bf 50%, 
-        #3b82f6 53%, 
-        #94a3b8 60%,
-        #94a3b8 100%
+    
+      color: #94a3b8;
+    
+      /* base metallic */
+      background: linear-gradient(
+        to bottom,
+        #e2e8f0 0%,
+        #94a3b8 45%,
+        #64748b 100%
       );
-      
-      /* Ukuran ditarik meluas secara diagonal */
-      background-size: 300% 300%; 
-      background-repeat: no-repeat;
-      
-      /* Mengunci gradasi dan kilauan HANYA di dalam bentuk teks */
+    
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: none; 
-      
-      /* Kecepatan konstan satu arah */
-      animation: shineLoop 3.5s linear infinite; 
+    
+      overflow: hidden;
     }
-
-    /* LOGIKA GERAKAN: KILAUAN MASUK DARI KANAN BAWAH TEKS, KELUAR KE KIRI ATAS TEKS */
-    @keyframes shineLoop { 
+    
+    /* SHINE LAYER */
+    .hero-title::after {
+      content: "";
+      position: absolute;
+      top: -20%;
+      left: -120%;
+    
+      width: 70%;
+      height: 160%;
+    
+      transform: rotate(20deg);
+    
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.05) 35%,
+        rgba(255,255,255,0.9) 50%,
+        rgba(255,255,255,0.05) 65%,
+        transparent 100%
+      );
+    
+      filter: blur(8px);
+    
+      animation: realisticShine 3s ease-in-out infinite;
+    }
+    
+    @keyframes realisticShine {
       0% {
-        /* Kilauan berada di luar kanan bawah teks, yang kelihatan hanya base abu-abu perak */
-        background-position: 150% 150%; 
+        left: -120%;
       }
+    
       100% {
-        /* Kilauan berjalan menyapu teks hingga keluar lewat ujung kiri atas teks */
-        background-position: -50% -50%; 
+        left: 140%;
       }
     }
     
