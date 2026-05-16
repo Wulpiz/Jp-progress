@@ -174,6 +174,11 @@
       border-radius: 16px;
     }
 
+    .quest-item.ready-to-drag {
+      outline: 2px solid var(--accent-cyan);
+      background: rgba(45, 212, 191, 0.08);
+    }
+
     .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: var(--accent-blue); flex-shrink: 0; }
     .goal-info { flex: 1; min-width: 0; pointer-events: none; }
     .checkbox, .action-buttons button { pointer-events: auto; }
@@ -548,7 +553,8 @@
     }
     
     async function deleteGoal(id, text) {
-      if (confirm(`Apakah kamu yakin ingin menghapus goal: "${text}"?`)) {
+      const yes = window.confirm(`Hapus goal ini?\n\n${text}`);
+      if (yes) {
         const { error } = await clientApp.from('goals').delete().eq('id', id);
         if(!error) {
             fetchData();
@@ -764,6 +770,9 @@
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
     
+        const safeText = (g.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeDeadline = (g.deadline || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        
         item.innerHTML = `
           <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
           <div class="goal-info">
@@ -774,8 +783,8 @@
             <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
           </div>
           <div class="action-buttons">
-            <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}', '${escapeHtml(g.deadline || '').replace(/'/g, "\\'")}')">📝</button>
-            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${escapeHtml(g.text).replace(/'/g, "\\'")}')">🗑️</button>
+            <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${safeText}', '${safeDeadline}')">📝</button>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${safeText}')">🗑️</button>
           </div>
         `;
         
@@ -850,7 +859,7 @@
         // 3. KODE HITUNG MUNDUR BULANAN & SIDE QUEST (Pertahankan ini)
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
-        const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
+        const daysLeft = Math.ceil(mDiff / (1000 * 60 * 60 * 24));
         const mEl = document.getElementById("monthlyTimer");
         if (mEl) mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
     
