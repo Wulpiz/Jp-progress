@@ -816,10 +816,12 @@
         const timerEl = document.getElementById("dailyTimer");
         timerEl.innerText = `${h}:${m}:${s}`;
         
+        // =========================================================
+        // PASANG KODE INI UNTUK MENGGANTIKAN BLOK DI ATAS
+        // =========================================================
         if (h === "00" && m === "00" && s === "00") {
-            dbStreak = 0;
-            updateProgress();
-            evaluateStreakAtMidnight();
+          // Serahkan sepenuhnya ke fungsi evaluasi agar dicek apakah quest selesai semua atau tidak
+          evaluateStreakAtMidnight();
         }
 
         if (diff < 3600000) timerEl.classList.add('timer-critical');
