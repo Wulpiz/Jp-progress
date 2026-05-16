@@ -38,20 +38,23 @@
       letter-spacing: -3px;
       position: relative;
       display: inline-block;
-      /* MENGUBAH SUDUT KE 135deg (Kanan Bawah ke Kiri Atas) DAN MENIPISKAN WARNA SHINING */
+      
+      /* MENGUBAH WARNA DASAR MENJADI GELAP PEKAT SEPERTI DI GAMBAR */
       background: linear-gradient(135deg, 
-        #ffffff 35%, 
+        #020617 30%, 
+        #1e293b 40%,
         #3b82f6 48%, 
         #2dd4bf 50%, 
         #3b82f6 52%, 
-        #ffffff 65%
+        #1e293b 60%,
+        #020617 70%
       );
-      background-size: 300% 300%; /* Diperbesar agar pergerakan diagonal lebih halus */
+      background-size: 300% 300%;
       color: #000;
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shine 4s ease-in-out infinite; /* Diperlambat sedikit menjadi 4s agar lebih mewah */
+      animation: shine 4s ease-in-out infinite;
     }
 
     /* ANIMASI DIAGONAL DARI KANAN BAWAH KE KIRI ATAS */
