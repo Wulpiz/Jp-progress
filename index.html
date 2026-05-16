@@ -333,9 +333,10 @@
 
   <script>
     const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
+    // PENTING: Pastikan RLS di Supabase aktif untuk mengamankan Key ini!
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = supabase.createClient(SB_URL, SB_KEY);
-
+    
     let currentUser = null;
     let allGoals = [];
     let dbStreak = 0;
@@ -346,20 +347,29 @@
     let longPressTimeout = null;
     let dragSrcElement = null;
     let streakProcessedTonight = false;
-
+    
+    // 1. FUNGSI CHECKUSER TUNGGAL YANG SUDAH DIGABUNGKAN
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-dashboard').style.display = 'block';
+        
+        // Set tampilan awal masuk ke landing page (Zen Mode)
+        document.getElementById('landing-page').style.display = 'flex'; 
+        document.getElementById('main-dashboard').style.display = 'none';
+        
         await fetchOrCreateProfile();
-        fetchData();
+        await fetchData();
         startTimers();
         setupDragAndDropEvents();
+      } else {
+        document.getElementById('auth-screen').style.display = 'block';
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('main-dashboard').style.display = 'none';
       }
     }
-
+    
     async function fetchOrCreateProfile() {
       let { data: profile, error } = await clientApp.from('user_profiles').select('streak').eq('user_id', currentUser.id).single();
       
@@ -370,7 +380,7 @@
         dbStreak = profile.streak;
       }
     }
-
+    
     async function fetchData() {
       const { data } = await clientApp.from('goals')
         .select('*')
@@ -381,17 +391,17 @@
       allGoals = data || [];
       render();
     }
-
+    
     function openModal(type, goalId = null, currentText = '', currentDeadline = '') {
       currentModalType = type;
       editingGoalId = goalId;
-
+    
       const titleEl = document.getElementById('modal-title');
       const textInput = document.getElementById('modal-text');
       const deadlineInput = document.getElementById('modal-deadline');
       const deadlineBlock = document.getElementById('modal-deadline-block');
       const submitBtn = document.getElementById('btn-submit-goal');
-
+    
       if (type === 'side') {
         deadlineBlock.style.display = 'flex';
         if (currentDeadline && currentDeadline.match(/^\d{4}-\d{2}-\d{2}/)) {
@@ -403,7 +413,7 @@
         deadlineBlock.style.display = 'none';
         deadlineInput.value = '';
       }
-
+    
       if (editingGoalId) {
         if(type === 'daily') titleEl.innerText = 'Edit Goal Harian';
         else if(type === 'monthly') titleEl.innerText = 'Edit Goal Bulanan';
@@ -415,37 +425,37 @@
         if(type === 'daily') titleEl.innerText = 'Tambah Goal Harian';
         else if(type === 'monthly') titleEl.innerText = 'Tambah Goal Bulanan';
         else titleEl.innerText = 'Tambah Side Quest';
-
+    
         textInput.value = '';
         submitBtn.innerText = "Tambahkan";
       }
-
+    
       document.getElementById('goal-modal').style.display = 'flex';
       setTimeout(() => textInput.focus(), 100);
     }
-
+    
     function closeModal() {
       document.getElementById('goal-modal').style.display = 'none';
       document.getElementById('modal-text').value = '';
       document.getElementById('modal-deadline').value = '';
       editingGoalId = null;
     }
-
+    
     async function submitModal() {
       const text = document.getElementById('modal-text').value.trim();
       const customDeadline = document.getElementById('modal-deadline').value.trim();
       if(!text) return;
-
+    
       const btn = document.getElementById('btn-submit-goal');
       btn.innerText = "Menyimpan...";
       btn.disabled = true;
-
+    
       let deadlineText = 'Daily Reset';
       if (currentModalType === 'monthly') deadlineText = 'End of Month';
       else if (currentModalType === 'side') {
         deadlineText = customDeadline || 'Tanpa Batas Waktu';
       }
-
+    
       if (editingGoalId) {
         const { error } = await clientApp.from('goals').update({ 
           text: text,
@@ -453,7 +463,7 @@
         }).eq('id', editingGoalId);
         
         btn.disabled = false;
-
+    
         if(!error) {
           closeModal();
           fetchData();
@@ -464,7 +474,7 @@
       } else {
         const sameTypeGoals = allGoals.filter(g => g.type === currentModalType);
         const nextPosition = sameTypeGoals.length > 0 ? Math.max(...sameTypeGoals.map(g => g.position || 0)) + 10 : 10;
-
+    
         const { data, error } = await clientApp.from('goals').insert([{ 
           text: text, 
           user_id: currentUser.id, 
@@ -473,9 +483,9 @@
           deadline: deadlineText,
           position: nextPosition
         }]).select();
-
+    
         btn.disabled = false;
-
+    
         if(!error) {
           allGoals.push(data[0]);
           closeModal();
@@ -486,12 +496,12 @@
         }
       }
     }
-
+    
     async function toggleGoal(id, status) {
       await clientApp.from('goals').update({ checked: !status }).eq('id', id);
       fetchData();
     }
-
+    
     async function deleteGoal(id, text) {
       if (confirm(`Apakah kamu yakin ingin menghapus goal: "${text}"?`)) {
         const { error } = await clientApp.from('goals').delete().eq('id', id);
@@ -502,38 +512,33 @@
         }
       }
     }
-
+    
     async function evaluateStreakAtMidnight() {
-    if (streakProcessedTonight) return;
-    streakProcessedTonight = true;
-
-     // Memfilter goal harian dari array data bawaan kodemu
-    const dailyGoals = allGoals.filter(g => g.type === 'daily');
-  
-    if (dailyGoals.length > 0) {
+      if (streakProcessedTonight) return;
+      streakProcessedTonight = true;
+    
+      const dailyGoals = allGoals.filter(g => g.type === 'daily');
+    
+      if (dailyGoals.length > 0) {
         const allDone = dailyGoals.every(g => g.checked === true);
     
-      if (allDone) {
-        dbStreak += 1; // Jika semua selesai, streak +1
-      } else {
-        dbStreak = 0;  // Jika ada yang bolong, streak reset ke 0
+        if (allDone) {
+          dbStreak += 1;
+        } else {
+          dbStreak = 0;
+        }
+    
+        await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
+    
+        const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
+        await Promise.all(resetQuests);
+    
+        fetchData(); 
       }
-
-      // Update data profil user ke Supabase secara permanen
-      await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
     
-      // WIPEOUT: Uncheck otomatis semua goal harian untuk hari esok
-      const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
-      await Promise.all(resetQuests);
-    
-      // Panggil fungsi penarik data bawaan kodemu untuk menyegarkan UI
-      fetchData(); 
+      setTimeout(() => { streakProcessedTonight = false; }, 2000);
     }
-  
-    // Lepas kunci setelah 2 detik agar tidak mengeksekusi berulang kali pada detik yang sama
-    setTimeout(() => { streakProcessedTonight = false; }, 2000);
-  }
-
+    
     function updateSideQuestCountdowns() {
       const liveElements = document.querySelectorAll('.side-countdown-live');
       liveElements.forEach(el => {
@@ -542,17 +547,17 @@
           el.innerText = 'Tanpa Batas Waktu';
           return;
         }
-
+    
         const targetDate = new Date(rawDeadline + "T23:59:59");
         const now = new Date();
         const diff = targetDate - now;
-
+    
         if (diff <= 0) {
           el.innerText = 'Waktu Habis';
           el.classList.add('expired');
           return;
         }
-
+    
         const totalHours = Math.floor(diff / 3600000);
         
         if (totalHours >= 24) {
@@ -568,38 +573,33 @@
         }
       });
     }
-
+    
     function makeDraggableOnLongPress(el) {
-      // Untuk Desktop
       el.addEventListener('mousedown', (e) => startLongPressTimer(e, el));
       el.addEventListener('mouseup', clearLongPressTimer);
       el.addEventListener('mouseleave', clearLongPressTimer);
-
-      // Untuk Mobile (Dengan Toleransi)
+    
       el.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         startLongPressTimer(e, el);
       }, { passive: true });
-
+    
       el.addEventListener('touchmove', (e) => {
         const touchMoveX = e.touches[0].clientX;
         const touchMoveY = e.touches[0].clientY;
-        
-        // Hitung selisih gerakan jari
         const diffX = Math.abs(touchMoveX - touchStartX);
         const diffY = Math.abs(touchMoveY - touchStartY);
-
-        // Toleransi 10 pixel. Jika gerak lebih dari 10px, baru batalkan (clear) timer.
+    
         if (diffX > 10 || diffY > 10) {
           clearLongPressTimer();
         }
       }, { passive: true });
-
+    
       el.addEventListener('touchend', clearLongPressTimer);
       el.addEventListener('touchcancel', clearLongPressTimer);
     }
-
+    
     function startLongPressTimer(e, element) {
       if (e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
         return;
@@ -611,49 +611,40 @@
         if (navigator.vibrate) navigator.vibrate(50);
       }, 500);
     }
-
+    
     function clearLongPressTimer() {
       if (longPressTimeout) clearTimeout(longPressTimeout);
     }
-
+    
     function handleDragStart(e) {
       if (this.getAttribute('draggable') !== 'true') {
         e.preventDefault();
         return;
       }
-      dragSrcElement = this; // Pastikan variabel global ini terisi
+      dragSrcElement = this;
       this.classList.add('dragging');
-      
-      // Penting untuk Firefox & Chrome agar drag-and-drop aktif
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/html', this.innerHTML);
     }
-
+    
     function handleDragEnd(e) {
       this.classList.remove('dragging');
-      this.removeAttribute('draggable'); // Reset status setelah selesai
+      this.removeAttribute('draggable');
       this.classList.remove('ready-to-drag');
       
       document.querySelectorAll('.quest-list-container').forEach(container => {
         container.classList.remove('drag-over');
       });
-      // Jangan langsung null-kan dragSrcElement di sini, 
-      // biarkan event 'drop' selesai memprosesnya dulu
     }
-
+    
     function setupDragAndDropEvents() {
       const containers = document.querySelectorAll('.quest-list-container');
       
       containers.forEach(container => {
         container.addEventListener('dragover', function(e) {
-          e.preventDefault(); // WAJIB agar bisa drop
-          
+          e.preventDefault();
           if (!dragSrcElement) return;
-          
-          // Validasi agar tidak bisa pindah antar kategori (Daily ke Monthly dsb)
-          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) {
-            return;
-          }
+          if (dragSrcElement.getAttribute('data-type') !== this.getAttribute('data-type')) return;
           
           this.classList.add('drag-over');
           const afterElement = getDragAfterElement(this, e.clientY);
@@ -664,26 +655,25 @@
             this.insertBefore(dragSrcElement, afterElement);
           }
         });
-
+    
         container.addEventListener('drop', async function(e) {
           e.preventDefault();
           if (!dragSrcElement) return;
-
-          // Simpan urutan baru ke Supabase
+    
           const items = Array.from(this.querySelectorAll('.quest-item'));
           const updates = items.map((item, index) => {
             return clientApp.from('goals')
               .update({ position: index * 10 })
               .eq('id', item.getAttribute('data-id'));
           });
-
+    
           await Promise.all(updates);
-          fetchData(); // Refresh data agar urutan sinkron dengan DB
-          dragSrcElement = null; // Baru di-null-kan di sini
+          fetchData();
+          dragSrcElement = null;
         });
       });
     }
-
+    
     function getDragAfterElement(container, y) {
       const draggableElements = [...container.querySelectorAll('.quest-item:not(.dragging)')];
       
@@ -697,7 +687,8 @@
         }
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
-
+    
+    // 2. RENDERING BERSIH TANPA DUPLIKASI LISTENER
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
@@ -705,7 +696,7 @@
       
       dList.innerHTML = ""; mList.innerHTML = ""; 
       if(sList) sList.innerHTML = "";
-
+    
       allGoals.forEach((g) => {
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
@@ -716,13 +707,12 @@
           iconDeadline = '🎯';
           countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
         }
-
+    
         const item = document.createElement('div');
-        // KEBENALAN FIX: Menambahkan class penentu warna (type-daily, type-monthly, type-side)
         item.className = `quest-item type-${g.type}`;
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
-
+    
         item.innerHTML = `
           <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
           <div class="goal-info">
@@ -738,13 +728,11 @@
           </div>
         `;
         
+        // Dipanggil sekali dengan benar
         makeDraggableOnLongPress(item);
-
-        // Di dalam fungsi render(), tambahkan ini:
-        makeDraggableOnLongPress(item);
-        item.addEventListener('dragstart', handleDragStart); // Tambahkan ini
-        item.addEventListener('dragend', handleDragEnd);     // Tambahkan ini
-
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+    
         if(g.type === 'monthly') mList.appendChild(item);
         else if(g.type === 'side') { if(sList) sList.appendChild(item); }
         else dList.appendChild(item);
@@ -752,20 +740,20 @@
       updateProgress();
       if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
     }
-
+    
     function updateProgress() {
       const dailyGoals = allGoals.filter(g => g.type === 'daily');
       const dailyDone = dailyGoals.filter(g => g.checked).length;
       const dailyPercent = dailyGoals.length === 0 ? 0 : Math.round((dailyDone / dailyGoals.length) * 100);
       document.getElementById("dailyFill").style.width = dailyPercent + "%";
       document.getElementById("dailyPercent").innerText = dailyPercent + "%";
-
+    
       const monthlyGoals = allGoals.filter(g => g.type === 'monthly');
       const monthlyDone = monthlyGoals.filter(g => g.checked).length;
       const monthlyPercent = monthlyGoals.length === 0 ? 0 : Math.round((monthlyDone / monthlyGoals.length) * 100);
       document.getElementById("monthlyFill").style.width = monthlyPercent + "%";
       document.getElementById("monthlyPercent").innerText = monthlyPercent + "%";
-
+    
       const sideGoals = allGoals.filter(g => g.type === 'side');
       const sideDone = sideGoals.filter(g => g.checked).length;
       const sidePercent = sideGoals.length === 0 ? 0 : Math.round((sideDone / sideGoals.length) * 100);
@@ -783,8 +771,8 @@
         streakEl.className = "stat-value streak-active";
       }
     }
-
-function startTimers() {
+    
+    function startTimers() {
       setInterval(() => {
         const now = new Date();
         const midnight = new Date().setHours(24, 0, 0, 0);
@@ -796,33 +784,33 @@ function startTimers() {
         const timerEl = document.getElementById("dailyTimer");
         if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
-        // FIX BENTROK: Hanya panggil evaluasi otomatis saat jam menunjukkan 00:00:00 tengah malam
+        // Cek presisi evaluasi streak
         if (h === "00" && m === "00" && s === "00") {
             evaluateStreakAtMidnight();
         }
-
+    
         if (diff < 3600000) {
             if (timerEl) timerEl.classList.add('timer-critical');
         } else {
             if (timerEl) timerEl.classList.remove('timer-critical');
         }
-
+    
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
         const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
         const mEl = document.getElementById("monthlyTimer");
         if (mEl) mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
-
+    
         updateSideQuestCountdowns();
       }, 1000);
     }
-
+    
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.innerText = text;
       return div.innerHTML;
     }
-
+    
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
     
     async function logout() { 
@@ -831,42 +819,18 @@ function startTimers() {
         location.reload(); 
       }
     }
-
-    // Fungsi untuk menampilkan Dashboard dari Landing Page
+    
     function showDashboard() {
       document.getElementById('landing-page').style.display = 'none';
       document.getElementById('main-dashboard').style.display = 'block';
     }
-
+    
     function backToHome() {
-      // Ganti 'main-dashboard' sesuai dengan ID container dashboard aslimu jika berbeda
       document.getElementById('main-dashboard').style.display = 'none';
       document.getElementById('landing-page').style.display = 'flex';
     }
-
-    // Fungsi checkUser tunggal yang sudah bersih dan mengarah ke landing-page duluan
-    async function checkUser() {
-      const { data: { user } } = await clientApp.auth.getUser();
-      if (user) {
-        currentUser = user;
-        document.getElementById('auth-screen').style.display = 'none';
-        
-        // Set tampilan awal masuk ke landing page (Zen Mode)
-        document.getElementById('landing-page').style.display = 'flex'; 
-        document.getElementById('main-dashboard').style.display = 'none';
-        
-        await fetchOrCreateProfile();
-        fetchData();
-        startTimers();
-        setupDragAndDropEvents();
-      } else {
-        document.getElementById('auth-screen').style.display = 'block';
-        document.getElementById('landing-page').style.display = 'none';
-        document.getElementById('main-dashboard').style.display = 'none';
-      }
-    }
-
-    // Jalankan pengecekan user saat aplikasi pertama kali dimuat
+    
+    // Jalankan pengecekan pertama kali
     checkUser();
   </script>
 </body>
