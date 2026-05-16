@@ -569,19 +569,6 @@
       });
     }
 
-      // 2. Fungsi Navigasi Halaman
-    function enterDashboard() {
-      document.getElementById('homepage-screen').style.display = 'none';
-      // Panggil fungsi cek login atau load data bawaan kodemu di sini
-      checkUser(); 
-    }
-
-    function backToHome() {
-      // Ganti 'main-dashboard' sesuai dengan ID container dashboard aslimu jika berbeda
-      document.getElementById('main-dashboard').style.display = 'none';
-      document.getElementById('homepage-screen').style.display = 'flex';
-    }
-
     function makeDraggableOnLongPress(el) {
       // Untuk Desktop
       el.addEventListener('mousedown', (e) => startLongPressTimer(e, el));
@@ -797,7 +784,7 @@
       }
     }
 
-    function startTimers() {
+function startTimers() {
       setInterval(() => {
         const now = new Date();
         const midnight = new Date().setHours(24, 0, 0, 0);
@@ -807,23 +794,24 @@
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
         
         const timerEl = document.getElementById("dailyTimer");
-        timerEl.innerText = `${h}:${m}:${s}`;
+        if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
-        // =========================================================
-        // PASANG KODE INI UNTUK MENGGANTIKAN BLOK DI ATAS
-        // =========================================================
+        // FIX BENTROK: Hanya panggil evaluasi otomatis saat jam menunjukkan 00:00:00 tengah malam
         if (h === "00" && m === "00" && s === "00") {
-          // Serahkan sepenuhnya ke fungsi evaluasi agar dicek apakah quest selesai semua atau tidak
-          evaluateStreakAtMidnight();
+            evaluateStreakAtMidnight();
         }
 
-        if (diff < 3600000) timerEl.classList.add('timer-critical');
+        if (diff < 3600000) {
+            if (timerEl) timerEl.classList.add('timer-critical');
+        } else {
+            if (timerEl) timerEl.classList.remove('timer-critical');
+        }
 
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
         const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
         const mEl = document.getElementById("monthlyTimer");
-        mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
+        if (mEl) mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
 
         updateSideQuestCountdowns();
       }, 1000);
@@ -836,30 +824,34 @@
     }
 
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
+    
     async function logout() { 
       if (confirm("Apakah kamu yakin ingin keluar dari akun?")) {
         await clientApp.auth.signOut(); 
         location.reload(); 
       }
     }
-    checkUser();
 
-// Fungsi untuk menampilkan Dashboard
+    // Fungsi untuk menampilkan Dashboard dari Landing Page
     function showDashboard() {
       document.getElementById('landing-page').style.display = 'none';
       document.getElementById('main-dashboard').style.display = 'block';
     }
 
-    // Fungsi tambahan untuk memodifikasi fungsi checkUser yang sudah ada
-    // Cari fungsi checkUser() yang lama, dan tambahkan baris berikut di dalamnya:
-    
+    function backToHome() {
+      // Ganti 'main-dashboard' sesuai dengan ID container dashboard aslimu jika berbeda
+      document.getElementById('main-dashboard').style.display = 'none';
+      document.getElementById('landing-page').style.display = 'flex';
+    }
+
+    // Fungsi checkUser tunggal yang sudah bersih dan mengarah ke landing-page duluan
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
         
-        // UBAH BAGIAN INI: Awal masuk tampilkan landing page, bukan dashboard
+        // Set tampilan awal masuk ke landing page (Zen Mode)
         document.getElementById('landing-page').style.display = 'flex'; 
         document.getElementById('main-dashboard').style.display = 'none';
         
@@ -867,8 +859,15 @@
         fetchData();
         startTimers();
         setupDragAndDropEvents();
+      } else {
+        document.getElementById('auth-screen').style.display = 'block';
+        document.getElementById('landing-page').style.display = 'none';
+        document.getElementById('main-dashboard').style.display = 'none';
       }
     }
+
+    // Jalankan pengecekan user saat aplikasi pertama kali dimuat
+    checkUser();
   </script>
 </body>
 </html>
