@@ -40,33 +40,36 @@
       display: inline-block;
       line-height: 1.1;
       
-      /* GRADASI SIMETRIS (AWAL & AKHIR SAMA: #475569) AGAR TIDAK ADA GARIS PATAHAN */
+      /* MATIKAN TRANSISI GLOBAL (Ini kunci untuk menghilangkan garis hitam saat loop) */
+      transition: none !important; 
+      
+      /* GRADASI ABU-ABU METAlIK SIMETRIS */
       background: linear-gradient(135deg, 
         #475569 0%, 
         #94a3b8 25%,
-        #3b82f6 46%, 
+        #3b82f6 47%, 
         #2dd4bf 50%, 
-        #3b82f6 54%, 
+        #3b82f6 53%, 
         #94a3b8 75%,
         #475569 100%
       );
-      background-size: 200% 100%; /* Dikunci 100% tinggi agar tidak pecah vertikal */
-      background-repeat: repeat;   /* Memastikan sambungan gradasi mulus */
+      background-size: 300% 100%;  
+      background-repeat: no-repeat;
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: none; 
       
-      animation: shine 3.5s linear infinite; 
+      animation: shine 4s linear infinite; 
     }
 
-    /* PERGERAKAN SATU ARAH YANG MULUS TANPA GARIS HITAM */
+    /* ANIMASI BERPUTAR 1 ARAH YANG MULUS */
     @keyframes shine { 
       0% {
         background-position: 200% 0%;
       }
       100% {
-        background-position: 0% 0%;
+        background-position: -100% 0%;
       }
     }
     
