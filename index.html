@@ -346,7 +346,7 @@
     let touchStartY = 0;
     let longPressTimeout = null;
     let dragSrcElement = null;
-    let streakProcessedTonight = false;
+    let lastProcessedDate = localStorage.getItem('lastProcessedDate') || '';
     
     // 1. FUNGSI CHECKUSER TUNGGAL YANG SUDAH DIGABUNGKAN
     async function checkUser() {
@@ -514,8 +514,14 @@
     }
     
     async function evaluateStreakAtMidnight() {
-      if (streakProcessedTonight) return;
-      streakProcessedTonight = true;
+      const todayString = new Date().toLocaleDateString('id-ID'); // Mengambil tanggal hari ini (contoh: "17/5/2026")
+      
+      // Jika tanggal hari ini sama dengan tanggal terakhir diproses, artinya hari ini SUDAH dievaluasi. Kembalikan/jangan lewat.
+      if (lastProcessedDate === todayString) return;
+      
+      // Kunci langsung di awal agar tidak terjadi eksekusi ganda jika fungsi terpanggil berdekatan
+      lastProcessedDate = todayString;
+      localStorage.setItem('lastProcessedDate', todayString);
     
       const dailyGoals = allGoals.filter(g => g.type === 'daily');
     
@@ -525,18 +531,18 @@
         if (allDone) {
           dbStreak += 1;
         } else {
-          dbStreak = 0;
+          dbStreak = 0; // Reset ke 0 jika ada quest harian yang bolong
         }
     
+        // Update ke Supabase
         await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
     
+        // Wipeout/uncheck semua quest harian untuk hari yang baru
         const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
         await Promise.all(resetQuests);
     
-        fetchData(); 
+        fetchData(); // Refresh UI
       }
-    
-      setTimeout(() => { streakProcessedTonight = false; }, 2000);
     }
     
     function updateSideQuestCountdowns() {
@@ -784,10 +790,7 @@
         const timerEl = document.getElementById("dailyTimer");
         if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
-        // Cek presisi evaluasi streak
-        if (h === "00" && m === "00" && s === "00") {
-            evaluateStreakAtMidnight();
-        }
+        evaluateStreakAtMidnight();
     
         if (diff < 3600000) {
             if (timerEl) timerEl.classList.add('timer-critical');
