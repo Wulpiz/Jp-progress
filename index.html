@@ -40,17 +40,13 @@
       letter-spacing: -3px;
       line-height: 1.1;
     
-      /* BASE TEXT DIAM */
-      color: #94a3b8;
-    
-      background:
-      linear-gradient(
-        115deg,
-        transparent 46%,
-        rgba(255,255,255,0.15) 48%,
-        rgba(255,255,255,0.65) 50%,
-        rgba(255,255,255,0.15) 52%,
-        transparent 54%
+      /* BASE TEXT */
+      background: linear-gradient(
+        to bottom,
+        #f8fafc 0%,
+        #cbd5e1 20%,
+        #94a3b8 55%,
+        #64748b 100%
       );
     
       background-clip: text;
@@ -58,9 +54,9 @@
       -webkit-text-fill-color: transparent;
     }
     
-    /* SHINE TERPISAH */
+    /* REAL SHINE */
     .hero-title::after {
-      content: attr(data-text);
+      content: "まず日本語。";
     
       position: absolute;
       inset: 0;
@@ -69,28 +65,30 @@
     
       background:
         linear-gradient(
-          115deg,
-          transparent 40%,
-          rgba(255,255,255,0.15) 47%,
+          120deg,
+          transparent 46%,
+          rgba(255,255,255,0.0) 47%,
           rgba(255,255,255,0.95) 50%,
-          rgba(255,255,255,0.15) 53%,
-          transparent 60%
+          rgba(255,255,255,0.0) 53%,
+          transparent 54%
         );
     
-      background-size: 250% 100%;
+      background-size: 220% 100%;
       background-repeat: no-repeat;
     
-      background-position: -250% 0;
+      animation: shineMove 2s linear infinite;
     
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-    
-      animation: legitShine 2.8s linear infinite;
     }
     
-    @keyframes legitShine {
-      100% {
+    @keyframes shineMove {
+      from {
+        background-position: -250% 0;
+      }
+    
+      to {
         background-position: 250% 0;
       }
     }
