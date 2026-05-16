@@ -39,37 +39,51 @@
       position: relative;
       display: inline-block;
       line-height: 1.1;
+      overflow: hidden; /* Memotong kilauan agar tidak keluar dari area teks */
       
-      /* MATIKAN TRANSISI AGAR TIDAK ADA GARIS HITAM SAAT LOOP */
-      transition: none !important; 
-      
-      /* GRADASI ABU-ABU METAlIK DENGAN KILAUAN TIPIS */
-      background: linear-gradient(135deg, 
-        #475569 0%, 
-        #94a3b8 25%,
-        #3b82f6 47%, 
-        #2dd4bf 50%, 
-        #3b82f6 53%, 
-        #94a3b8 75%,
-        #475569 100%
-      );
-      background-size: 300% 300%;   /* Ukuran proporsional untuk gerakan diagonal */
-      background-repeat: no-repeat; /* Mencegah munculnya garis potong/sambungan */
+      /* WARNA DASAR TEKS: Abu-abu Keperakan Solid (Sama seperti gambar) */
+      color: #94a3b8; 
+      background: linear-gradient(135deg, #64748b, #cbd5e1);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: none; 
       
-      animation: shine 4s linear infinite; 
+      /* Matikan transisi agar aman */
+      transition: none !important;
     }
 
-    /* GERAKAN DIAGONAL SATU ARAH YANG AMAN & TEKS TETAP MUNCUL */
-    @keyframes shine { 
+    /* ELEMEN KILAUAN (SHINING) YANG BERGERAK */
+    .hero-title::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      
+      /* Garis kilauan tipis diagonal warna cyan-biru transparan */
+      background: linear-gradient(135deg, 
+        rgba(255,255,255,0) 45%, 
+        rgba(59,130,246,0.3) 48%, 
+        rgba(45,212,191,0.6) 50%, 
+        rgba(59,130,246,0.3) 52%, 
+        rgba(255,255,255,0) 55%
+      );
+      
+      /* Hanya menerangi bagian warna teks di bawahnya */
+      mix-blend-mode: overlay; 
+      
+      /* Jalankan animasi meluncur satu arah */
+      animation: sweep 4s linear infinite;
+    }
+
+    /* ANIMASI MELUNCUR SATU ARAH (KANAN BAWAH KE KIRI ATAS) */
+    @keyframes sweep {
       0% {
-        background-position: 150% 150%; /* Mulai dari kanan bawah luar teks */
+        transform: translate(30%, 30%); /* Mulai di kanan bawah luar teks */
       }
       100% {
-        background-position: -50% -50%; /* Selesai di kiri atas luar teks */
+        transform: translate(-30%, -30%); /* Selesai di kiri atas luar teks */
       }
     }
     
