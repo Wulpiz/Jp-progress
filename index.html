@@ -38,9 +38,9 @@
       letter-spacing: -3px;
       position: relative;
       display: inline-block;
-      line-height: 1.1; /* Mencegah teks terpotong di bagian atas/bawah */
+      line-height: 1.1;
       
-      /* GRADASI ABU-ABU KEPERAKAN DENGAN KILAUAN HOLOGRAM TIPIS DI TENGAH */
+      /* GRADASI METAlIK DENGAN KILAUAN HOLOGRAM TIPIS */
       background: linear-gradient(135deg, 
         #475569 0%, 
         #94a3b8 35%,
@@ -50,22 +50,25 @@
         #94a3b8 65%,
         #475569 100%
       );
-      background-size: 300% 300%;
+      /* background-size diganti ke linear x-axis saja agar transisi loop satu arah mulus */
+      background-size: 200% auto; 
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      
-      /* Hapus text-shadow bawaan jika ada karena merusak efek transparan background-clip */
       text-shadow: none; 
       
-      animation: shine 4s ease-in-out infinite;
+      /* Menggunakan 'linear' agar pergerakan konstan saat looping satu arah */
+      animation: shine 3.5s linear infinite; 
     }
 
-    /* ANIMASI DIAGONAL DARI KANAN BAWAH KE KIRI ATAS */
+    /* ANIMASI SATU ARAH: KANAN BAWAH KE KIRI ATAS SECARA TERUS MENERUS */
     @keyframes shine { 
-      0% { background-position: 100% 100%; }
-      50% { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
+      0% {
+        background-position: 200% 200%;
+      }
+      100% {
+        background-position: 0% 0%;
+      }
     }
     
     #auth-screen { 
