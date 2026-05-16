@@ -241,6 +241,12 @@
   </style>
 </head>
 <body>
+  
+<div id="homepage-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); position: fixed; width: 100%; top: 0; left: 0; z-index: 2000;">
+  <div id="zen-reminder-text" style="font-size: 0.9rem; color: #2dd4bf; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 20px; font-weight: 800;">SISTEM PENUNJANG DISIPLIN</div>
+  <div id="zen-quote-text" style="font-size: 2rem; font-weight: 300; font-style: italic; max-width: 800px; line-height: 1.5; margin-bottom: 50px; color: #fff;">"Bahasa Jepang bukan tentang siapa yang paling pintar, tapi siapa yang paling konsisten bertahan setiap hari."</div>
+  <button onclick="enterDashboard()" style="padding: 18px 45px; background: transparent; border: 1px solid #3b82f6; color: #3b82f6; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 1rem; letter-spacing: 1px; transition: all 0.3s;">LIHAT PROGRESS GOAL</button>
+</div>
 
   <div id="goal-modal">
     <div class="modal-content">
@@ -278,6 +284,8 @@
     </div>
   
   <div class="container" id="main-dashboard">
+    
+    <button onclick="backToHome()" style="background:none; border:none; color:#2dd4bf; cursor:pointer; margin-bottom: 20px; font-weight:600; display:block;">← Kembali ke Beranda</button>
       
     <div class="hero-section">
       <h1 class="hero-title">まず日本語。</h1>
@@ -344,6 +352,7 @@
     let touchStartY = 0;
     let longPressTimeout = null;
     let dragSrcElement = null;
+    let streakProcessedTonight = false;
 
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
@@ -501,6 +510,37 @@
       }
     }
 
+    async function evaluateStreakAtMidnight() {
+    if (streakProcessedTonight) return;
+    streakProcessedTonight = true;
+
+     // Memfilter goal harian dari array data bawaan kodemu
+    const dailyGoals = allGoals.filter(g => g.type === 'daily');
+  
+    if (dailyGoals.length > 0) {
+        const allDone = dailyGoals.every(g => g.checked === true);
+    
+      if (allDone) {
+        dbStreak += 1; // Jika semua selesai, streak +1
+      } else {
+        dbStreak = 0;  // Jika ada yang bolong, streak reset ke 0
+      }
+
+      // Update data profil user ke Supabase secara permanen
+      await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
+    
+      // WIPEOUT: Uncheck otomatis semua goal harian untuk hari esok
+      const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
+      await Promise.all(resetQuests);
+    
+      // Panggil fungsi penarik data bawaan kodemu untuk menyegarkan UI
+      fetchData(); 
+    }
+  
+    // Lepas kunci setelah 2 detik agar tidak mengeksekusi berulang kali pada detik yang sama
+    setTimeout(() => { streakProcessedTonight = false; }, 2000);
+  }
+
     function updateSideQuestCountdowns() {
       const liveElements = document.querySelectorAll('.side-countdown-live');
       liveElements.forEach(el => {
@@ -534,6 +574,19 @@
           el.classList.remove('expired');
         }
       });
+    }
+
+      // 2. Fungsi Navigasi Halaman
+    function enterDashboard() {
+      document.getElementById('homepage-screen').style.display = 'none';
+      // Panggil fungsi cek login atau load data bawaan kodemu di sini
+      checkUser(); 
+    }
+
+    function backToHome() {
+      // Ganti 'main-dashboard' sesuai dengan ID container dashboard aslimu jika berbeda
+      document.getElementById('main-dashboard').style.display = 'none';
+      document.getElementById('homepage-screen').style.display = 'flex';
     }
 
     function makeDraggableOnLongPress(el) {
@@ -766,6 +819,7 @@
         if (h === "00" && m === "00" && s === "00") {
             dbStreak = 0;
             updateProgress();
+            evaluateStreakAtMidnight();
         }
 
         if (diff < 3600000) timerEl.classList.add('timer-critical');
