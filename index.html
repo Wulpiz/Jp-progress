@@ -783,6 +783,8 @@
         const now = new Date();
         const midnight = new Date().setHours(24, 0, 0, 0);
         const diff = midnight - now;
+        
+        // 1. KODE JAM DIGITAL YANG HARUS TETAP ADA (Supaya jam di UI terus berdetak):
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
@@ -790,14 +792,17 @@
         const timerEl = document.getElementById("dailyTimer");
         if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
-        evaluateStreakAtMidnight();
-    
+        // Memberikan warna merah jika waktu sisa kurang dari 1 jam
         if (diff < 3600000) {
             if (timerEl) timerEl.classList.add('timer-critical');
         } else {
             if (timerEl) timerEl.classList.remove('timer-critical');
         }
     
+        // 2. JALANKAN EVALUASI BERBASIS TANGGAL (Logika barumu yang super aman)
+        evaluateStreakAtMidnight();
+    
+        // 3. KODE HITUNG MUNDUR BULANAN & SIDE QUEST (Pertahankan ini)
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
         const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
