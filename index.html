@@ -38,30 +38,26 @@
       letter-spacing: -3px;
       position: relative;
       display: inline-block;
+      line-height: 1.1; /* Mencegah teks terpotong di bagian atas/bawah */
       
-    .hero-title {
-      font-size: 4.5rem;
-      font-weight: 900;
-      margin: 0;
-      letter-spacing: -3px;
-      position: relative;
-      display: inline-block;
-      
-      /* GRADASI ABU-ABU GELAP KEPERAKAN DENGAN KILAUAN TIPIS DI TENGAH */
+      /* GRADASI ABU-ABU KEPERAKAN DENGAN KILAUAN HOLOGRAM TIPIS DI TENGAH */
       background: linear-gradient(135deg, 
-        #1e293b 25%, 
-        #475569 40%,
+        #475569 0%, 
+        #94a3b8 35%,
         #3b82f6 47%, 
         #2dd4bf 50%, 
         #3b82f6 53%, 
-        #475569 60%,
-        #1e293b 75%
+        #94a3b8 65%,
+        #475569 100%
       );
       background-size: 300% 300%;
-      color: #000;
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      
+      /* Hapus text-shadow bawaan jika ada karena merusak efek transparan background-clip */
+      text-shadow: none; 
+      
       animation: shine 4s ease-in-out infinite;
     }
 
@@ -71,7 +67,7 @@
       50% { background-position: 0% 0%; }
       100% { background-position: 100% 100%; }
     }
-
+    
     #auth-screen { 
       background: var(--glass); 
       backdrop-filter: blur(30px); 
