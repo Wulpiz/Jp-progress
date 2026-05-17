@@ -250,6 +250,7 @@
     .quote-container {
       margin-bottom: 40px;
       padding: 20px;
+      width: 100%;
     }
 
     .reminder-text {
@@ -261,14 +262,50 @@
       font-weight: 700;
     }
 
+    /* Slider Container wrapper */
+    .motivation-slider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      max-width: 650px;
+      margin: 0 auto 20px;
+    }
+
+    .slider-arrow {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: white;
+      font-size: 1.2rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .slider-arrow:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      transform: scale(1.1);
+    }
+
     .motivation-text {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 800;
       line-height: 1.2;
       background: linear-gradient(to bottom, #fff, #94a3b8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
+      flex: 1;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-enter {
@@ -288,6 +325,11 @@
       box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
     }
     
+    @media (max-width: 768px) {
+      .motivation-text { font-size: 1.6rem; min-height: 120px; }
+      .slider-arrow { width: 36px; height: 36px; font-size: 1rem; }
+      .motivation-slider { gap: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -316,11 +358,16 @@
     </button>
   </div>
     
-    <!-- SECTION 1: HOMEPAGE / LANDING PAGE -->
     <div id="landing-page" style="display: none;">
       <div class="quote-container">
         <p class="reminder-text">Pengingat Hari Ini</p>
-        <h1 class="motivation-text">"Waktu akan terus berjalan, baik kamu menggunakannya atau tidak."</h1>
+        
+        <div class="motivation-slider">
+          <button class="slider-arrow" onclick="moveReminder(-1)">←</button>
+          <h1 class="motivation-text" id="motivationQuote">"Memuat pengingat..."</h1>
+          <button class="slider-arrow" onclick="moveReminder(1)">→</button>
+        </div>
+        
         <p style="color: var(--text-dim); font-style: italic;">Jangan biarkan penyesalan masa depan membunuhmu perlahan.</p>
       </div>
       <button class="btn-enter" onclick="showDashboard()">Buka Quest Log →</button>
@@ -383,7 +430,6 @@
 
   <script>
     const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
-    // PENTING: Pastikan RLS di Supabase aktif untuk mengamankan Key ini!
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = supabase.createClient(SB_URL, SB_KEY);
     
@@ -397,19 +443,25 @@
     let longPressTimeout = null;
     let dragSrcElement = null;
     let lastProcessedDate = localStorage.getItem('lastProcessedDate') || '';
+
+    // DAFTAR PILIHAN REMINDER KALIMAT MOTIVASI
+    const REMINDER_LIST = [
+      `"Waktu akan terus berjalan, baik kamu menggunakannya atau tidak."`,
+      `"Walaupun kamu merasa tidak merasa paham, yakinilah bahwa kamu sudah mempelajarinya walaupun itu tidak terlihat"`
+    ];
+    let currentReminderIndex = 0;
     
-    // 1. FUNGSI CHECKUSER TUNGGAL YANG SUDAH DIGABUNGKAN
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
         
-        // Set tampilan awal masuk ke landing page (Zen Mode)
         document.getElementById('landing-page').style.display = 'flex'; 
         document.getElementById('main-dashboard').style.display = 'none';
         
         await fetchOrCreateProfile();
+        await fetchOrCreateReminder(); // Ambil setelan kalimat terakhir dari database
         await fetchData();
         startTimers();
         setupDragAndDropEvents();
@@ -429,6 +481,47 @@
       } else if (profile) {
         dbStreak = profile.streak;
       }
+    }
+
+    // FUNGSI UNTUK SINKRONISASI KALIMAT REMINDER DARI SUPABASE
+    async function fetchOrCreateReminder() {
+      let { data: config, error } = await clientApp.from('user_reminders').select('current_index').eq('user_id', currentUser.id).single();
+      
+      if (error && error.code === 'PGRST116') {
+        await clientApp.from('user_reminders').insert([{ user_id: currentUser.id, current_index: 0 }]);
+        currentReminderIndex = 0;
+      } else if (config) {
+        currentReminderIndex = config.current_index;
+      }
+      displayReminder();
+    }
+
+    function displayReminder() {
+      // Validasi range index agar tidak error jika array diubah
+      if (currentReminderIndex < 0 || currentReminderIndex >= REMINDER_LIST.length) {
+        currentReminderIndex = 0;
+      }
+      document.getElementById('motivationQuote').innerText = REMINDER_LIST[currentReminderIndex];
+    }
+
+    // FUNGSI KETIKA TOMBOL PANAH DIKLIK
+    async function moveReminder(direction) {
+      currentReminderIndex += direction;
+      if (currentReminderIndex < 0) {
+        currentReminderIndex = REMINDER_LIST.length - 1;
+      } else if (currentReminderIndex >= REMINDER_LIST.length) {
+        currentReminderIndex = 0;
+      }
+      
+      // Update UI langsung demi kenyamanan instan user
+      displayReminder();
+
+      // Simpan perubahan ke database Supabase agar permanen
+      await clientApp.from('user_reminders').upsert({
+        user_id: currentUser.id,
+        current_index: currentReminderIndex,
+        updated_at: new Date().toISOString()
+      });
     }
     
     async function fetchData() {
@@ -565,12 +658,10 @@
     }
     
     async function evaluateStreakAtMidnight() {
-      const todayString = new Date().toLocaleDateString('id-ID'); // Mengambil tanggal hari ini (contoh: "17/5/2026")
+      const todayString = new Date().toLocaleDateString('id-ID');
       
-      // Jika tanggal hari ini sama dengan tanggal terakhir diproses, artinya hari ini SUDAH dievaluasi. Kembalikan/jangan lewat.
       if (lastProcessedDate === todayString) return;
       
-      // Kunci langsung di awal agar tidak terjadi eksekusi ganda jika fungsi terpanggil berdekatan
       lastProcessedDate = todayString;
       localStorage.setItem('lastProcessedDate', todayString);
     
@@ -582,17 +673,15 @@
         if (allDone) {
           dbStreak += 1;
         } else {
-          dbStreak = 0; // Reset ke 0 jika ada quest harian yang bolong
+          dbStreak = 0;
         }
     
-        // Update ke Supabase
         await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
     
-        // Wipeout/uncheck semua quest harian untuk hari yang baru
         const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
         await Promise.all(resetQuests);
     
-        fetchData(); // Refresh UI
+        fetchData();
       }
     }
     
@@ -617,28 +706,22 @@
     
         const totalHours = Math.floor(diff / 3600000);
         
-        // --- PERBAIKAN LOGIKA TOTAL ---
         if (totalHours >= 24 && totalHours < 48) {
-          // Besok (Sisa jam antara 24 s.d 47 jam)
           el.innerText = '1 Hari lagi';
           el.classList.remove('expired');
         } else if (totalHours >= 48) {
-          // Lusa dan seterusnya (Menggunakan Math.floor agar 2.5 hari dibaca 2 hari)
           const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
           el.innerText = `${daysLeft} Hari lagi`;
           el.classList.remove('expired');
         } else {
-          // Hari H / Kurang dari 24 jam (Format Jam)
           const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
           const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
           const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
           el.innerText = `${h}:${m}:${s} lagi`;
           el.classList.remove('expired');
         }
-        // ---------------------------------
       });
     }
-
 
     function makeDraggableOnLongPress(el) {
       el.addEventListener('mousedown', (e) => startLongPressTimer(e, el));
@@ -754,7 +837,6 @@
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
     
-    // 2. RENDERING BERSIH TANPA DUPLIKASI LISTENER
     function render() {
       const dList = document.getElementById("dailyQuestsList");
       const mList = document.getElementById("monthlyGoalsList");
@@ -797,7 +879,6 @@
           </div>
         `;
         
-        // Dipanggil sekali dengan benar
         makeDraggableOnLongPress(item);
         item.addEventListener('dragstart', handleDragStart);
         item.addEventListener('dragend', handleDragEnd);
@@ -847,7 +928,6 @@
         const midnight = new Date().setHours(24, 0, 0, 0);
         const diff = midnight - now;
         
-        // 1. KODE JAM DIGITAL YANG HARUS TETAP ADA (Supaya jam di UI terus berdetak):
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
@@ -855,17 +935,14 @@
         const timerEl = document.getElementById("dailyTimer");
         if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
-        // Memberikan warna merah jika waktu sisa kurang dari 1 jam
         if (diff < 3600000) {
             if (timerEl) timerEl.classList.add('timer-critical');
         } else {
             if (timerEl) timerEl.classList.remove('timer-critical');
         }
     
-        // 2. JALANKAN EVALUASI BERBASIS TANGGAL (Logika barumu yang super aman)
         evaluateStreakAtMidnight();
     
-        // 3. KODE HITUNG MUNDUR BULANAN & SIDE QUEST (Pertahankan ini)
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
         const daysLeft = Math.ceil(mDiff / (1000 * 60 * 60 * 24));
@@ -901,7 +978,6 @@
       document.getElementById('landing-page').style.display = 'flex';
     }
     
-    // Jalankan pengecekan pertama kali
     checkUser();
   </script>
 </body>
