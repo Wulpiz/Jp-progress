@@ -617,19 +617,18 @@
     
         const totalHours = Math.floor(diff / 3600000);
         
-        // --- MODIFIKASI LOGIKA DI SINI ---
+        // --- PERBAIKAN LOGIKA TOTAL ---
         if (totalHours >= 24 && totalHours < 48) {
-          // Jika sisa waktu antara 24 s.d 48 jam, berarti deadline adalah BESOK.
-          // Kita paksa tampilkan "1 Hari lagi" agar tidak melompat ke "2 Hari".
+          // Besok (Sisa jam antara 24 s.d 47 jam)
           el.innerText = '1 Hari lagi';
           el.classList.remove('expired');
         } else if (totalHours >= 48) {
-          // Untuk jangka panjang (lebih dari 2 hari), gunakan pembulatan ke atas murni
-          const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+          // Lusa dan seterusnya (Menggunakan Math.floor agar 2.5 hari dibaca 2 hari)
+          const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
           el.innerText = `${daysLeft} Hari lagi`;
           el.classList.remove('expired');
         } else {
-          // Jika sisa waktu di bawah 24 jam, tampilkan hitungan mundur Jam (HH:MM:SS)
+          // Hari H / Kurang dari 24 jam (Format Jam)
           const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
           const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
           const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
@@ -639,6 +638,7 @@
         // ---------------------------------
       });
     }
+
 
     function makeDraggableOnLongPress(el) {
       el.addEventListener('mousedown', (e) => startLongPressTimer(e, el));
