@@ -368,7 +368,7 @@
           <button class="slider-arrow" onclick="moveReminder(1)">→</button>
         </div>
         
-        <p style="color: var(--text-dim); font-style: italic;">Jangan biarkan penyesalan masa depan membunuhmu perlahan.</p>
+        <p id="subQuote" style="color: var(--text-dim); font-style: italic; min-height: 24px;"></p>
       </div>
       <button class="btn-enter" onclick="showDashboard()">Buka Quest Log →</button>
     </div>
@@ -444,10 +444,15 @@
     let dragSrcElement = null;
     let lastProcessedDate = localStorage.getItem('lastProcessedDate') || '';
 
-    // DAFTAR PILIHAN REMINDER KALIMAT MOTIVASI
     const REMINDER_LIST = [
-      `"Waktu akan terus berjalan, baik kamu menggunakannya atau tidak."`,
-      `"Walaupun kamu merasa tidak merasa paham, yakinilah bahwa kamu sudah mempelajarinya walaupun itu tidak terlihat"`
+      {
+        utama: `"Waktu akan terus berjalan, baik kamu menggunakannya atau tidak."`,
+        kecil: "Jangan biarkan penyesalan masa depan membunuhmu perlahan."
+      },
+      {
+        utama: `"Walaupun kamu merasa tidak merasa paham, yakinilah bahwa kamu sudah mempelajarinya walaupun itu tidak terlihat"`,
+        kecil: "Biarkan otakmu yang memproses dan mengakuisisi hal tersebut"
+      }
     ];
     let currentReminderIndex = 0;
     
@@ -497,11 +502,19 @@
     }
 
     function displayReminder() {
-      // Validasi range index agar tidak error jika array diubah
+      // Validasi range index agar tidak error jika array diubah/dikurangi
       if (currentReminderIndex < 0 || currentReminderIndex >= REMINDER_LIST.length) {
         currentReminderIndex = 0;
       }
-      document.getElementById('motivationQuote').innerText = REMINDER_LIST[currentReminderIndex];
+      
+      // Ambil data reminder aktif berdasarkan indeks saat ini
+      const activeReminder = REMINDER_LIST[currentReminderIndex];
+      
+      // Update kalimat utama
+      document.getElementById('motivationQuote').innerText = activeReminder.utama;
+      
+      // Update teks kecil tepat di bawahnya
+      document.getElementById('subQuote').innerText = activeReminder.kecil;
     }
 
     // FUNGSI KETIKA TOMBOL PANAH DIKLIK
