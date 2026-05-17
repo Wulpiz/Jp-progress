@@ -33,18 +33,20 @@
 
     .hero-title {
       position: relative;
-      display: block; /* Diubah dari inline-block ke block agar menguasai barisnya sendiri */
-      width: 100%;    /* Memastikan pembungkusnya rata tengah sempurna */
+      display: block;
+      width: 100%;
       text-align: center;
       
       font-size: 4.5rem;
       font-weight: 900;
       letter-spacing: -3px;
+      /* Tambahkan padding-right negatif yang sama dengan nilai letter-spacing */
+      padding-right: -3px; 
       line-height: 1.1;
       margin-bottom: 0.2rem;
       margin-top: 0;
     
-      /* BASE TEXT GGRADIENT */
+      /* BASE TEXT GRADIENT */
       background: linear-gradient(
         to bottom,
         #f8fafc 0%,
@@ -58,14 +60,15 @@
       -webkit-text-fill-color: transparent;
     }
     
-    /* EFEK KILAUAN TETAP AKTIF & DI-CENTER */
+    /* EFEK KILAUAN DI-CENTER DENGAN SEMPURNA */
     .hero-title::after {
-      content: "まず日本語"; /* Dihilangkan tanda titik di ujungnya agar pas dengan teks utama */
+      content: "まず日本語";
     
       position: absolute;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%); /* Memaksa elemen kilauan presisi di tengah teks utama */
+      /* Ubah left ke 0 agar posisinya menumpuk sempurna mengikuti text-align: center dari parent-nya */
+      left: 0;
+      transform: none; 
       width: 100%;
       height: 100%;
     
