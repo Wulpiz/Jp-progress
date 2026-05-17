@@ -104,6 +104,12 @@
       text-align: center; 
       max-width: 500px; 
       width: 100%; 
+      
+      /* TAMBAHKAN KODE DI BAWAH INI UTK MEMAKSA SEMUA ISI JADI DI TENGAH */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .container { 
@@ -224,7 +230,10 @@
       body { padding: 12px; }
       .hero-title { font-size: 2.8rem; letter-spacing: -1.5px; }
       .hero-subtitle { font-size: 0.95rem; padding: 0 10px; }
-      #auth-screen { padding: 40px 20px; border-radius: 24px; }
+      
+      /* Sesuaikan padding auth-screen di HP agar manis */
+      #auth-screen { padding: 40px 24px; border-radius: 24px; }
+      
       .container { padding: 20px 16px; border-radius: 24px; }
       .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
       .stat-card { padding: 15px; border-radius: 16px; }
