@@ -169,7 +169,6 @@
     .quest-item.type-monthly { border-left: 4px solid var(--accent-gold); }
     .quest-item.type-side { border-left: 4px solid var(--accent-purple); }
     
-    /* STYLE KHUSUS UNTUK QUEST YANG GAGAL / KEDALUWARSA */
     .quest-item.quest-failed {
       background: rgba(255, 255, 255, 0.01) !important;
       border: 1px solid rgba(239, 68, 68, 0.2) !important;
@@ -223,7 +222,8 @@
     .add-placeholder { background: rgba(255,255,255,0.01); border: 1px dashed var(--glass-border); color: var(--text-dim); width: 100%; padding: 16px; border-radius: 15px; cursor: pointer; margin-top: 5px; font-weight: 600; text-align: center; }
     .add-placeholder:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.03); }
 
-    #goal-modal {
+    /* STYLING MODAL UTAMA & CONFIRM MODAL */
+    #goal-modal, #confirm-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(2, 6, 23, 0.7); backdrop-filter: blur(15px);
       z-index: 1000; align-items: center; justify-content: center; padding: 20px;
@@ -236,6 +236,9 @@
     .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
+    
+    /* Tombol konfirmasi merah khusus untuk konfirmasi hapus/logout */
+    .btn-danger-confirm { background: var(--accent-red) !important; color: white; }
 
     .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
     .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
@@ -253,15 +256,8 @@
         line-height: 1.2;
       }
       
-      .hero-section {
-        margin-bottom: 20px;     
-      }
-      
-      .hero-subtitle { 
-        font-size: 0.95rem; 
-        padding: 0 10px; 
-        margin-top: 6px;         
-      }
+      .hero-section { margin-bottom: 20px; }
+      .hero-subtitle { font-size: 0.95rem; padding: 0 10px; margin-top: 6px; }
       
       #auth-screen { padding: 40px 24px; border-radius: 24px; }
       .container { padding: 20px 16px; border-radius: 24px; }
@@ -388,6 +384,17 @@
     </div>
   </div>
 
+  <div id="confirm-modal">
+    <div class="modal-content">
+      <h3 id="confirm-title" style="margin-top: 0; font-size: 1.3rem; color: var(--text-main);">Konfirmasi</h3>
+      <p id="confirm-message" style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin: 15px 0 25px; white-space: pre-wrap;"></p>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" id="btn-confirm-cancel">Batal</button>
+        <button class="btn-modal btn-confirm btn-danger-confirm" id="btn-confirm-yes">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
   <div id="auth-screen">
     <h1 class="hero-title">まず日本語</h1>
     <p style="color: var(--accent-blue); margin-bottom:30px;">Daily Quest: Win or Lose Everything.</p>
@@ -396,23 +403,22 @@
     </button>
   </div>
     
-    <div id="landing-page" style="display: none;">
-      <div class="quote-container">
-        <p class="reminder-text">Pengingat Hari Ini</p>
-        
-        <div class="motivation-slider">
-          <button class="slider-arrow" onclick="moveReminder(-1)">←</button>
-          <h1 class="motivation-text" id="motivationQuote">"Memuat pengingat..."</h1>
-          <button class="slider-arrow" onclick="moveReminder(1)">→</button>
-        </div>
-        
-        <p id="subQuote" style="color: var(--text-dim); font-style: italic; min-height: 24px;"></p>
+  <div id="landing-page" style="display: none;">
+    <div class="quote-container">
+      <p class="reminder-text">Pengingat Hari Ini</p>
+      
+      <div class="motivation-slider">
+        <button class="slider-arrow" onclick="moveReminder(-1)">←</button>
+        <h1 class="motivation-text" id="motivationQuote">"Memuat pengingat..."</h1>
+        <button class="slider-arrow" onclick="moveReminder(1)">→</button>
       </div>
-      <button class="btn-enter" onclick="showDashboard()">Buka Quest Log →</button>
+      
+      <p id="subQuote" style="color: var(--text-dim); font-style: italic; min-height: 24px;"></p>
     </div>
+    <button class="btn-enter" onclick="showDashboard()">Buka Quest Log →</button>
+  </div>
   
   <div class="container" id="main-dashboard">
-    
     <button onclick="backToHome()" style="background:none; border:none; color:#2dd4bf; cursor:pointer; margin-bottom: 20px; font-weight:600; display:block;">← Kembali ke Beranda</button>
       
     <div class="hero-section">
@@ -494,6 +500,40 @@
     ];
     let currentReminderIndex = 0;
     
+    // FUNGSI UTAMA UNTUK MENAMPILKAN MODAL CONFIRM KUSTOM
+    function showCustomConfirm(title, message) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const titleEl = document.getElementById('confirm-title');
+        const msgEl = document.getElementById('confirm-message');
+        const btnYes = document.getElementById('btn-confirm-yes');
+        const btnCancel = document.getElementById('btn-confirm-cancel');
+
+        titleEl.innerText = title;
+        msgEl.innerText = message;
+        modal.style.display = 'flex';
+
+        function handleYes() {
+          cleanup();
+          resolve(true);
+        }
+
+        function handleCancel() {
+          cleanup();
+          resolve(false);
+        }
+
+        function cleanup() {
+          modal.style.display = 'none';
+          btnYes.removeEventListener('click', handleYes);
+          btnCancel.removeEventListener('click', handleCancel);
+        }
+
+        btnYes.addEventListener('click', handleYes);
+        btnCancel.addEventListener('click', handleCancel);
+      });
+    }
+
     async function checkUser() {
       const { data: { user } } = await clientApp.auth.getUser();
       if (user) {
@@ -687,13 +727,14 @@
     }
     
     async function deleteGoal(id, text, isFailed = false) {
-      // BERIKAN PESAN NOTIFIKASI/KONFIRMASI YANG BERBEDA SAAT SIDE QUEST GAGAL DIHAPUS
+      const title = isFailed ? "Quest Gagal Deteksi" : "Hapus Goal";
       const message = isFailed 
         ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dihapus dari history. Jadikan kegagalan ini sebagai pelajaran untuk disiplin berikutnya!`
-        : `Hapus goal ini?\n\n${text}`;
+        : `Apakah kamu yakin ingin menghapus goal ini?\n\n"${text}"`;
         
-      const yes = window.confirm(message);
-      if (yes) {
+      // Menggunakan UI Modal Kustom
+      const confirmed = await showCustomConfirm(title, message);
+      if (confirmed) {
         const { error } = await clientApp.from('goals').delete().eq('id', id);
         if(!error) {
             fetchData();
@@ -705,7 +746,6 @@
     
     async function evaluateStreakAtMidnight() {
       const todayString = new Date().toLocaleDateString('id-ID');
-      
       if (lastProcessedDate === todayString) return;
       
       lastProcessedDate = todayString;
@@ -715,7 +755,6 @@
     
       if (dailyGoals.length > 0) {
         const allDone = dailyGoals.every(g => g.checked === true);
-    
         if (allDone) {
           dbStreak += 1;
         } else {
@@ -723,10 +762,8 @@
         }
     
         await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
-    
         const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
         await Promise.all(resetQuests);
-    
         fetchData();
       }
     }
@@ -746,16 +783,13 @@
         const now = new Date();
         const diff = targetDate - now;
     
-        // JIKA DEADLINE TELAH LEWAT
         if (diff <= 0) {
           el.innerText = 'Gagal (Waktu Habis)';
           el.classList.add('expired');
           
-          // Cari elemen card quest-item aslinya lalu tambahkan kelas rusak (.quest-failed)
           const questCard = document.querySelector(`.quest-item[data-id="${goalId}"]`);
           if (questCard && !questCard.classList.contains('quest-failed')) {
             questCard.classList.add('quest-failed');
-            // Sembunyikan tombol edit, sisakan tombol delete
             const editBtn = questCard.querySelector('.btn-edit');
             if (editBtn) editBtn.style.display = 'none';
           }
@@ -763,7 +797,6 @@
         }
     
         const totalHours = Math.floor(diff / 3600000);
-        
         if (totalHours >= 24 && totalHours < 48) {
           el.innerText = '1 Hari lagi';
           el.classList.remove('expired');
@@ -808,7 +841,6 @@
     }
     
     function startLongPressTimer(e, element) {
-      // JIKA QUEST SUDAH GAGAL, MATIKAN FITUR DRAG-AND-DROP
       if (element.classList.contains('quest-failed') || e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
         return;
       }
@@ -847,7 +879,6 @@
     
     function setupDragAndDropEvents() {
       const containers = document.querySelectorAll('.quest-list-container');
-      
       containers.forEach(container => {
         container.addEventListener('dragover', function(e) {
           e.preventDefault();
@@ -856,7 +887,6 @@
           
           this.classList.add('drag-over');
           const afterElement = getDragAfterElement(this, e.clientY);
-          
           if (afterElement == null) {
             this.appendChild(dragSrcElement);
           } else {
@@ -884,7 +914,6 @@
     
     function getDragAfterElement(container, y) {
       const draggableElements = [...container.querySelectorAll('.quest-item:not(.dragging)')];
-      
       return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
@@ -913,8 +942,6 @@
           iconDeadline = '🗓️';
         } else if(g.type === 'side') {
           iconDeadline = '🎯';
-          
-          // PENGECEKAN AWAL JIKA OVERDUE DI RENDER SISI KLIEN
           if (g.deadline && g.deadline !== 'Tanpa Batas Waktu') {
             const targetDate = new Date(g.deadline + "T23:59:59");
             if (targetDate - new Date() <= 0) {
@@ -925,7 +952,6 @@
         }
     
         const item = document.createElement('div');
-        // TAMBAHKAN KELAS .quest-failed JIKA QUEST LEWAT DEADLINE
         item.className = `quest-item type-${g.type} ${isSideQuestFailed ? 'quest-failed' : ''}`;
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
@@ -948,7 +974,6 @@
           </div>
         `;
         
-        // HANYA AKTIFKAN DRAG-AND-DROP JIKA QUEST BELUM GAGAL
         if (!isSideQuestFailed) {
           makeDraggableOnLongPress(item);
           item.addEventListener('dragstart', handleDragStart);
@@ -1035,8 +1060,10 @@
     
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
     
+    // LOGOUT MENGGUNAKAN MODAL KUSTOM
     async function logout() { 
-      if (confirm("Apakah kamu yakin ingin keluar dari akun?")) {
+      const confirmed = await showCustomConfirm("Logout Akun", "Apakah kamu yakin ingin keluar dari akun?");
+      if (confirmed) {
         await clientApp.auth.signOut(); 
         location.reload(); 
       }
