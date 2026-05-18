@@ -985,7 +985,9 @@
             if (timerEl) timerEl.classList.remove('timer-critical');
         }
     
-        evaluateStreakAtMidnight();
+        if (h === '00' && m === '00' && s <= '02') {
+          evaluateStreakAtMidnight();
+        }
     
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const mDiff = endOfMonth - now;
