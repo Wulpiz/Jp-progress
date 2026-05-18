@@ -40,12 +40,11 @@
       font-size: 4.5rem;
       font-weight: 900;
       letter-spacing: -3px;
-      text-indent: -10px; /* Menggeser awal teks ke kiri untuk menyeimbangkan spasi */
+      text-indent: -10px;
       line-height: 1.1;
       margin-bottom: 0.2rem;
       margin-top: 0;
     
-      /* BASE TEXT GRADIENT */
       background: linear-gradient(
         to bottom,
         #f8fafc 0%,
@@ -59,13 +58,11 @@
       -webkit-text-fill-color: transparent;
     }
     
-    /* EFEK KILAUAN DI-CENTER DENGAN SEMPURNA */
     .hero-title::after {
       content: "まず日本語";
     
       position: absolute;
       top: 0;
-      /* Ubah left ke 0 agar posisinya menumpuk sempurna mengikuti text-align: center dari parent-nya */
       left: 0;
       transform: none; 
       width: 100%;
@@ -110,7 +107,6 @@
       max-width: 500px; 
       width: 100%; 
       
-      /* TAMBAHKAN KODE DI BAWAH INI UTK MEMAKSA SEMUA ISI JADI DI TENGAH */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -158,7 +154,6 @@
     h2.title-monthly { border-left: 4px solid var(--accent-gold); }
     h2.title-side { border-left: 4px solid var(--accent-purple); }
 
-    /* BASE STYLE QUEST ITEM DENGAN REORDER */
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
       margin-bottom: 12px; border: 1px solid var(--glass-border);
@@ -170,11 +165,28 @@
     .quest-item:hover { background: rgba(255,255,255,0.05); }
     .quest-item:active { cursor: grabbing; }
     
-    /* VARIANT WARNA GARIS KIRI UTK MASING-MASING KATEGORI */
     .quest-item.type-daily { border-left: 4px solid var(--accent-blue); }
     .quest-item.type-monthly { border-left: 4px solid var(--accent-gold); }
     .quest-item.type-side { border-left: 4px solid var(--accent-purple); }
     
+    /* STYLE KHUSUS UNTUK QUEST YANG GAGAL / KEDALUWARSA */
+    .quest-item.quest-failed {
+      background: rgba(255, 255, 255, 0.01) !important;
+      border: 1px solid rgba(239, 68, 68, 0.2) !important;
+      border-left: 4px solid var(--accent-red) !important;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .quest-item.quest-failed:active { cursor: not-allowed; }
+    .quest-item.quest-failed .quest-text {
+      color: var(--text-dim) !important;
+      text-decoration: line-through solid var(--accent-red) !important;
+    }
+    .quest-item.quest-failed .checkbox {
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
     .quest-item.dragging {
       opacity: 0.4;
       border: 1px dashed var(--accent-cyan);
@@ -234,26 +246,23 @@
     @media (max-width: 768px) {
       body { padding: 12px; }
       
-      /* PERBAIKAN TEKS UTAMA DI HP (BIAR BERISI & TIDAK KURUS) */
       .hero-title { 
-        font-size: 3.2rem;       /* Ukuran font disesuaikan agar pas di layar HP */
-        letter-spacing: -1px;    /* Mengurangi kerenggangan negatif agar huruf tidak kurus/saling tabrakan */
-        text-indent: -10px;       /* Menyeimbangkan posisi tengah sesuai letter-spacing baru */
+        font-size: 3.2rem;       
+        letter-spacing: -1px;    
+        text-indent: -10px;       
         line-height: 1.2;
       }
       
-      /* PERBAIKAN JARAK ANTARA SUB-JUDUL DENGAN KOTAK RESET */
       .hero-section {
-        margin-bottom: 20px;     /* Memangkas jarak bawah dari 40px menjadi 20px */
+        margin-bottom: 20px;     
       }
       
       .hero-subtitle { 
         font-size: 0.95rem; 
         padding: 0 10px; 
-        margin-top: 6px;         /* Mengatur jarak atas sub-judul agar lebih proporsional */
+        margin-top: 6px;         
       }
       
-      /* Kode di bawah ini tetap sama seperti sebelumnya */
       #auth-screen { padding: 40px 24px; border-radius: 24px; }
       .container { padding: 20px 16px; border-radius: 24px; }
       .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
@@ -266,7 +275,6 @@
       .modal-content { padding: 25px 20px; border-radius: 20px; }
     }
 
-    /* Style Tambahan untuk Homepage */
     #landing-page {
       display: flex;
       flex-direction: column;
@@ -293,7 +301,6 @@
       font-weight: 700;
     }
 
-    /* Slider Container wrapper */
     .motivation-slider {
       display: flex;
       align-items: center;
@@ -497,7 +504,7 @@
         document.getElementById('main-dashboard').style.display = 'none';
         
         await fetchOrCreateProfile();
-        await fetchOrCreateReminder(); // Ambil setelan kalimat terakhir dari database
+        await fetchOrCreateReminder(); 
         await fetchData();
         startTimers();
         setupDragAndDropEvents();
@@ -519,7 +526,6 @@
       }
     }
 
-    // FUNGSI UNTUK SINKRONISASI KALIMAT REMINDER DARI SUPABASE
     async function fetchOrCreateReminder() {
       let { data: config, error } = await clientApp.from('user_reminders').select('current_index').eq('user_id', currentUser.id).single();
       
@@ -533,22 +539,15 @@
     }
 
     function displayReminder() {
-      // Validasi range index agar tidak error jika array diubah/dikurangi
       if (currentReminderIndex < 0 || currentReminderIndex >= REMINDER_LIST.length) {
         currentReminderIndex = 0;
       }
       
-      // Ambil data reminder aktif berdasarkan indeks saat ini
       const activeReminder = REMINDER_LIST[currentReminderIndex];
-      
-      // Update kalimat utama
       document.getElementById('motivationQuote').innerText = activeReminder.utama;
-      
-      // Update teks kecil tepat di bawahnya
       document.getElementById('subQuote').innerText = activeReminder.kecil;
     }
 
-    // FUNGSI KETIKA TOMBOL PANAH DIKLIK
     async function moveReminder(direction) {
       currentReminderIndex += direction;
       if (currentReminderIndex < 0) {
@@ -557,10 +556,8 @@
         currentReminderIndex = 0;
       }
       
-      // Update UI langsung demi kenyamanan instan user
       displayReminder();
 
-      // Simpan perubahan ke database Supabase agar permanen
       await clientApp.from('user_reminders').upsert({
         user_id: currentUser.id,
         current_index: currentReminderIndex,
@@ -689,8 +686,13 @@
       fetchData();
     }
     
-    async function deleteGoal(id, text) {
-      const yes = window.confirm(`Hapus goal ini?\n\n${text}`);
+    async function deleteGoal(id, text, isFailed = false) {
+      // BERIKAN PESAN NOTIFIKASI/KONFIRMASI YANG BERBEDA SAAT SIDE QUEST GAGAL DIHAPUS
+      const message = isFailed 
+        ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dihapus dari history. Jadikan kegagalan ini sebagai pelajaran untuk disiplin berikutnya!`
+        : `Hapus goal ini?\n\n${text}`;
+        
+      const yes = window.confirm(message);
       if (yes) {
         const { error } = await clientApp.from('goals').delete().eq('id', id);
         if(!error) {
@@ -733,6 +735,8 @@
       const liveElements = document.querySelectorAll('.side-countdown-live');
       liveElements.forEach(el => {
         const rawDeadline = el.getAttribute('data-deadline');
+        const goalId = el.getAttribute('data-id');
+        
         if (!rawDeadline || rawDeadline === 'Tanpa Batas Waktu') {
           el.innerText = 'Tanpa Batas Waktu';
           return;
@@ -742,9 +746,19 @@
         const now = new Date();
         const diff = targetDate - now;
     
+        // JIKA DEADLINE TELAH LEWAT
         if (diff <= 0) {
-          el.innerText = 'Waktu Habis';
+          el.innerText = 'Gagal (Waktu Habis)';
           el.classList.add('expired');
+          
+          // Cari elemen card quest-item aslinya lalu tambahkan kelas rusak (.quest-failed)
+          const questCard = document.querySelector(`.quest-item[data-id="${goalId}"]`);
+          if (questCard && !questCard.classList.contains('quest-failed')) {
+            questCard.classList.add('quest-failed');
+            // Sembunyikan tombol edit, sisakan tombol delete
+            const editBtn = questCard.querySelector('.btn-edit');
+            if (editBtn) editBtn.style.display = 'none';
+          }
           return;
         }
     
@@ -794,7 +808,8 @@
     }
     
     function startLongPressTimer(e, element) {
-      if (e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
+      // JIKA QUEST SUDAH GAGAL, MATIKAN FITUR DRAG-AND-DROP
+      if (element.classList.contains('quest-failed') || e.target.closest('.checkbox') || e.target.closest('.action-buttons')) {
         return;
       }
       clearLongPressTimer();
@@ -892,16 +907,26 @@
       allGoals.forEach((g) => {
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
+        let isSideQuestFailed = false;
         
         if(g.type === 'monthly') {
           iconDeadline = '🗓️';
         } else if(g.type === 'side') {
           iconDeadline = '🎯';
-          countdownBadgeHTML = `<span class="side-countdown-live" data-deadline="${escapeHtml(g.deadline || '')}">Menghitung...</span>`;
+          
+          // PENGECEKAN AWAL JIKA OVERDUE DI RENDER SISI KLIEN
+          if (g.deadline && g.deadline !== 'Tanpa Batas Waktu') {
+            const targetDate = new Date(g.deadline + "T23:59:59");
+            if (targetDate - new Date() <= 0) {
+              isSideQuestFailed = true;
+            }
+          }
+          countdownBadgeHTML = `<span class="side-countdown-live ${isSideQuestFailed ? 'expired' : ''}" data-id="${g.id}" data-deadline="${escapeHtml(g.deadline || '')}">${isSideQuestFailed ? 'Gagal (Waktu Habis)' : 'Menghitung...'}</span>`;
         }
     
         const item = document.createElement('div');
-        item.className = `quest-item type-${g.type}`;
+        // TAMBAHKAN KELAS .quest-failed JIKA QUEST LEWAT DEADLINE
+        item.className = `quest-item type-${g.type} ${isSideQuestFailed ? 'quest-failed' : ''}`;
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
     
@@ -918,14 +943,17 @@
             <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
           </div>
           <div class="action-buttons">
-            <button class="btn-edit" onclick="openModal('${g.type}', '${g.id}', '${safeText}', '${safeDeadline}')">📝</button>
-            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${safeText}')">🗑️</button>
+            <button class="btn-edit" style="${isSideQuestFailed ? 'display:none;' : ''}" onclick="openModal('${g.type}', '${g.id}', '${safeText}', '${safeDeadline}')">📝</button>
+            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${safeText}', ${isSideQuestFailed})">🗑️</button>
           </div>
         `;
         
-        makeDraggableOnLongPress(item);
-        item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragend', handleDragEnd);
+        // HANYA AKTIFKAN DRAG-AND-DROP JIKA QUEST BELUM GAGAL
+        if (!isSideQuestFailed) {
+          makeDraggableOnLongPress(item);
+          item.addEventListener('dragstart', handleDragStart);
+          item.addEventListener('dragend', handleDragEnd);
+        }
     
         if(g.type === 'monthly') mList.appendChild(item);
         else if(g.type === 'side') { if(sList) sList.appendChild(item); }
