@@ -271,6 +271,33 @@
       .modal-content { padding: 25px 20px; border-radius: 20px; }
     }
 
+    #goal-modal .modal-content {
+      padding: 24px 32px; 
+    }
+    
+    /* Paksa judul modal untuk menempel ke atas tanpa margin bawaan browser */
+    #modal-title {
+      margin-top: 0;      
+      margin-bottom: 20px; /* Jarak yang pas dan proporsional ke input di bawahnya */
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    /* Sesuaikan margin input di dalam goal-modal agar alurnya pas ke bawah */
+    #goal-modal .modal-content input { 
+      margin: 0 0 16px 0; 
+    }
+    
+    /* Sesuaikan container deadline side quest jika aktif agar tidak merusak jarak vertikal */
+    .deadline-container { 
+      margin-top: -4px; 
+      margin-bottom: 16px; 
+    }
+    .deadline-container label {
+      margin-bottom: 6px;
+      display: block;
+    }
+
     #landing-page {
       display: flex;
       flex-direction: column;
@@ -363,6 +390,9 @@
       .motivation-text { font-size: 1.6rem; min-height: 120px; }
       .slider-arrow { width: 36px; height: 36px; font-size: 1rem; }
       .motivation-slider { gap: 10px; }
+      #goal-modal .modal-content {
+        padding: 20px 20px; 
+      }
     }
   </style>
 </head>
