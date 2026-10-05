@@ -752,8 +752,41 @@
     }
     
     async function toggleGoal(id, status) {
+      // 1. Update status centang kuesioner yang diklik
       await clientApp.from('goals').update({ checked: !status }).eq('id', id);
-      fetchData();
+      
+      // 2. Ambil data goals terbaru setelah diupdate
+      const { data: updatedGoals } = await clientApp.from('goals')
+        .select('*')
+        .eq('user_id', currentUser.id);
+    
+      if (updatedGoals) {
+        allGoals = updatedGoals;
+        
+        // Filter hanya goal harian (daily)
+        const dailyGoals = allGoals.filter(g => g.type === 'daily');
+        
+        // Cek apakah daily goals ada dan SEMUA sudah dicentang (100%)
+        if (dailyGoals.length > 0 && dailyGoals.every(g => g.checked === true)) {
+          
+          // Cek apakah streak hari ini sudah pernah ditambah atau belum (mencegah spam centang-uncentang)
+          const today = new Date().toISOString().split('T')[0];
+          const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
+    
+          if (lastStreakDate !== today) {
+            dbStreak += 1; // Tambah streak langsung di UI
+            localStorage.setItem('lastStreakClaimedDate', today);
+            
+            // Simpan streak baru ke database Supabase
+            await clientApp.from('user_profiles')
+              .update({ streak: dbStreak })
+              .eq('user_id', currentUser.id);
+          }
+        }
+      }
+    
+      // 3. Render ulang tampilan web
+      render();
     }
     
     async function deleteGoal(id, text, isFailed = false) {
