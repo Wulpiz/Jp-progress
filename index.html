@@ -752,32 +752,40 @@
     }
     
     async function toggleGoal(id, status) {
-      // 1. Update status centang kuesioner yang diklik
+      // 1. Update status centang kuesioner yang diklik di Supabase
       await clientApp.from('goals').update({ checked: !status }).eq('id', id);
       
-      // 2. Ambil data goals terbaru setelah diupdate
+      // 2. Ambil data goals terbaru dari Supabase
       const { data: updatedGoals } = await clientApp.from('goals')
         .select('*')
-        .eq('user_id', currentUser.id);
+        .eq('user_id', currentUser.id)
+        .order('position', { ascending: true });
     
       if (updatedGoals) {
         allGoals = updatedGoals;
         
-        // Filter hanya goal harian (daily)
+        // Filter khusus daily goals
         const dailyGoals = allGoals.filter(g => g.type === 'daily');
         
-        // Cek apakah daily goals ada dan SEMUA sudah dicentang (100%)
-        if (dailyGoals.length > 0 && dailyGoals.every(g => g.checked === true)) {
-          
-          // Cek apakah streak hari ini sudah pernah ditambah atau belum (mencegah spam centang-uncentang)
+        if (dailyGoals.length > 0) {
+          const allDone = dailyGoals.every(g => g.checked === true);
           const today = new Date().toISOString().split('T')[0];
           const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
     
-          if (lastStreakDate !== today) {
-            dbStreak += 1; // Tambah streak langsung di UI
+          // KONDISI A: Baru saja mencapai 100% hari ini -> Tambah Streak +1
+          if (allDone && lastStreakDate !== today) {
+            dbStreak += 1;
             localStorage.setItem('lastStreakClaimedDate', today);
             
-            // Simpan streak baru ke database Supabase
+            await clientApp.from('user_profiles')
+              .update({ streak: dbStreak })
+              .eq('user_id', currentUser.id);
+          } 
+          // KONDISI B: Salah pencet / uncheck (jadi kurang dari 100%) padahal hari ini sudah dapat streak +1 -> Kurangi Streak -1
+          else if (!allDone && lastStreakDate === today) {
+            dbStreak = Math.max(0, dbStreak - 1); // Memastikan streak tidak minus
+            localStorage.removeItem('lastStreakClaimedDate'); // Hapus klaim hari ini
+            
             await clientApp.from('user_profiles')
               .update({ streak: dbStreak })
               .eq('user_id', currentUser.id);
@@ -785,7 +793,7 @@
         }
       }
     
-      // 3. Render ulang tampilan web
+      // 3. Render ulang UI agar perubahan streak & checklist langsung terlihat
       render();
     }
     
