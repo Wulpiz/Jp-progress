@@ -44,7 +44,7 @@
       line-height: 1.1;
       margin-bottom: 0.2rem;
       margin-top: 0;
-    
+      
       background: linear-gradient(
         to bottom,
         #f8fafc 0%,
@@ -52,7 +52,7 @@
         #94a3b8 55%,
         #64748b 100%
       );
-    
+      
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -60,14 +60,14 @@
     
     .hero-title::after {
       content: "まず日本語";
-    
+      
       position: absolute;
       top: 0;
       left: 0;
       transform: none; 
       width: 100%;
       height: 100%;
-    
+      
       color: transparent;
       background: linear-gradient(
         120deg,
@@ -77,24 +77,19 @@
         rgba(255,255,255,0.0) 53%,
         transparent 54%
       );
-    
+      
       background-size: 220% 100%;
       background-repeat: no-repeat;
       animation: shineMove 2s linear infinite;
-    
+      
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     
     @keyframes shineMove {
-      from {
-        background-position: -250% 0;
-      }
-    
-      to {
-        background-position: 250% 0;
-      }
+      from { background-position: -250% 0; }
+      to { background-position: 250% 0; }
     }
     
     #auth-screen { 
@@ -237,7 +232,6 @@
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
     
-    /* Tombol konfirmasi merah khusus untuk konfirmasi hapus/logout */
     .btn-danger-confirm { background: var(--accent-red) !important; color: white; }
 
     .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
@@ -248,17 +242,9 @@
 
     @media (max-width: 768px) {
       body { padding: 12px; }
-      
-      .hero-title { 
-        font-size: 3.2rem;       
-        letter-spacing: -1px;    
-        text-indent: -10px;       
-        line-height: 1.2;
-      }
-      
+      .hero-title { font-size: 3.2rem; letter-spacing: -1px; text-indent: -10px; line-height: 1.2; }
       .hero-section { margin-bottom: 20px; }
       .hero-subtitle { font-size: 0.95rem; padding: 0 10px; margin-top: 6px; }
-      
       #auth-screen { padding: 40px 24px; border-radius: 24px; }
       .container { padding: 20px 16px; border-radius: 24px; }
       .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
@@ -271,128 +257,42 @@
       .modal-content { padding: 25px 20px; border-radius: 20px; }
     }
 
-    #goal-modal .modal-content {
-      padding: 24px 32px; 
-    }
-    
-    /* Paksa judul modal untuk menempel ke atas tanpa margin bawaan browser */
-    #modal-title {
-      margin-top: 0;      
-      margin-bottom: 20px; /* Jarak yang pas dan proporsional ke input di bawahnya */
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    
-    /* Sesuaikan margin input di dalam goal-modal agar alurnya pas ke bawah */
-    #goal-modal .modal-content input { 
-      margin: 0 0 16px 0; 
-    }
-    
-    /* Sesuaikan container deadline side quest jika aktif agar tidak merusak jarak vertikal */
-    .deadline-container { 
-      margin-top: -4px; 
-      margin-bottom: 16px; 
-    }
-    .deadline-container label {
-      margin-bottom: 6px;
-      display: block;
-    }
+    #goal-modal .modal-content { padding: 24px 32px; }
+    #modal-title { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; }
+    #goal-modal .modal-content input { margin: 0 0 16px 0; }
+    .deadline-container { margin-top: -4px; margin-bottom: 16px; }
+    .deadline-container label { margin-bottom: 6px; display: block; }
 
     #landing-page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 80vh;
-      width: 100%;
-      max-width: 800px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; min-height: 80vh; width: 100%; max-width: 800px;
     }
 
-    .quote-container {
-      margin-bottom: 40px;
-      padding: 20px;
-      width: 100%;
-    }
-
-    .reminder-text {
-      font-size: 1.2rem;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .motivation-slider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      max-width: 650px;
-      margin: 0 auto 20px;
-    }
-
-    .slider-arrow {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      color: white;
-      font-size: 1.2rem;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      user-select: none;
-    }
-
-    .slider-arrow:hover {
-      background: var(--accent-blue);
-      border-color: var(--accent-blue);
-      transform: scale(1.1);
-    }
+    .quote-container { margin-bottom: 40px; padding: 20px; width: 100%; }
+    .reminder-text { font-size: 1.2rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 700; }
+    .motivation-slider { display: flex; align-items: center; justify-content: center; gap: 20px; max-width: 650px; margin: 0 auto 20px; }
+    .slider-arrow { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: white; font-size: 1.2rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none; }
+    .slider-arrow:hover { background: var(--accent-blue); border-color: var(--accent-blue); transform: scale(1.1); }
 
     .motivation-text {
-      font-size: 2.3rem;
-      font-weight: 800;
-      line-height: 1.2;
+      font-size: 2.3rem; font-weight: 800; line-height: 1.2;
       background: linear-gradient(to bottom, #fff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      flex: 1;
-      min-height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      flex: 1; min-height: 110px; display: flex; align-items: center; justify-content: center;
     }
 
     .btn-enter {
       background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
-      color: white;
-      padding: 18px 40px;
-      border-radius: 50px;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      font-size: 1.1rem;
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+      color: white; padding: 18px 40px; border-radius: 50px; font-weight: 800;
+      border: none; cursor: pointer; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
     }
+    .btn-enter:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4); }
 
-    .btn-enter:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
-    }
-    
     @media (max-width: 768px) {
       .motivation-text { font-size: 1.6rem; min-height: 120px; }
       .slider-arrow { width: 36px; height: 36px; font-size: 1rem; }
       .motivation-slider { gap: 10px; }
-      #goal-modal .modal-content {
-        padding: 20px 20px; 
-      }
+      #goal-modal .modal-content { padding: 20px 20px; }
     }
   </style>
 </head>
@@ -530,7 +430,6 @@
     ];
     let currentReminderIndex = 0;
     
-    // FUNGSI UTAMA UNTUK MENAMPILKAN MODAL CONFIRM KUSTOM
     function showCustomConfirm(title, message) {
       return new Promise((resolve) => {
         const modal = document.getElementById('confirm-modal');
@@ -751,99 +650,46 @@
       }
     }
     
-  async function toggleGoal(id, status) {
-    // 1. Update status centang quest di Supabase
-    await clientApp.from('goals').update({ checked: !status }).eq('id', id);
+    async function toggleGoal(id, status) {
+      await clientApp.from('goals').update({ checked: !status }).eq('id', id);
+      
+      const { data: updatedGoals } = await clientApp.from('goals')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('position', { ascending: true });
     
-    // 2. Ambil data goals terbaru dari Supabase
-    const { data: updatedGoals } = await clientApp.from('goals')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('position', { ascending: true });
-  
-    if (updatedGoals) {
-      allGoals = updatedGoals;
-      
-      const dailyGoals = allGoals.filter(g => g.type === 'daily');
-      
-      if (dailyGoals.length > 0) {
-        const allDone = dailyGoals.every(g => g.checked === true);
-        const today = new Date().toISOString().split('T')[0];
-        const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
-  
-        // KONDISI A: 100% Selesai hari ini -> Tambah Streak +1 (hanya sekali per hari)
-        if (allDone && lastStreakDate !== today) {
-          dbStreak += 1;
-          localStorage.setItem('lastStreakClaimedDate', today);
-          
-          await clientApp.from('user_profiles')
-            .update({ streak: dbStreak })
-            .eq('user_id', currentUser.id);
-        } 
-        // KONDISI B: Uncheck quest (progress turun dari 100%) -> Batalkan bonus streak hari ini
-        else if (!allDone && lastStreakDate === today) {
-          dbStreak = Math.max(0, dbStreak - 1);
-          localStorage.removeItem('lastStreakClaimedDate');
-          
-          await clientApp.from('user_profiles')
-            .update({ streak: dbStreak })
-            .eq('user_id', currentUser.id);
+      if (updatedGoals) {
+        allGoals = updatedGoals;
+        
+        const dailyGoals = allGoals.filter(g => g.type === 'daily');
+        
+        if (dailyGoals.length > 0) {
+          const allDone = dailyGoals.every(g => g.checked === true);
+          const today = new Date().toISOString().split('T')[0];
+          const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
+    
+          if (allDone && lastStreakDate !== today) {
+            dbStreak += 1;
+            localStorage.setItem('lastStreakClaimedDate', today);
+            
+            await clientApp.from('user_profiles')
+              .update({ streak: dbStreak })
+              .eq('user_id', currentUser.id);
+          } 
+          else if (!allDone && lastStreakDate === today) {
+            dbStreak = Math.max(0, dbStreak - 1);
+            localStorage.removeItem('lastStreakClaimedDate');
+            
+            await clientApp.from('user_profiles')
+              .update({ streak: dbStreak })
+              .eq('user_id', currentUser.id);
+          }
         }
       }
-    }
 
-    render();
-  }
-
-  async function evaluateStreakAtMidnight() {
-    const todayString = new Date().toLocaleDateString('id-ID');
-    if (lastProcessedDate === todayString) return;
-    
-    lastProcessedDate = todayString;
-    localStorage.setItem('lastProcessedDate', todayString);
-  
-    const dailyGoals = allGoals.filter(g => g.type === 'daily');
-  
-    if (dailyGoals.length > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
-  
-      // Jika sampai tengah malam daily goals TIDAK selesai 100% (tidak klaim streak hari kemarin), reset streak ke 0
-      if (lastStreakDate !== today) {
-        dbStreak = 0;
-        await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
-      }
-  
-      // Reset semua centang quest harian untuk hari yang baru
-      const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
-      await Promise.all(resetQuests);
-      
-      fetchData();
-    }
-  }
-    
-      // 3. Render ulang UI agar perubahan streak & checklist langsung terlihat
       render();
     }
-    
-    async function deleteGoal(id, text, isFailed = false) {
-      const title = isFailed ? "Quest Gagal Deteksi" : "Hapus Goal";
-      const message = isFailed 
-        ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dihapus dari history. Jadikan kegagalan ini sebagai pelajaran untuk disiplin berikutnya!`
-        : `Apakah kamu yakin ingin menghapus goal ini?\n\n"${text}"`;
-        
-      // Menggunakan UI Modal Kustom
-      const confirmed = await showCustomConfirm(title, message);
-      if (confirmed) {
-        const { error } = await clientApp.from('goals').delete().eq('id', id);
-        if(!error) {
-            fetchData();
-        } else {
-            alert("Gagal menghapus data.");
-        }
-      }
-    }
-    
+
     async function evaluateStreakAtMidnight() {
       const todayString = new Date().toLocaleDateString('id-ID');
       if (lastProcessedDate === todayString) return;
@@ -854,17 +700,35 @@
       const dailyGoals = allGoals.filter(g => g.type === 'daily');
     
       if (dailyGoals.length > 0) {
-        const allDone = dailyGoals.every(g => g.checked === true);
-        if (allDone) {
-          dbStreak += 1;
-        } else {
+        const today = new Date().toISOString().split('T')[0];
+        const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
+    
+        if (lastStreakDate !== today) {
           dbStreak = 0;
+          await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
         }
     
-        await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
         const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
         await Promise.all(resetQuests);
+        
         fetchData();
+      }
+    }
+    
+    async function deleteGoal(id, text, isFailed = false) {
+      const title = isFailed ? "Quest Gagal Deteksi" : "Hapus Goal";
+      const message = isFailed 
+        ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dihapus dari history. Jadikan kegagalan ini sebagai pelajaran untuk disiplin berikutnya!`
+        : `Apakah kamu yakin ingin menghapus goal ini?\n\n"${text}"`;
+        
+      const confirmed = await showCustomConfirm(title, message);
+      if (confirmed) {
+        const { error } = await clientApp.from('goals').delete().eq('id', id);
+        if(!error) {
+            fetchData();
+        } else {
+            alert("Gagal menghapus data.");
+        }
       }
     }
     
@@ -1160,7 +1024,6 @@
     
     async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
     
-    // LOGOUT MENGGUNAKAN MODAL KUSTOM
     async function logout() { 
       const confirmed = await showCustomConfirm("Logout Akun", "Apakah kamu yakin ingin keluar dari akun?");
       if (confirmed) {
