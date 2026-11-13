@@ -36,7 +36,6 @@
       display: block;
       width: 100%;
       text-align: center;
-      
       font-size: 4.5rem;
       font-weight: 900;
       letter-spacing: -3px;
@@ -44,7 +43,6 @@
       line-height: 1.1;
       margin-bottom: 0.2rem;
       margin-top: 0;
-      
       background: linear-gradient(
         to bottom,
         #f8fafc 0%,
@@ -52,7 +50,6 @@
         #94a3b8 55%,
         #64748b 100%
       );
-      
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -60,14 +57,12 @@
     
     .hero-title::after {
       content: "まず日本語";
-      
       position: absolute;
       top: 0;
       left: 0;
       transform: none; 
       width: 100%;
       height: 100%;
-      
       color: transparent;
       background: linear-gradient(
         120deg,
@@ -77,11 +72,9 @@
         rgba(255,255,255,0.0) 53%,
         transparent 54%
       );
-      
       background-size: 220% 100%;
       background-repeat: no-repeat;
       animation: shineMove 2s linear infinite;
-      
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -101,7 +94,6 @@
       text-align: center; 
       max-width: 500px; 
       width: 100%; 
-      
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -224,44 +216,23 @@
       z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
     .modal-content { background: #0f172a; border: 1px solid var(--glass-border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+    #goal-modal .modal-content { padding: 24px 32px; }
+    #modal-title { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; }
     .modal-content input { width: 100%; padding: 15px; margin: 15px 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 1rem; }
+    #goal-modal .modal-content input { margin: 0 0 16px 0; }
     .modal-content input[type="date"] { color-scheme: dark; font-family: inherit; cursor: pointer; }
     
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
     .btn-confirm { background: var(--accent-blue); color: white; }
     .btn-cancel { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--glass-border); }
-    
     .btn-danger-confirm { background: var(--accent-red) !important; color: white; }
 
-    .deadline-container { display: none; flex-direction: column; text-align: left; margin-bottom: 10px; }
-    .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
+    .deadline-container { display: none; flex-direction: column; text-align: left; margin-top: -4px; margin-bottom: 16px; }
+    .deadline-container label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-left: 5px; margin-bottom: 6px; display: block; }
 
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
-
-    @media (max-width: 768px) {
-      body { padding: 12px; }
-      .hero-title { font-size: 3.2rem; letter-spacing: -1px; text-indent: -10px; line-height: 1.2; }
-      .hero-section { margin-bottom: 20px; }
-      .hero-subtitle { font-size: 0.95rem; padding: 0 10px; margin-top: 6px; }
-      #auth-screen { padding: 40px 24px; border-radius: 24px; }
-      .container { padding: 20px 16px; border-radius: 24px; }
-      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
-      .stat-card { padding: 15px; border-radius: 16px; }
-      .stat-value { font-size: 1.5rem; }
-      h2 { margin: 30px 0 15px; font-size: 1.05rem; }
-      .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
-      .quest-text { font-size: 0.95rem; }
-      .add-placeholder { padding: 14px; font-size: 0.9rem; border-radius: 12px; }
-      .modal-content { padding: 25px 20px; border-radius: 20px; }
-    }
-
-    #goal-modal .modal-content { padding: 24px 32px; }
-    #modal-title { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; }
-    #goal-modal .modal-content input { margin: 0 0 16px 0; }
-    .deadline-container { margin-top: -4px; margin-bottom: 16px; }
-    .deadline-container label { margin-bottom: 6px; display: block; }
 
     #landing-page {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -289,10 +260,24 @@
     .btn-enter:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4); }
 
     @media (max-width: 768px) {
+      body { padding: 12px; }
+      .hero-title { font-size: 3.2rem; letter-spacing: -1px; text-indent: -10px; line-height: 1.2; }
+      .hero-section { margin-bottom: 20px; }
+      .hero-subtitle { font-size: 0.95rem; padding: 0 10px; margin-top: 6px; }
+      #auth-screen { padding: 40px 24px; border-radius: 24px; }
+      .container { padding: 20px 16px; border-radius: 24px; }
+      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+      .stat-card { padding: 15px; border-radius: 16px; }
+      .stat-value { font-size: 1.5rem; }
+      h2 { margin: 30px 0 15px; font-size: 1.05rem; }
+      .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
+      .quest-text { font-size: 0.95rem; }
+      .add-placeholder { padding: 14px; font-size: 0.9rem; border-radius: 12px; }
+      .modal-content { padding: 25px 20px; border-radius: 20px; }
+      #goal-modal .modal-content { padding: 20px 20px; }
       .motivation-text { font-size: 1.6rem; min-height: 120px; }
       .slider-arrow { width: 36px; height: 36px; font-size: 1rem; }
       .motivation-slider { gap: 10px; }
-      #goal-modal .modal-content { padding: 20px 20px; }
     }
   </style>
 </head>
@@ -329,7 +314,7 @@
     <h1 class="hero-title">まず日本語</h1>
     <p style="color: var(--accent-blue); margin-bottom:30px;">Daily Quest: Win or Lose Everything.</p>
     <button class="google-btn" onclick="loginWithGoogle()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Masuk dengan Google
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google"> Masuk dengan Google
     </button>
   </div>
     
@@ -383,8 +368,8 @@
       </div>
     </div>
     <div class="stat-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
-        <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
-        <span id="monthlyTimer" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem;">00 Hari</span>
+      <span class="stat-label" style="text-align: left;">Bulan Ini Berakhir Dalam:</span>
+      <span id="monthlyTimer" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem;">00 Hari</span>
     </div>
     <div id="monthlyGoalsList" class="quest-list-container" data-type="monthly"></div>
     <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah Goal Bulanan</button>
@@ -416,6 +401,7 @@
     let touchStartY = 0;
     let longPressTimeout = null;
     let dragSrcElement = null;
+    let isEvaluatingStreak = false;
     let lastProcessedDate = localStorage.getItem('lastProcessedDate') || '';
 
     const REMINDER_LIST = [
@@ -429,6 +415,14 @@
       }
     ];
     let currentReminderIndex = 0;
+
+    // Helper tanggal lokal (YYYY-MM-DD) agar tidak bentrok dengan zona waktu UTC
+    function getLocalDateString(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
     
     function showCustomConfirm(title, message) {
       return new Promise((resolve) => {
@@ -468,13 +462,13 @@
       if (user) {
         currentUser = user;
         document.getElementById('auth-screen').style.display = 'none';
-        
         document.getElementById('landing-page').style.display = 'flex'; 
         document.getElementById('main-dashboard').style.display = 'none';
         
         await fetchOrCreateProfile();
         await fetchOrCreateReminder(); 
         await fetchData();
+        await evaluateStreakAtMidnight();
         startTimers();
         setupDragAndDropEvents();
       } else {
@@ -544,6 +538,13 @@
       allGoals = data || [];
       render();
     }
+
+    function openModalById(goalId) {
+      const goal = allGoals.find(g => String(g.id) === String(goalId));
+      if (goal) {
+        openModal(goal.type, goal.id, goal.text, goal.deadline);
+      }
+    }
     
     function openModal(type, goalId = null, currentText = '', currentDeadline = '') {
       currentModalType = type;
@@ -568,15 +569,15 @@
       }
     
       if (editingGoalId) {
-        if(type === 'daily') titleEl.innerText = 'Edit Goal Harian';
-        else if(type === 'monthly') titleEl.innerText = 'Edit Goal Bulanan';
+        if (type === 'daily') titleEl.innerText = 'Edit Goal Harian';
+        else if (type === 'monthly') titleEl.innerText = 'Edit Goal Bulanan';
         else titleEl.innerText = 'Edit Side Quest';
         
         textInput.value = currentText;
         submitBtn.innerText = "Simpan Perubahan";
       } else {
-        if(type === 'daily') titleEl.innerText = 'Tambah Goal Harian';
-        else if(type === 'monthly') titleEl.innerText = 'Tambah Goal Bulanan';
+        if (type === 'daily') titleEl.innerText = 'Tambah Goal Harian';
+        else if (type === 'monthly') titleEl.innerText = 'Tambah Goal Bulanan';
         else titleEl.innerText = 'Tambah Side Quest';
     
         textInput.value = '';
@@ -597,7 +598,7 @@
     async function submitModal() {
       const text = document.getElementById('modal-text').value.trim();
       const customDeadline = document.getElementById('modal-deadline').value.trim();
-      if(!text) return;
+      if (!text) return;
     
       const btn = document.getElementById('btn-submit-goal');
       btn.innerText = "Menyimpan...";
@@ -617,7 +618,7 @@
         
         btn.disabled = false;
     
-        if(!error) {
+        if (!error) {
           closeModal();
           fetchData();
         } else {
@@ -639,7 +640,7 @@
     
         btn.disabled = false;
     
-        if(!error) {
+        if (!error) {
           allGoals.push(data[0]);
           closeModal();
           fetchData();
@@ -665,7 +666,7 @@
         
         if (dailyGoals.length > 0) {
           const allDone = dailyGoals.every(g => g.checked === true);
-          const today = new Date().toISOString().split('T')[0];
+          const today = getLocalDateString();
           const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
     
           if (allDone && lastStreakDate !== today) {
@@ -691,27 +692,42 @@
     }
 
     async function evaluateStreakAtMidnight() {
-      const todayString = new Date().toLocaleDateString('id-ID');
-      if (lastProcessedDate === todayString) return;
-      
-      lastProcessedDate = todayString;
-      localStorage.setItem('lastProcessedDate', todayString);
-    
-      const dailyGoals = allGoals.filter(g => g.type === 'daily');
-    
-      if (dailyGoals.length > 0) {
-        const today = new Date().toISOString().split('T')[0];
+      if (isEvaluatingStreak) return;
+      const today = getLocalDateString();
+      if (lastProcessedDate === today) return;
+
+      isEvaluatingStreak = true;
+      try {
+        lastProcessedDate = today;
+        localStorage.setItem('lastProcessedDate', today);
+
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterday = getLocalDateString(yesterdayDate);
+
         const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
-    
-        if (lastStreakDate !== today) {
+
+        // Jika klaim streak terakhir bukan hari ini dan bukan kemarin, berarti kemarin bolong -> reset streak ke 0
+        if (lastStreakDate && lastStreakDate !== today && lastStreakDate !== yesterday) {
           dbStreak = 0;
-          await clientApp.from('user_profiles').update({ streak: dbStreak }).eq('user_id', currentUser.id);
+          await clientApp.from('user_profiles')
+            .update({ streak: 0 })
+            .eq('user_id', currentUser.id);
         }
-    
-        const resetQuests = dailyGoals.map(g => clientApp.from('goals').update({ checked: false }).eq('id', g.id));
-        await Promise.all(resetQuests);
-        
-        fetchData();
+
+        // Ambil ulang data terbaru dari Supabase (memberi jeda 2 detik agar cron job server selesai terlebih dahulu)
+        setTimeout(async () => {
+          await fetchData();
+        }, 2000);
+      } finally {
+        isEvaluatingStreak = false;
+      }
+    }
+
+    async function deleteGoalById(id, isFailed = false) {
+      const goal = allGoals.find(g => String(g.id) === String(id));
+      if (goal) {
+        await deleteGoal(goal.id, goal.text, isFailed);
       }
     }
     
@@ -724,10 +740,10 @@
       const confirmed = await showCustomConfirm(title, message);
       if (confirmed) {
         const { error } = await clientApp.from('goals').delete().eq('id', id);
-        if(!error) {
-            fetchData();
+        if (!error) {
+          fetchData();
         } else {
-            alert("Gagal menghapus data.");
+          alert("Gagal menghapus data.");
         }
       }
     }
@@ -895,16 +911,16 @@
       const sList = document.getElementById("sideQuestsList");
       
       dList.innerHTML = ""; mList.innerHTML = ""; 
-      if(sList) sList.innerHTML = "";
+      if (sList) sList.innerHTML = "";
     
       allGoals.forEach((g) => {
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
         let isSideQuestFailed = false;
         
-        if(g.type === 'monthly') {
+        if (g.type === 'monthly') {
           iconDeadline = '🗓️';
-        } else if(g.type === 'side') {
+        } else if (g.type === 'side') {
           iconDeadline = '🎯';
           if (g.deadline && g.deadline !== 'Tanpa Batas Waktu') {
             const targetDate = new Date(g.deadline + "T23:59:59");
@@ -919,9 +935,6 @@
         item.className = `quest-item type-${g.type} ${isSideQuestFailed ? 'quest-failed' : ''}`;
         item.setAttribute('data-id', g.id);
         item.setAttribute('data-type', g.type);
-    
-        const safeText = (g.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const safeDeadline = (g.deadline || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         
         item.innerHTML = `
           <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} onchange="toggleGoal('${g.id}', ${g.checked})">
@@ -933,8 +946,8 @@
             <div class="goal-deadline">${iconDeadline} ${escapeHtml(g.deadline || '')}</div>
           </div>
           <div class="action-buttons">
-            <button class="btn-edit" style="${isSideQuestFailed ? 'display:none;' : ''}" onclick="openModal('${g.type}', '${g.id}', '${safeText}', '${safeDeadline}')">📝</button>
-            <button class="btn-delete" onclick="deleteGoal('${g.id}', '${safeText}', ${isSideQuestFailed})">🗑️</button>
+            <button class="btn-edit" style="${isSideQuestFailed ? 'display:none;' : ''}" onclick="openModalById('${g.id}')">📝</button>
+            <button class="btn-delete" onclick="deleteGoalById('${g.id}', ${isSideQuestFailed})">🗑️</button>
           </div>
         `;
         
@@ -944,12 +957,13 @@
           item.addEventListener('dragend', handleDragEnd);
         }
     
-        if(g.type === 'monthly') mList.appendChild(item);
-        else if(g.type === 'side') { if(sList) sList.appendChild(item); }
+        if (g.type === 'monthly') mList.appendChild(item);
+        else if (g.type === 'side') { if (sList) sList.appendChild(item); }
         else dList.appendChild(item);
       });
+
       updateProgress();
-      if(currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
+      if (currentModalType === 'side' || allGoals.some(g => g.type === 'side')) updateSideQuestCountdowns();
     }
     
     function updateProgress() {
@@ -970,8 +984,8 @@
       const sidePercent = sideGoals.length === 0 ? 0 : Math.round((sideDone / sideGoals.length) * 100);
       const sideFillEl = document.getElementById("sideFill");
       const sidePercentEl = document.getElementById("sidePercent");
-      if(sideFillEl) sideFillEl.style.width = sidePercent + "%";
-      if(sidePercentEl) sidePercentEl.innerText = sidePercent + "%";
+      if (sideFillEl) sideFillEl.style.width = sidePercent + "%";
+      if (sidePercentEl) sidePercentEl.innerText = sidePercent + "%";
       
       const streakEl = document.getElementById("streakVal");
       streakEl.innerText = `🔥 ${dbStreak} Hari`;
@@ -997,18 +1011,18 @@
         if (timerEl) timerEl.innerText = `${h}:${m}:${s}`;
         
         if (diff < 3600000) {
-            if (timerEl) timerEl.classList.add('timer-critical');
+          if (timerEl) timerEl.classList.add('timer-critical');
         } else {
-            if (timerEl) timerEl.classList.remove('timer-critical');
+          if (timerEl) timerEl.classList.remove('timer-critical');
         }
     
-        if (h === '00' && m === '00' && s <= '02') {
+        if (h === '00' && m === '00' && Number(s) <= 2) {
           evaluateStreakAtMidnight();
         }
     
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         const mDiff = endOfMonth - now;
-        const daysLeft = Math.ceil(mDiff / (1000 * 60 * 60 * 24));
+        const daysLeft = Math.floor(mDiff / (1000 * 60 * 60 * 24));
         const mEl = document.getElementById("monthlyTimer");
         if (mEl) mEl.innerText = daysLeft > 0 ? `${daysLeft} Hari lagi` : `${h}:${m}:${s}`;
     
@@ -1022,7 +1036,9 @@
       return div.innerHTML;
     }
     
-    async function loginWithGoogle() { await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
+    async function loginWithGoogle() {
+      await clientApp.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    }
     
     async function logout() { 
       const confirmed = await showCustomConfirm("Logout Akun", "Apakah kamu yakin ingin keluar dari akun?");
