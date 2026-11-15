@@ -391,7 +391,8 @@
     const SB_URL = 'https://ifdgmtzdgyldobeparjy.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = supabase.createClient(SB_URL, SB_KEY);
-    
+
+    let dbLastStreakDate = null;
     let currentUser = null;
     let allGoals = [];
     let dbStreak = 0;
@@ -479,13 +480,17 @@
     }
     
     async function fetchOrCreateProfile() {
-      let { data: profile, error } = await clientApp.from('user_profiles').select('streak').eq('user_id', currentUser.id).single();
-      
+      let { data: profile, error } = await clientApp.from('user_profiles')
+        .select('streak, last_streak_date').eq('user_id', currentUser.id).single();
+    
       if (error && error.code === 'PGRST116') {
-        const { data: newProfile } = await clientApp.from('user_profiles').insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
+        const { data: newProfile } = await clientApp.from('user_profiles')
+          .insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
         dbStreak = newProfile ? newProfile.streak : 0;
+        dbLastStreakDate = null;
       } else if (profile) {
         dbStreak = profile.streak;
+        dbLastStreakDate = profile.last_streak_date || null;
       }
     }
 
@@ -667,22 +672,20 @@
         if (dailyGoals.length > 0) {
           const allDone = dailyGoals.every(g => g.checked === true);
           const today = getLocalDateString();
-          const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
-    
-          if (allDone && lastStreakDate !== today) {
+        
+          if (allDone && dbLastStreakDate !== today) {
             dbStreak += 1;
-            localStorage.setItem('lastStreakClaimedDate', today);
-            
+            dbLastStreakDate = today;
             await clientApp.from('user_profiles')
-              .update({ streak: dbStreak })
+              .update({ streak: dbStreak, last_streak_date: today })
               .eq('user_id', currentUser.id);
-          } 
-          else if (!allDone && lastStreakDate === today) {
+          }
+          else if (!allDone && dbLastStreakDate === today) {
             dbStreak = Math.max(0, dbStreak - 1);
-            localStorage.removeItem('lastStreakClaimedDate');
-            
+            const y = new Date(); y.setDate(y.getDate() - 1);
+            dbLastStreakDate = dbStreak > 0 ? getLocalDateString(y) : null;
             await clientApp.from('user_profiles')
-              .update({ streak: dbStreak })
+              .update({ streak: dbStreak, last_streak_date: dbLastStreakDate })
               .eq('user_id', currentUser.id);
           }
         }
@@ -705,17 +708,16 @@
         yesterdayDate.setDate(yesterdayDate.getDate() - 1);
         const yesterday = getLocalDateString(yesterdayDate);
 
-        const lastStreakDate = localStorage.getItem('lastStreakClaimedDate');
-
-        // Jika klaim streak terakhir bukan hari ini dan bukan kemarin, berarti kemarin bolong -> reset streak ke 0
-        if (lastStreakDate && lastStreakDate !== today && lastStreakDate !== yesterday) {
+        // Jika klaim streak terakhir bukan hari ini dan bukan kemarin, berarti ada hari yang bolong -> reset streak ke 0
+        if (dbLastStreakDate && dbLastStreakDate !== today && dbLastStreakDate !== yesterday) {
           dbStreak = 0;
+          dbLastStreakDate = null;
           await clientApp.from('user_profiles')
-            .update({ streak: 0 })
+            .update({ streak: 0, last_streak_date: null })
             .eq('user_id', currentUser.id);
         }
 
-        // Ambil ulang data terbaru dari Supabase (memberi jeda 2 detik agar cron job server selesai terlebih dahulu)
+        // Ambil ulang data terbaru dari Supabase (jeda 2 detik agar cron job server selesai terlebih dahulu)
         setTimeout(async () => {
           await fetchData();
         }, 2000);
