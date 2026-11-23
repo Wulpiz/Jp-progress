@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Japanese Focus - Progress Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#020617">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -14,7 +16,6 @@
     }
 
     * { box-sizing: border-box; }
-    /* PERBAIKAN: transition hanya untuk elemen yang butuh (bukan "all" di semua elemen) */
     button, .quest-item, .stat-card, .add-placeholder, .slider-arrow, .btn-enter, .btn-modal,
     .btn-edit, .btn-delete, input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -76,6 +77,12 @@
     h2.title-monthly { border-left: 4px solid var(--accent-gold); }
     h2.title-side { border-left: 4px solid var(--accent-purple); }
     h2.title-yearly { border-left: 4px solid var(--accent-cyan); }
+
+    /* Heatmap */
+    .heatmap { display: grid; grid-template-rows: repeat(7, 14px); grid-auto-flow: column; grid-auto-columns: 14px; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
+    .hm-cell { width: 14px; height: 14px; border-radius: 3px; background: rgba(255,255,255,.05); }
+    .hm-1 { background: rgba(45,212,191,.25); } .hm-2 { background: rgba(45,212,191,.5); }
+    .hm-3 { background: rgba(45,212,191,.75); } .hm-4 { background: #2dd4bf; }
 
     .quest-item {
       background: rgba(255,255,255,0.02); padding: 18px; border-radius: 15px;
@@ -152,7 +159,6 @@
     @keyframes blink { 50% { opacity: 0.5; } }
     .google-btn { background: white; color: #020617; padding: 15px 30px; border-radius: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
 
-    /* Toast notifikasi kecil (pengganti alert) */
     #toast {
       position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 20px);
       background: #0f172a; color: var(--text-main); border: 1px solid var(--glass-border);
@@ -187,9 +193,9 @@
       .hero-subtitle { font-size: 0.95rem; padding: 0 10px; margin-top: 6px; }
       #auth-screen { padding: 40px 24px; border-radius: 24px; }
       .container { padding: 20px 16px; border-radius: 24px; }
-      .header-info { grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+      .header-info { gap: 12px; margin-bottom: 20px; }
       .stat-card { padding: 15px; border-radius: 16px; }
-      .stat-value { font-size: 1.5rem; }
+      .stat-value { font-size: 1.3rem; }
       h2 { margin: 30px 0 15px; font-size: 1.05rem; }
       .quest-item { padding: 14px; gap: 12px; border-radius: 12px; }
       .quest-text { font-size: 0.95rem; }
@@ -272,8 +278,20 @@
       <div class="stat-card">
         <div class="stat-label">Current Streak</div>
         <div class="stat-value" id="streakVal">🔥 0 Hari</div>
+        <div id="freezeInfo" style="font-size:.7rem;color:var(--text-dim);margin-top:4px"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Streak</div>
+        <div class="stat-value" id="bestVal" style="color:var(--accent-gold)">🏆 0 Hari</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Countdown JLPT</div>
+        <div class="stat-value" id="jlptVal" style="color:var(--accent-cyan)">-</div>
       </div>
     </div>
+
+    <h2 class="title-yearly">📅 Riwayat Belajar</h2>
+    <div id="heatmap" class="heatmap"></div>
 
     <h2 class="title-daily">⚔️ Daily Quests</h2>
     <div class="progress-box">
@@ -318,6 +336,7 @@
         <div class="progress-fill" id="sideFill" style="background: linear-gradient(90deg, var(--accent-purple), #f472b6);"></div>
       </div>
     </div>
+    <button id="btnSideSort" onclick="toggleSideSort()" class="add-placeholder" style="margin:0 0 12px">↕ Urut: Manual</button>
     <div id="sideQuestsList" class="quest-list-container" data-type="side"></div>
     <button onclick="openModal('side')" class="add-placeholder">+ Tambah Side Quest</button>
 
@@ -329,10 +348,16 @@
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = supabase.createClient(SB_URL, SB_KEY);
 
+    const JLPT_DATE = '2026-12-06'; // ganti sesuai jadwal resmi ujianmu
+
     let dbLastStreakDate = null;
     let currentUser = null;
     let allGoals = [];
     let dbStreak = 0;
+    let dbBest = 0;
+    let dbFreezeMonth = null;
+    let dailyLog = {};
+    let sortSideByDeadline = false;
     let currentModalType = 'daily';
     let editingGoalId = null;
     let touchStartX = 0;
@@ -370,7 +395,6 @@
     ];
     let currentReminderIndex = 0;
 
-    // Helper tanggal lokal (YYYY-MM-DD) agar tidak bentrok dengan zona waktu UTC
     function getLocalDateString(date = new Date()) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -378,7 +402,6 @@
       return `${year}-${month}-${day}`;
     }
 
-    // Toast kecil pengganti alert()
     function showToast(message, isError = false) {
       const el = document.getElementById('toast');
       el.innerText = message;
@@ -423,12 +446,12 @@
         await fetchOrCreateProfile();
         await fetchOrCreateReminder();
         await fetchData();
+        await fetchHeatmap();
         await evaluateStreakAtMidnight();
         startTimers();
         setupDragAndDropEvents();
         isInitialized = true;
       } else {
-        // PERBAIKAN: pakai 'flex' (sesuai CSS), bukan 'block'
         document.getElementById('auth-screen').style.display = 'flex';
         document.getElementById('landing-page').style.display = 'none';
         document.getElementById('main-dashboard').style.display = 'none';
@@ -437,16 +460,21 @@
 
     async function fetchOrCreateProfile() {
       let { data: profile, error } = await clientApp.from('user_profiles')
-        .select('streak, last_streak_date').eq('user_id', currentUser.id).single();
+        .select('streak, last_streak_date, best_streak, freeze_used_month')
+        .eq('user_id', currentUser.id).single();
 
       if (error && error.code === 'PGRST116') {
         const { data: newProfile } = await clientApp.from('user_profiles')
           .insert([{ user_id: currentUser.id, streak: 0 }]).select().single();
         dbStreak = newProfile ? newProfile.streak : 0;
         dbLastStreakDate = null;
+        dbBest = 0;
+        dbFreezeMonth = null;
       } else if (profile) {
         dbStreak = profile.streak;
         dbLastStreakDate = profile.last_streak_date || null;
+        dbBest = profile.best_streak || 0;
+        dbFreezeMonth = profile.freeze_used_month || null;
       }
     }
 
@@ -478,7 +506,6 @@
 
       displayReminder();
 
-      // PERBAIKAN: onConflict eksplisit agar tidak menambah baris baru
       await clientApp.from('user_reminders').upsert({
         user_id: currentUser.id,
         current_index: currentReminderIndex,
@@ -501,6 +528,53 @@
       allGoals = data || [];
       render();
       checkYearlyFailures();
+    }
+
+    // ===== HEATMAP =====
+    async function fetchHeatmap() {
+      const from = new Date(); from.setDate(from.getDate() - 125);
+      const { data } = await clientApp.from('daily_log').select('date, completed, total')
+        .eq('user_id', currentUser.id).gte('date', getLocalDateString(from));
+      dailyLog = {};
+      (data || []).forEach(r => dailyLog[r.date] = r);
+      renderHeatmap();
+    }
+
+    function renderHeatmap() {
+      const el = document.getElementById('heatmap'); if (!el) return;
+      const end = new Date();
+      const start = new Date(); start.setDate(end.getDate() - (7 * 17 + end.getDay())); // mulai hari Minggu
+      let html = '';
+      for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const key = getLocalDateString(d), r = dailyLog[key];
+        const ratio = r && r.total ? r.completed / r.total : 0;
+        const lvl = ratio === 0 ? 0 : ratio < 0.34 ? 1 : ratio < 0.67 ? 2 : ratio < 1 ? 3 : 4;
+        html += `<div class="hm-cell hm-${lvl}" title="${key}: ${r ? r.completed : 0}/${r ? r.total : 0}"></div>`;
+      }
+      el.innerHTML = html;
+    }
+
+    async function logToday() {
+      const daily = allGoals.filter(g => g.type === 'daily');
+      if (!daily.length) return;
+      const row = { user_id: currentUser.id, date: getLocalDateString(),
+                    completed: daily.filter(g => g.checked).length, total: daily.length };
+      dailyLog[row.date] = row; renderHeatmap();
+      await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
+    }
+
+    // ===== URUTAN SIDE QUEST =====
+    function toggleSideSort() {
+      sortSideByDeadline = !sortSideByDeadline;
+      document.getElementById('btnSideSort').innerText = sortSideByDeadline ? '↕ Urut: Deadline terdekat' : '↕ Urut: Manual';
+      render();
+    }
+
+    function sortedGoals() {
+      if (!sortSideByDeadline) return allGoals;
+      const key = g => /^\d{4}-/.test(g.deadline || '') ? g.deadline : '9999';
+      const side = allGoals.filter(g => g.type === 'side').sort((a, b) => key(a).localeCompare(key(b)));
+      return allGoals.filter(g => g.type !== 'side').concat(side);
     }
 
     function openModalById(goalId) {
@@ -565,14 +639,13 @@
       if (!text) return;
 
       const btn = document.getElementById('btn-submit-goal');
-      if (btn.disabled) return; // cegah klik ganda
+      if (btn.disabled) return;
       btn.innerText = "Menyimpan...";
       btn.disabled = true;
 
       let deadlineText = 'Daily Reset';
       if (currentModalType === 'monthly') deadlineText = 'End of Month';
       else if (currentModalType === 'yearly') {
-        // Simpan tanggal akhir tahun (YYYY-12-31). Saat edit, deadline lama dipertahankan.
         const ex = editingGoalId ? allGoals.find(g => String(g.id) === String(editingGoalId)) : null;
         deadlineText = (ex && ex.deadline) ? ex.deadline : `${new Date().getFullYear()}-12-31`;
       }
@@ -613,7 +686,7 @@
 
         if (!error) {
           closeModal();
-          fetchData(); // allGoals.push dihapus: fetchData sudah menimpa data yang sama
+          fetchData();
           showToast('Goal ditambahkan ✓');
         } else {
           showToast("Gagal menyimpan: " + error.message, true);
@@ -622,13 +695,14 @@
       }
     }
 
-    // PERBAIKAN: update optimis. Centang langsung muncul, database menyusul, rollback kalau gagal.
+    // Update optimis: centang langsung muncul, database menyusul, rollback kalau gagal.
     async function toggleGoal(id, status) {
       const goal = allGoals.find(g => String(g.id) === String(id));
       if (!goal) return;
 
       const prevChecked = goal.checked;
       const prevStreak = dbStreak;
+      const prevBest = dbBest;
       const prevLastDate = dbLastStreakDate;
 
       goal.checked = !prevChecked;
@@ -642,7 +716,8 @@
         if (allDone && dbLastStreakDate !== today) {
           dbStreak += 1;
           dbLastStreakDate = today;
-          streakUpdate = { streak: dbStreak, last_streak_date: today };
+          if (dbStreak > dbBest) dbBest = dbStreak;
+          streakUpdate = { streak: dbStreak, last_streak_date: today, best_streak: dbBest };
         } else if (!allDone && dbLastStreakDate === today) {
           dbStreak = Math.max(0, dbStreak - 1);
           const y = new Date(); y.setDate(y.getDate() - 1);
@@ -652,6 +727,7 @@
       }
 
       render();
+      if (goal.type === 'daily') logToday();
 
       const { error } = await clientApp.from('goals').update({ checked: goal.checked }).eq('id', id);
       let streakError = null;
@@ -663,8 +739,10 @@
       if (error || streakError) {
         goal.checked = prevChecked;
         dbStreak = prevStreak;
+        dbBest = prevBest;
         dbLastStreakDate = prevLastDate;
         render();
+        if (goal.type === 'daily') logToday();
         showToast('Gagal menyimpan perubahan. Coba lagi.', true);
       }
     }
@@ -682,18 +760,28 @@
         const yesterdayDate = new Date();
         yesterdayDate.setDate(yesterdayDate.getDate() - 1);
         const yesterday = getLocalDateString(yesterdayDate);
+        const twoAgo = new Date(); twoAgo.setDate(twoAgo.getDate() - 2);
+        const thisMonth = today.substring(0, 7);
 
-        // Jika klaim streak terakhir bukan hari ini dan bukan kemarin, berarti ada hari yang bolong -> reset streak ke 0
         if (dbLastStreakDate && dbLastStreakDate !== today && dbLastStreakDate !== yesterday) {
-          dbStreak = 0;
-          dbLastStreakDate = null;
-          await clientApp.from('user_profiles')
-            .update({ streak: 0, last_streak_date: null })
-            .eq('user_id', currentUser.id);
+          if (dbLastStreakDate === getLocalDateString(twoAgo) && dbFreezeMonth !== thisMonth) {
+            // bolong tepat 1 hari dan freeze bulan ini masih ada -> streak diselamatkan
+            dbFreezeMonth = thisMonth;
+            dbLastStreakDate = yesterday;
+            await clientApp.from('user_profiles')
+              .update({ last_streak_date: yesterday, freeze_used_month: thisMonth })
+              .eq('user_id', currentUser.id);
+            showToast('🧊 Streak freeze dipakai, streak kamu aman!');
+          } else {
+            dbStreak = 0;
+            dbLastStreakDate = null;
+            await clientApp.from('user_profiles')
+              .update({ streak: 0, last_streak_date: null }).eq('user_id', currentUser.id);
+          }
           render();
         }
 
-        // Ambil ulang data terbaru dari Supabase (jeda 2 detik agar cron job server selesai terlebih dahulu)
+        // Jeda 2 detik agar cron job server selesai terlebih dahulu
         setTimeout(() => { fetchData(); }, 2000);
       } finally {
         isEvaluatingStreak = false;
@@ -730,7 +818,6 @@
         const goalId = el.getAttribute('data-id');
         const goal = allGoals.find(g => String(g.id) === String(goalId));
 
-        // PERBAIKAN: side quest yang sudah selesai tidak pernah ditandai gagal
         if (goal && goal.checked) {
           el.innerText = 'Selesai ✓';
           el.classList.remove('expired');
@@ -852,6 +939,14 @@
           e.preventDefault();
           if (!dragSrcElement) return;
 
+          // Jangan timpa posisi saat side quest sedang diurutkan berdasarkan deadline
+          if (sortSideByDeadline && this.getAttribute('data-type') === 'side') {
+            showToast('Ubah urutan ke Manual dulu untuk drag & drop.', true);
+            dragSrcElement = null;
+            render();
+            return;
+          }
+
           const items = Array.from(this.querySelectorAll('.quest-item'));
           const updates = items.map((item, index) => {
             return clientApp.from('goals')
@@ -887,7 +982,7 @@
       if (sList) sList.innerHTML = "";
       if (yList) yList.innerHTML = "";
 
-      allGoals.forEach((g) => {
+      sortedGoals().forEach((g) => {
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
         let isFailed = false;
@@ -899,7 +994,6 @@
           if (isYearlyFailed(g)) isFailed = true;
         } else if (g.type === 'side') {
           iconDeadline = '🎯';
-          // PERBAIKAN: hanya gagal kalau BELUM dicentang
           if (!g.checked && g.deadline && g.deadline !== 'Tanpa Batas Waktu') {
             const targetDate = new Date(g.deadline + "T23:59:59");
             if (targetDate - new Date() <= 0) isFailed = true;
@@ -941,7 +1035,6 @@
         else dList.appendChild(item);
       });
 
-      // Petunjuk saat list kosong
       [[dList, 'daily', 'Belum ada goal harian.'], [mList, 'monthly', 'Belum ada goal bulanan.'],
        [yList, 'yearly', 'Belum ada goal tahunan.'], [sList, 'side', 'Belum ada side quest.']].forEach(([el, type, msg]) => {
         if (el && !allGoals.some(g => g.type === type)) el.innerHTML = `<div class="empty-hint">${msg}</div>`;
@@ -969,6 +1062,10 @@
       const streakEl = document.getElementById("streakVal");
       streakEl.innerText = `🔥 ${dbStreak} Hari`;
       streakEl.className = dbStreak === 0 ? "stat-value streak-zero" : "stat-value streak-active";
+
+      document.getElementById('bestVal').innerText = `🏆 ${dbBest} Hari`;
+      document.getElementById('freezeInfo').innerText =
+        dbFreezeMonth === getLocalDateString().substring(0, 7) ? '🧊 Freeze bulan ini terpakai' : '🧊 1 freeze tersedia';
     }
 
     function startTimers() {
@@ -990,8 +1087,6 @@
           timerEl.classList.toggle('timer-critical', diff < 3600000);
         }
 
-        // PERBAIKAN: deteksi ganti hari lewat perbandingan tanggal.
-        // (Kondisi lama h==='00' tidak pernah terpenuhi karena timer langsung kembali ke 23:59:59 setelah tengah malam.)
         if (isInitialized && getLocalDateString() !== lastProcessedDate) {
           evaluateStreakAtMidnight();
         }
@@ -1006,9 +1101,12 @@
         const yEl = document.getElementById("yearlyTimer");
         if (yEl) yEl.innerText = yDaysLeft > 0 ? `${yDaysLeft} Hari lagi` : `${h}:${m}:${s}`;
 
+        const jDays = Math.ceil((new Date(JLPT_DATE + 'T00:00:00') - now) / 86400000);
+        const jEl = document.getElementById('jlptVal');
+        if (jEl) jEl.innerText = jDays > 0 ? `🎌 ${jDays} Hari` : (jDays === 0 ? '🎌 Hari H!' : 'Selesai ✓');
+
         updateSideQuestCountdowns();
 
-        // PERBAIKAN: cek goal tahunan gagal cukup sekali per menit
         tickCount++;
         if (tickCount % 60 === 0) checkYearlyFailures();
       }, 1000);
@@ -1017,7 +1115,6 @@
     // ===== GOAL TAHUNAN =====
     function getYearlyDeadlineDate(g) {
       if (g.deadline && /^\d{4}-\d{2}-\d{2}/.test(g.deadline)) return g.deadline.substring(0, 10);
-      // Fallback untuk goal lama ('End of Year'): pakai tahun saat goal dibuat
       const y = g.created_at ? new Date(g.created_at).getFullYear() : new Date().getFullYear();
       return `${y}-12-31`;
     }
@@ -1060,7 +1157,6 @@
     let isShowingYearlyNotice = false;
     async function checkYearlyFailures() {
       if (isShowingYearlyNotice || !currentUser || allGoals.length === 0) return;
-      // Jangan tampilkan modal saat form tambah/edit atau konfirmasi lain sedang terbuka
       if (document.getElementById('goal-modal').style.display === 'flex' ||
           document.getElementById('confirm-modal').style.display === 'flex') return;
 
@@ -1073,7 +1169,7 @@
       if (fresh.length === 0) return;
 
       isShowingYearlyNotice = true;
-      render(); // pastikan tampilan sudah berubah menjadi tercoret
+      render();
 
       const year = getYearlyDeadlineDate(fresh[0]).substring(0, 4);
       const list = fresh.map(g => `• ${g.text}`).join('\n');
@@ -1089,7 +1185,6 @@
       isShowingYearlyNotice = false;
     }
 
-    // PERBAIKAN: ikut meng-escape tanda kutip (aman dipakai di atribut HTML)
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.innerText = text;
@@ -1097,7 +1192,6 @@
     }
 
     async function loginWithGoogle() {
-      // PERBAIKAN: buang hash/query lama dari URL redirect
       await clientApp.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.origin + window.location.pathname }
@@ -1122,18 +1216,19 @@
       document.getElementById('landing-page').style.display = 'flex';
     }
 
-    // PERBAIKAN: saat tab/HP dibuka lagi, cek pergantian hari dan ambil data terbaru
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && currentUser && isInitialized) {
         evaluateStreakAtMidnight();
         fetchData();
+        fetchHeatmap();
       }
     });
 
-    // Tutup modal dengan tombol Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && document.getElementById('goal-modal').style.display === 'flex') closeModal();
     });
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
     checkUser();
   </script>
