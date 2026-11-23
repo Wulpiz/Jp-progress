@@ -11,7 +11,7 @@
   <style>
 :root{--bg:#020617;--panel:#0b1325;--panel-2:#101b33;--line:rgba(148,163,184,.14);--line-2:rgba(148,163,184,.28);--text:#e8edf6;--dim:#8d99b0;--daily:#5b9bff;--monthly:#f2b34a;--yearly:#3fd0c0;--side:#b794ff;--danger:#f0616d;--serif:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;--sans:'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100dvh;display:flex;flex-direction:column;align-items:center;background:var(--bg);color:var(--text);font:400 1rem/1.55 var(--sans);padding-bottom:var(--safe-b)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;align-items:center;background:radial-gradient(800px 380px at 50% -100px,rgba(91,155,255,.14),transparent 70%) no-repeat,var(--bg);color:var(--text);font:400 1rem/1.55 var(--sans);padding-bottom:var(--safe-b)}
 button{font:inherit;color:inherit;cursor:pointer}
 button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,color .2s,opacity .2s}
 :focus-visible{outline:2px solid var(--yearly);outline-offset:2px}
@@ -128,6 +128,15 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #toast.error{border-color:rgba(240,97,109,.5);color:#fca5a5}
 
+#landing-page{position:relative;overflow:hidden}
+#landing-page::before{content:"学";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font:800 min(24rem,80vw)/1 var(--serif);color:rgba(91,155,255,.055);pointer-events:none}
+#landing-page>*{position:relative}
+.home-stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.home-stats>div{padding:16px 8px;border-left:1px solid var(--line)}
+.home-stats>div:first-child{border-left:0}
+.home-stats b{display:block;font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums}
+.home-stats span{font-size:.78rem;color:var(--dim)}
+.cnt{margin-right:10px;font-size:.82rem;font-weight:500;color:var(--dim)}
 @media(min-width:1000px){
   .layout{grid-template-columns:360px minmax(0,1fr);gap:32px;padding-top:32px}
   .side-panel{position:sticky;top:84px}
@@ -138,13 +147,11 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
   .panel,.group{padding:16px;border-radius:16px}
   .heatmap{--hm:12px}
   .quest-item{padding:10px 2px 10px 12px;gap:12px}
-  .motivation-slider{grid-template-columns:1fr 1fr;grid-template-areas:"q q" "p n";gap:12px}
-  .motivation-text{grid-area:q;min-height:12rem}
-  .motivation-slider .slider-arrow:first-child{grid-area:p;justify-self:start}
-  .motivation-slider .slider-arrow:last-child{grid-area:n;justify-self:end}
+  .motivation-slider{gap:6px;margin:0 -8px}
+  .motivation-text{min-height:11rem;font-size:1.35rem}
+  .slider-arrow{width:38px;height:38px}
   .btn-enter{width:100%}
-  #goal-modal,#confirm-modal{align-items:flex-end;padding:0}
-  .modal-content{max-width:none;padding:24px 20px calc(20px + var(--safe-b));border-radius:20px 20px 0 0}
+  .modal-content{padding:24px 20px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -192,6 +199,11 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       </div>
       <p id="subQuote"></p>
     </div>
+    <div class="home-stats">
+      <div><b id="homeStreak" style="color:#facc15">-</b><span>Streak</span></div>
+      <div><b id="homeDaily" style="color:var(--daily)">-</b><span>Quest hari ini</span></div>
+      <div><b id="homeJlpt" style="color:var(--yearly)">-</b><span>Menuju JLPT</span></div>
+    </div>
     <button class="btn-enter" onclick="showDashboard()">Buka quest log</button>
   </div>
 
@@ -220,25 +232,25 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       </aside>
       <main class="quests">
       <section class="group g-daily">
-        <div class="group-head"><h2>Daily quests</h2><span class="pct" id="dailyPercent">0%</span></div>
+        <div class="group-head"><h2>Daily quests</h2><span class="pct"><small class="cnt" id="dailyCount"></small><span id="dailyPercent">0%</span></span></div>
         <div class="progress-track"><div class="progress-fill" id="dailyFill"></div></div>
         <div id="dailyQuestsList" class="quest-list-container" data-type="daily"></div>
         <button onclick="openModal('daily')" class="add-placeholder">+ Tambah goal harian</button>
       </section>
       <section class="group g-monthly">
-        <div class="group-head"><h2>Monthly epic goals</h2><span class="pct" id="monthlyPercent">0%</span></div>
+        <div class="group-head"><h2>Monthly epic goals</h2><span class="pct"><small class="cnt" id="monthlyCount"></small><span id="monthlyPercent">0%</span></span></div>
         <div class="progress-track"><div class="progress-fill" id="monthlyFill"></div></div>
         <div class="group-meta"><span>Bulan ini berakhir dalam</span><b id="monthlyTimer">00 Hari</b></div><div id="monthlyGoalsList" class="quest-list-container" data-type="monthly"></div>
         <button onclick="openModal('monthly')" class="add-placeholder">+ Tambah goal bulanan</button>
       </section>
       <section class="group g-yearly">
-        <div class="group-head"><h2>Yearly grand goals</h2><span class="pct" id="yearlyPercent">0%</span></div>
+        <div class="group-head"><h2>Yearly grand goals</h2><span class="pct"><small class="cnt" id="yearlyCount"></small><span id="yearlyPercent">0%</span></span></div>
         <div class="progress-track"><div class="progress-fill" id="yearlyFill"></div></div>
         <div class="group-meta"><span>Tahun ini berakhir dalam</span><b id="yearlyTimer">0 Hari</b></div><div id="yearlyGoalsList" class="quest-list-container" data-type="yearly"></div>
         <button onclick="openModal('yearly')" class="add-placeholder">+ Tambah goal tahunan</button>
       </section>
       <section class="group g-side">
-        <div class="group-head"><h2>Side quests</h2><span class="pct" id="sidePercent">0%</span></div>
+        <div class="group-head"><h2>Side quests</h2><span class="pct"><small class="cnt" id="sideCount"></small><span id="sidePercent">0%</span></span></div>
         <div class="progress-track"><div class="progress-fill" id="sideFill"></div></div>
         <div class="group-meta"><span>Urutan daftar</span><button id="btnSideSort" onclick="toggleSideSort()" class="chip">↕ Urut: Manual</button></div><div id="sideQuestsList" class="quest-list-container" data-type="side"></div>
         <button onclick="openModal('side')" class="add-placeholder">+ Tambah side quest</button>
@@ -963,6 +975,8 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         const txt = document.getElementById(type + "Percent");
         if (fill) fill.style.width = p + "%";
         if (txt) txt.innerText = p + "%";
+        const cl = allGoals.filter(g => g.type === type), cnt = document.getElementById(type + "Count");
+        if (cnt) cnt.innerText = cl.length ? `${cl.filter(g => g.checked).length}/${cl.length} selesai` : '';
       };
       ['daily', 'monthly', 'yearly', 'side'].forEach(setBar);
 
@@ -973,6 +987,14 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       document.getElementById('bestVal').innerText = `🏆 ${dbBest} Hari`;
       document.getElementById('freezeInfo').innerText =
         dbFreezeMonth === getLocalDateString().substring(0, 7) ? '🧊 Freeze bulan ini terpakai' : '🧊 1 freeze tersedia';
+      syncHome();
+    }
+
+    function syncHome() {
+      const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      set('homeStreak', document.getElementById('streakVal').textContent.replace('🔥', '').trim());
+      set('homeDaily', document.getElementById('dailyPercent').textContent);
+      set('homeJlpt', document.getElementById('jlptVal').textContent.replace('🎌', '').trim());
     }
 
     function startTimers() {
@@ -1013,6 +1035,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         if (jEl) jEl.innerText = jDays > 0 ? `🎌 ${jDays} Hari` : (jDays === 0 ? '🎌 Hari H!' : 'Selesai ✓');
 
         updateSideQuestCountdowns();
+        syncHome();
 
         tickCount++;
         if (tickCount % 60 === 0) checkYearlyFailures();
