@@ -198,9 +198,28 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 .cnt{margin-right:10px;font-size:.82rem;font-weight:500;color:var(--dim)}
 @media(min-width:1000px){
   .layout{grid-template-columns:360px minmax(0,1fr);gap:32px;padding-top:32px}
-  .side-panel{position:sticky;top:84px;max-height:calc(100dvh - 100px);overflow-y:auto;scrollbar-width:thin}
+  .side-panel{align-self:start}
+}
+@media(min-width:641px) and (max-width:999px){
+  .header-info{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:999px){
+  /* Susunan: judul > kartu ringkas > QUEST > riwayat/timer/statistik */
+  .side-panel{display:contents}
+  .intro{order:1;text-align:center;padding:0}
+  .intro .hero-title{text-align:center}
+  .hero-subtitle{margin-left:auto;margin-right:auto;max-width:36ch}
+  .header-info{order:2}
+  .quests{order:3}
+  .side-panel>.panel{order:4}
 }
 @media(max-width:640px){
+  .intro .hero-title{font-size:2.1rem}
+  .hero-subtitle{margin-top:6px;font-size:.84rem;line-height:1.45}
+  .header-info{gap:8px}
+  .stat-card{padding:10px 12px}
+  .stat-value{font-size:1.2rem}
+  .stat-hint{display:none}
   .topbar{padding-left:16px;padding-right:16px}
   .layout{padding:16px 16px 56px;gap:16px}
   .panel,.group{padding:16px;border-radius:16px}
@@ -579,11 +598,13 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 
       displayReminder();
 
-      await clientApp.from('user_reminders').upsert({
-        user_id: currentUser.id,
-        current_index: currentReminderIndex,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' });
+      try {
+        await clientApp.from('user_reminders').upsert({
+          user_id: currentUser.id,
+          current_index: currentReminderIndex,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+      } catch (e) { /* offline: tampilan tetap jalan */ }
     }
 
     async function fetchData(opts = {}) {
@@ -695,7 +716,14 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       const row = { user_id: currentUser.id, date: getLocalDateString(),
                     completed: daily.filter(g => g.checked).length, total: daily.length };
       dailyLog[row.date] = Object.assign({}, dailyLog[row.date], row); renderHeatmap(); renderStats();
-      await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
+      try {
+        lastLocalWriteAt = Date.now();
+        const { error } = await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
+        if (error) throw error;
+      } catch (e) {
+        showToast('Riwayat hari ini belum tersimpan ke server.', true);
+      }
+      lastLocalWriteAt = Date.now();
     }
 
     // ===== URUTAN SIDE QUEST =====
@@ -917,7 +945,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         }
 
         // Jeda 2 detik agar cron job server selesai terlebih dahulu
-        setTimeout(() => { fetchData(); }, 2000);
+        setTimeout(() => { fetchData(); fetchHeatmap(); }, 2000);
       } finally {
         isEvaluatingStreak = false;
       }
@@ -1636,6 +1664,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (yList) yList.innerHTML = "";
 
       sortedGoals().forEach((g) => {
+        const gid = escapeHtml(String(g.id));
         let iconDeadline = '⌛';
         let countdownBadgeHTML = '';
         let isFailed = false;
@@ -1653,7 +1682,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
           }
           const badgeText = g.checked ? 'Selesai ✓' : (isFailed ? 'Gagal (Waktu Habis)' : 'Menghitung...');
           const badgeClass = g.checked ? 'done' : (isFailed ? 'expired' : '');
-          countdownBadgeHTML = `<span class="side-countdown-live ${badgeClass}" data-id="${g.id}" data-deadline="${escapeHtml(g.deadline || '')}">${badgeText}</span>`;
+          countdownBadgeHTML = `<span class="side-countdown-live ${badgeClass}" data-id="${gid}" data-deadline="${escapeHtml(g.deadline || '')}">${badgeText}</span>`;
         }
 
         const item = document.createElement('div');
@@ -1662,7 +1691,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         item.setAttribute('data-type', g.type);
 
         item.innerHTML = `
-          <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} aria-label="Selesai: ${escapeHtml(g.text)}" onchange="toggleGoal('${g.id}')">
+          <input type="checkbox" class="checkbox" ${g.checked ? 'checked' : ''} aria-label="Selesai: ${escapeHtml(g.text)}" onchange="toggleGoal('${gid}')">
           <div class="goal-info">
             <div class="quest-title-row">
               <span class="quest-text ${g.checked ? 'completed' : ''}">${escapeHtml(g.text)}</span>
@@ -1671,8 +1700,8 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
             <div class="goal-deadline">${iconDeadline} ${g.type === 'yearly' ? yearlyLabel(g) : escapeHtml(g.deadline || '')}</div>
           </div>
           <div class="action-buttons">
-            <button class="btn-edit" style="${isFailed ? 'display:none;' : ''}" onclick="openModalById('${g.id}')" aria-label="Edit goal" title="Edit">${ICON_EDIT}</button>
-            <button class="btn-delete" onclick="deleteGoalById('${g.id}', ${isFailed})" aria-label="Hapus goal" title="Hapus">${ICON_DEL}</button>
+            <button class="btn-edit" style="${isFailed ? 'display:none;' : ''}" onclick="openModalById('${gid}')" aria-label="Edit goal" title="Edit">${ICON_EDIT}</button>
+            <button class="btn-delete" onclick="deleteGoalById('${gid}', ${isFailed})" aria-label="Hapus goal" title="Hapus">${ICON_DEL}</button>
           </div>
         `;
 
@@ -1825,7 +1854,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (failed.length === 0) return;
 
       let notified = [];
-      try { notified = JSON.parse(localStorage.getItem('yearlyNotifiedIds') || '[]'); } catch (e) {}
+      try { notified = JSON.parse(lsGet('yearlyNotifiedIds') || '[]'); } catch (e) {}
       const fresh = failed.filter(g => !notified.includes(String(g.id)));
       if (fresh.length === 0) return;
 
@@ -1842,14 +1871,14 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       await showNotice(`🌸 Goal Tahunan ${year} Gagal`, message, 'Aku Mengerti');
 
       notified = notified.concat(fresh.map(g => String(g.id)));
-      try { localStorage.setItem('yearlyNotifiedIds', JSON.stringify(notified)); } catch (e) {}
+      lsSet('yearlyNotifiedIds', JSON.stringify(notified));
       isShowingYearlyNotice = false;
     }
 
     function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.innerText = text;
-      return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      return String(text == null ? '' : text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     async function loginWithGoogle() {
@@ -1925,7 +1954,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       }
     });
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
     bootstrap();
   </script>
