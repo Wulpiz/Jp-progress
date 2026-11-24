@@ -28,34 +28,6 @@ button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,c
 .google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;padding:0 24px;background:#fff;color:#0b1325;border:0;border-radius:12px;font-weight:700}
 .google-btn:hover{background:#e8edf6}
 
-/* Timer belajar */
-.pomo{text-align:center}
-.pomo-mode{font-size:.85rem;font-weight:700;color:var(--c)}
-.pomo-time{margin:2px 0 12px;font:800 3rem/1.15 var(--serif);font-variant-numeric:tabular-nums}
-.pomo-presets,.pomo-actions{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
-.pomo-btn{min-height:40px;padding:0 30px;border:0;border-radius:99px;background:var(--daily);color:#04122b;font-weight:800}
-.pomo-btn:hover{background:#7fb1ff}
-.pomo-today{font-size:.82rem;color:var(--dim)}
-.chip.active{border-color:var(--c);color:var(--c)}
-.chip:disabled{opacity:.4;cursor:not-allowed}
-
-/* Statistik */
-.stat-rows{display:grid;gap:8px;margin-bottom:6px}
-.stat-row{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;color:var(--dim)}
-.stat-row b{color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
-.mini-title{margin:14px 0 8px;font-size:.8rem;font-weight:700;color:var(--dim)}
-.week-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:112px}
-.wb{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
-.wb-track{flex:1;width:100%;display:flex;align-items:flex-end;background:rgba(148,163,184,.08);border-radius:6px;overflow:hidden}
-.wb-bar{width:100%;background:var(--c);border-radius:6px 6px 0 0}
-.wb-d{font-size:.68rem;color:var(--dim)}
-.wb-m{min-height:1em;font-size:.64rem;color:var(--c)}
-.month-bars{display:grid;gap:6px}
-.mb{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:8px;font-size:.8rem;color:var(--dim)}
-.mb-track{height:8px;background:rgba(148,163,184,.12);border-radius:99px;overflow:hidden}
-.mb-fill{height:100%;background:var(--c);border-radius:99px}
-.mb b{text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
-
 /* Arsip */
 .top-actions{display:flex;gap:8px}
 .modal-content.archive-content{max-width:520px;max-height:85dvh;display:flex;flex-direction:column}
@@ -100,14 +72,12 @@ button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,c
 .intro .hero-title{text-align:left;font-size:clamp(2.4rem,8vw,3.2rem)}
 .hero-subtitle{margin:10px 0 0;color:var(--dim);max-width:34ch}
 .header-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.header-info .stat-card:last-child{grid-column:1/-1}
 .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .stat-label{font-size:.8rem;color:var(--dim);font-weight:500}
 .stat-value{margin-top:2px;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
-#bestVal{color:var(--monthly)} #jlptVal{color:var(--yearly)}
+#bestVal{color:var(--monthly)}
 #freezeInfo,.stat-hint{font-size:.74rem;color:var(--dim);margin-top:2px}
-.stat-btn{text-align:left;width:100%;cursor:pointer}
-.stat-btn span{display:block}
-.stat-btn:hover{border-color:var(--line-2)}
 .timer-critical{color:var(--danger)!important;animation:blink 1s infinite}
 .streak-zero{color:var(--dim)!important;filter:grayscale(1);opacity:.7}
 .streak-active{color:#facc15!important}
@@ -168,7 +138,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 .empty-hint{padding:14px 0 18px;text-align:center;font-size:.9rem;color:var(--dim)}
 
 /* Modal */
-#goal-modal,#confirm-modal,#jlpt-modal,#archive-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#goal-modal,#confirm-modal,#archive-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .modal-content{width:100%;max-width:420px;padding:28px;background:#0d172c;border:1px solid var(--line-2);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 #modal-title,#confirm-title{margin:0 0 16px;font-size:1.2rem;font-weight:800}
 #confirm-message{margin:0 0 22px;color:var(--dim);line-height:1.6;white-space:pre-wrap}
@@ -190,7 +160,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 #landing-page{position:relative;overflow:hidden}
 #landing-page::before{content:"学";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font:800 min(24rem,80vw)/1 var(--serif);color:rgba(91,155,255,.055);pointer-events:none}
 #landing-page>*{position:relative}
-.home-stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.home-stats{display:grid;grid-template-columns:repeat(2,1fr);width:100%;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
 .home-stats>div{padding:16px 8px;border-left:1px solid var(--line)}
 .home-stats>div:first-child{border-left:0}
 .home-stats b{display:block;font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums}
@@ -201,7 +171,8 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
   .side-panel{align-self:start}
 }
 @media(min-width:641px) and (max-width:999px){
-  .header-info{grid-template-columns:repeat(4,1fr)}
+  .header-info{grid-template-columns:repeat(3,1fr)}
+  .header-info .stat-card:last-child{grid-column:auto}
 }
 @media(max-width:999px){
   /* Susunan: judul > kartu ringkas > QUEST > riwayat/timer/statistik */
@@ -219,7 +190,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
   .header-info{gap:8px}
   .stat-card{padding:10px 12px}
   .stat-value{font-size:1.2rem}
-  .stat-btn .stat-hint{display:none}
   .topbar{padding-left:16px;padding-right:16px}
   .layout{padding:16px 16px 56px;gap:16px}
   .panel,.group{padding:16px;border-radius:16px}
@@ -247,18 +217,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
       <button class="btn-modal btn-confirm" id="btn-submit-goal" onclick="submitModal()">Tambahkan</button>
-    </div>
-  </div></div>
-
-  <div id="jlpt-modal" role="dialog" aria-modal="true" aria-labelledby="jlpt-title"><div class="modal-content">
-    <h3 id="jlpt-title">Tanggal ujian JLPT</h3>
-    <div class="deadline-container" style="display:flex">
-      <label for="jlpt-date">Tanggal ujian</label>
-      <input type="date" id="jlpt-date" onkeydown="if(event.key==='Enter') saveJlptDate()">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-modal btn-cancel" onclick="closeJlptModal()">Batal</button>
-      <button class="btn-modal btn-confirm" onclick="saveJlptDate()">Simpan</button>
     </div>
   </div></div>
 
@@ -307,7 +265,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     <div class="home-stats">
       <div><b id="homeStreak" style="color:#facc15">-</b><span>Streak</span></div>
       <div><b id="homeDaily" style="color:var(--daily)">-</b><span>Quest hari ini</span></div>
-      <div><b id="homeJlpt" style="color:var(--yearly)">-</b><span>Menuju JLPT</span></div>
     </div>
     <button class="btn-enter" onclick="showDashboard()">Buka quest log</button>
   </div>
@@ -327,40 +284,11 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
           <div class="stat-card"><div class="stat-label">Streak saat ini</div><div class="stat-value" id="streakVal">🔥 0 Hari</div><div id="freezeInfo"></div></div>
           <div class="stat-card"><div class="stat-label">Streak terbaik</div><div class="stat-value" id="bestVal">🏆 0 Hari</div></div>
           <div class="stat-card"><div class="stat-label">Reset harian</div><div class="stat-value" id="dailyTimer">00:00:00</div></div>
-          <button type="button" class="stat-card stat-btn" onclick="openJlptModal()" aria-label="Countdown JLPT, ketuk untuk mengubah tanggal ujian"><span class="stat-label">Countdown JLPT</span><span class="stat-value" id="jlptVal">-</span><span class="stat-hint" id="jlptHint">Ketuk untuk ubah tanggal</span></button>
         </div>
         <section class="panel">
           <h2>Riwayat belajar</h2>
           <div class="hm-scroll" id="hmScroll"><div id="hmMonths" class="hm-months" aria-hidden="true"></div><div id="heatmap" class="heatmap"></div></div>
           <div class="hm-legend"><span>Sedikit</span><i class="hm-cell"></i><i class="hm-cell hm-1"></i><i class="hm-cell hm-2"></i><i class="hm-cell hm-3"></i><i class="hm-cell hm-4"></i><span>Penuh</span></div>
-        </section>
-      <section class="panel pomo">
-          <h2>Timer belajar</h2>
-          <div class="pomo-mode" id="pomoMode">Fokus</div>
-          <div class="pomo-time" id="pomoTime" role="timer">25:00</div>
-          <div class="pomo-presets" role="group" aria-label="Durasi fokus">
-            <button class="chip" data-min="15" onclick="pomoSetFocus(15)">15 mnt</button>
-            <button class="chip" data-min="25" onclick="pomoSetFocus(25)">25 mnt</button>
-            <button class="chip" data-min="50" onclick="pomoSetFocus(50)">50 mnt</button>
-          </div>
-          <div class="pomo-actions">
-            <button class="pomo-btn" id="pomoToggle" onclick="pomoToggle()">Mulai</button>
-            <button class="chip" onclick="pomoReset()">Reset</button>
-          </div>
-          <div class="pomo-today" id="pomoToday">Hari ini: 0 mnt</div>
-        </section>
-        <section class="panel" id="stats-panel">
-          <h2>Statistik</h2>
-          <div class="stat-rows">
-            <div class="stat-row"><span>Rata-rata selesai (7 hari)</span><b id="stWeek">–</b></div>
-            <div class="stat-row"><span>Rata-rata selesai (4 minggu)</span><b id="stMonthAvg">–</b></div>
-            <div class="stat-row"><span>Hari terbaik</span><b id="stBestDay">–</b></div>
-            <div class="stat-row"><span>Waktu belajar (7 hari)</span><b id="stStudy">–</b></div>
-          </div>
-          <div class="mini-title">7 hari terakhir (tinggi = % quest selesai)</div>
-          <div class="week-bars" id="weekBars"></div>
-          <div class="mini-title">Quest harian selesai per bulan</div>
-          <div class="month-bars" id="monthBars"></div>
         </section>
       </aside>
       <main class="quests">
@@ -397,11 +325,8 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmZGdtdHpkZ3lsZG9iZXBhcmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODY2MTIsImV4cCI6MjA5NDI2MjYxMn0.xJqjlPNZgU3vYHhuv1IF6ph4UvsJR7oSFYM8pVByVmw';
     const clientApp = (typeof supabase !== 'undefined') ? supabase.createClient(SB_URL, SB_KEY) : null;
 
-    const DEFAULT_JLPT_DATE = '2026-12-06'; // dipakai sampai kamu mengatur tanggal sendiri (ketuk kartu Countdown JLPT)
     const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-    let jlptDate = DEFAULT_JLPT_DATE;
-    let profileHasJlpt = true;
     let dbLastStreakDate = null;
     let currentUser = null;
     let allGoals = [];
@@ -423,19 +348,13 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     let fetchQueued = false;
     let noticeMode = false;
     let goalModalReturn = null;
-    let jlptReturn = null;
     let archiveReturn = null;
-    let logHasStudy = true;
     let realtimeChannel = null;
     let remoteTimer = null;
     let isDragging = false;
     let remoteDirty = false;
     let lastLocalWriteAt = 0;
     const remoteTables = new Set();
-    let pomo = { mode: 'focus', focusMin: 25, running: false, endsAt: 0, remaining: 25 * 60 };
-    let pomoTimer = null;
-    const POMO_BREAK_MIN = 5;
-    const BASE_TITLE = document.title;
     const TYPE_LABEL = { daily: 'Harian', monthly: 'Bulanan', yearly: 'Tahunan', side: 'Side quest' };
     const TYPE_COLOR = { daily: 'var(--daily)', monthly: 'var(--side)', yearly: 'var(--monthly)', side: 'var(--yearly)' };
     let lastProcessedDate = lsGet('lastProcessedDate') || '';
@@ -528,7 +447,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (!(await fetchData())) throw new Error('Gagal memuat goal');
       await fetchHeatmap();
       await evaluateStreakAtMidnight();
-      updateJlpt();
 
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('landing-page').style.display = 'flex';
@@ -537,23 +455,14 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 
       startTimers();
       setupSortable();
-      initPomodoro();
       setupRealtime();
       isInitialized = true;
     }
 
     async function fetchOrCreateProfile() {
       const cols = 'streak, last_streak_date, best_streak, freeze_used_month';
-      profileHasJlpt = true;
-      let res = await clientApp.from('user_profiles').select(cols + ', jlpt_date')
+      const res = await clientApp.from('user_profiles').select(cols)
         .eq('user_id', currentUser.id).single();
-
-      if (res.error && res.error.code !== 'PGRST116') {
-        // kolom jlpt_date mungkin belum dibuat: coba lagi tanpa kolom itu
-        profileHasJlpt = false;
-        res = await clientApp.from('user_profiles').select(cols)
-          .eq('user_id', currentUser.id).single();
-      }
 
       let profile = null;
       if (res.error && res.error.code === 'PGRST116') {
@@ -651,25 +560,15 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       try {
         const from = new Date(); from.setDate(from.getDate() - 200);
         const fromKey = getLocalDateString(from);
-        logHasStudy = true;
-        let res = await clientApp.from('daily_log').select('date, completed, total, study_minutes')
+        const res = await clientApp.from('daily_log').select('date, completed, total')
           .eq('user_id', currentUser.id).gte('date', fromKey);
-        if (res.error) {
-          // kolom study_minutes mungkin belum dibuat: coba tanpa kolom itu
-          res = await clientApp.from('daily_log').select('date, completed, total')
-            .eq('user_id', currentUser.id).gte('date', fromKey);
-          if (!res.error) logHasStudy = false;
-        }
         if (res.error) throw res.error;
         dailyLog = {};
         (res.data || []).forEach(r => dailyLog[r.date] = r);
-        if (!logHasStudy) applyLocalStudy();
       } catch (e) {
         showToast('Riwayat belajar gagal dimuat.', true);
       }
       renderHeatmap();
-      renderStats();
-      updatePomoToday();
     }
 
     function renderHeatmap() {
@@ -715,7 +614,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (!daily.length) return;
       const row = { user_id: currentUser.id, date: getLocalDateString(),
                     completed: daily.filter(g => g.checked).length, total: daily.length };
-      dailyLog[row.date] = Object.assign({}, dailyLog[row.date], row); renderHeatmap(); renderStats();
+      dailyLog[row.date] = Object.assign({}, dailyLog[row.date], row); renderHeatmap();
       try {
         lastLocalWriteAt = Date.now();
         const { error } = await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
@@ -1219,52 +1118,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       }
     }
 
-    // ===== JLPT =====
-    function updateJlpt() {
-      const jEl = document.getElementById('jlptVal');
-      if (!jEl) return;
-      const jDays = Math.ceil((new Date(jlptDate + 'T00:00:00') - new Date()) / 86400000);
-      jEl.innerText = jDays > 0 ? `🎌 ${jDays} Hari` : (jDays === 0 ? '🎌 Hari H!' : 'Selesai ✓');
-      const hint = document.getElementById('jlptHint');
-      if (hint) hint.innerText = jDays < 0 ? 'Ketuk untuk atur ujian berikutnya' : 'Ketuk untuk ubah tanggal';
-      syncHome();
-    }
-
-    function openJlptModal() {
-      jlptReturn = document.activeElement;
-      const input = document.getElementById('jlpt-date');
-      input.value = jlptDate || '';
-      document.getElementById('jlpt-modal').style.display = 'flex';
-      setTimeout(() => input.focus(), 100);
-    }
-
-    function closeJlptModal() {
-      document.getElementById('jlpt-modal').style.display = 'none';
-      if (jlptReturn && jlptReturn.focus) jlptReturn.focus();
-    }
-
-    async function saveJlptDate() {
-      const val = document.getElementById('jlpt-date').value.trim();
-      if (!val) { showToast('Pilih tanggal ujian dulu.', true); return; }
-
-      jlptDate = val;
-      lsSet('jlptDate', val);
-      closeJlptModal();
-      updateJlpt();
-
-      if (!profileHasJlpt) {
-        showToast('Tersimpan di perangkat ini saja (kolom jlpt_date belum ada di database).', true);
-        return;
-      }
-      try {
-        const { error } = await clientApp.from('user_profiles').update({ jlpt_date: val }).eq('user_id', currentUser.id);
-        if (error) throw error;
-        showToast('Tanggal JLPT disimpan ✓');
-      } catch (e) {
-        showToast('Gagal menyimpan ke server, tersimpan di perangkat ini saja.', true);
-      }
-    }
-
     // ===== BOOT / LOADING =====
     function setBoot(state) {
       const b = document.getElementById('boot-screen');
@@ -1289,10 +1142,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     function retryBoot() { clientApp ? bootstrap() : location.reload(); }
 
     function byId(id) { return document.getElementById(id); }
-    function fmtMin(m) {
-      m = Math.round(m || 0);
-      return m < 60 ? `${m} mnt` : `${Math.floor(m / 60)} j ${m % 60} mnt`;
-    }
 
     // ===== PROFIL (dipakai saat boot dan sinkronisasi realtime) =====
     function applyProfile(p) {
@@ -1300,18 +1149,16 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       dbLastStreakDate = p.last_streak_date || null;
       dbBest = p.best_streak || 0;
       dbFreezeMonth = p.freeze_used_month || null;
-      jlptDate = (profileHasJlpt && p.jlpt_date) || lsGet('jlptDate') || DEFAULT_JLPT_DATE;
     }
 
     async function refreshProfile() {
       if (pendingWrites > 0) return;
       try {
-        const cols = 'streak, last_streak_date, best_streak, freeze_used_month' + (profileHasJlpt ? ', jlpt_date' : '');
+        const cols = 'streak, last_streak_date, best_streak, freeze_used_month';
         const { data, error } = await clientApp.from('user_profiles').select(cols).eq('user_id', currentUser.id).single();
         if (error || !data) return;
         applyProfile(data);
         render();
-        updateJlpt();
       } catch (e) {}
     }
 
@@ -1424,232 +1271,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       loadArchive();
     }
 
-    // ===== STATISTIK =====
-    function renderStats() {
-      if (!byId('stWeek')) return;
-      const keys = Object.keys(dailyLog).sort();
-      const firstKey = keys.length ? keys[0] : null;
-      const dayKey = (off) => { const d = new Date(); d.setDate(d.getDate() - off); return getLocalDateString(d); };
-      const ratio = (k) => { const r = dailyLog[k]; return r && r.total ? r.completed / r.total : 0; };
-      // Hari yang dihitung: sejak catatan pertama; hari ini baru ikut kalau sudah ada progres
-      const counted = (off) => {
-        const k = dayKey(off);
-        if (!firstKey || k < firstKey) return false;
-        return off > 0 || ratio(k) > 0;
-      };
-      const avg = (days) => {
-        let sum = 0, n = 0;
-        for (let i = 0; i < days; i++) if (counted(i)) { sum += ratio(dayKey(i)); n++; }
-        return n ? Math.round((sum / n) * 100) + '%' : '–';
-      };
-      byId('stWeek').textContent = avg(7);
-      byId('stMonthAvg').textContent = avg(28);
-
-      // Hari terbaik (12 minggu terakhir, minimal 2 data per hari)
-      const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      const agg = dayNames.map(() => ({ sum: 0, n: 0 }));
-      for (let i = 0; i < 84; i++) {
-        if (!counted(i)) continue;
-        const k = dayKey(i), wd = new Date(k + 'T00:00:00').getDay();
-        agg[wd].sum += ratio(k); agg[wd].n++;
-      }
-      let best = -1, bestAvg = 0;
-      agg.forEach((a, wd) => { if (a.n >= 2 && a.sum / a.n > bestAvg) { bestAvg = a.sum / a.n; best = wd; } });
-      byId('stBestDay').textContent = best >= 0 ? `${dayNames[best]} (${Math.round(bestAvg * 100)}%)` : '–';
-
-      // 7 hari terakhir: tinggi batang = % quest selesai, angka kecil = menit belajar
-      const short = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-      let studyWeek = 0, bars = '';
-      for (let i = 6; i >= 0; i--) {
-        const k = dayKey(i), r = dailyLog[k] || {};
-        const m = r.study_minutes || 0;
-        studyWeek += m;
-        const pct = Math.round(ratio(k) * 100);
-        const wd = new Date(k + 'T00:00:00').getDay();
-        bars += `<div class="wb" title="${k}: ${pct}% selesai, ${m} mnt belajar"><div class="wb-track"><div class="wb-bar" style="height:${pct}%"></div></div>` +
-          `<span class="wb-d">${short[wd]}</span><span class="wb-m">${m ? m + 'm' : ''}</span></div>`;
-      }
-      byId('weekBars').innerHTML = bars;
-      byId('stStudy').textContent = fmtMin(studyWeek);
-
-      // Total quest harian selesai per bulan (6 bulan terakhir)
-      const now = new Date(), months = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-        let total = 0;
-        Object.keys(dailyLog).forEach(k => { if (k.startsWith(key)) total += dailyLog[k].completed || 0; });
-        months.push({ label: MONTHS_ID[d.getMonth()], total });
-      }
-      const max = Math.max(1, ...months.map(m => m.total));
-      byId('monthBars').innerHTML = months.map(m =>
-        `<div class="mb"><span>${m.label}</span><div class="mb-track"><div class="mb-fill" style="width:${Math.round(m.total / max * 100)}%"></div></div><b>${m.total}</b></div>`
-      ).join('');
-    }
-
-    // ===== TIMER BELAJAR (POMODORO) =====
-    function pomoSave() { lsSet('jfPomo', JSON.stringify(pomo)); }
-    function pomoTotal() { return (pomo.mode === 'focus' ? pomo.focusMin : POMO_BREAK_MIN) * 60; }
-    function pomoSecondsLeft() { return pomo.running ? Math.max(0, Math.ceil((pomo.endsAt - Date.now()) / 1000)) : pomo.remaining; }
-    function pomoFmt(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
-
-    function initPomodoro() {
-      if (pomoTimer) return;
-      try {
-        const s = JSON.parse(lsGet('jfPomo') || 'null');
-        if (s && typeof s.remaining === 'number') pomo = Object.assign(pomo, s);
-      } catch (e) {}
-      if ([15, 25, 50].indexOf(pomo.focusMin) < 0) pomo.focusMin = 25;
-      if (pomo.mode !== 'focus' && pomo.mode !== 'break') pomo.mode = 'focus';
-
-      if (pomo.running) {
-        if (Date.now() - pomo.endsAt > 2 * 3600 * 1000) {
-          // sesi lama yang tertinggal (app ditutup berjam-jam): jangan dihitung
-          pomo.running = false; pomo.mode = 'focus'; pomo.remaining = pomo.focusMin * 60; pomoSave();
-        } else if (pomoSecondsLeft() <= 0) {
-          pomoComplete();
-        }
-      }
-      pomoRender();
-      pomoTimer = setInterval(pomoTick, 500);
-    }
-
-    function pomoTick() {
-      if (!pomoTimer) return;
-      if (pomo.running && pomoSecondsLeft() <= 0) pomoComplete();
-      pomoRender();
-    }
-
-    function pomoRender() {
-      const timeEl = byId('pomoTime');
-      if (!timeEl) return;
-      const left = pomoSecondsLeft();
-      const label = pomo.mode === 'focus' ? 'Fokus' : 'Istirahat';
-      timeEl.textContent = pomoFmt(left);
-      byId('pomoMode').textContent = label;
-      byId('pomoToggle').textContent = pomo.running ? 'Jeda' : (left < pomoTotal() ? 'Lanjut' : 'Mulai');
-      document.querySelectorAll('.pomo-presets .chip').forEach(btn => {
-        btn.classList.toggle('active', Number(btn.dataset.min) === pomo.focusMin);
-        btn.disabled = pomo.running || pomo.mode !== 'focus' || left < pomoTotal();
-      });
-      document.title = pomo.running ? `${pomoFmt(left)} · ${label}` : BASE_TITLE;
-    }
-
-    function updatePomoToday() {
-      const el = byId('pomoToday');
-      if (!el) return;
-      const r = dailyLog[getLocalDateString()] || {};
-      el.textContent = `Hari ini: ${fmtMin(r.study_minutes || 0)}`;
-    }
-
-    function pomoToggle() {
-      if (pomo.running) {
-        pomo.remaining = pomoSecondsLeft();
-        pomo.running = false;
-      } else {
-        if (pomo.remaining <= 0) pomo.remaining = pomoTotal();
-        pomo.endsAt = Date.now() + pomo.remaining * 1000;
-        pomo.running = true;
-      }
-      pomoSave();
-      pomoRender();
-    }
-
-    function pomoSetFocus(min) {
-      if (pomo.running || pomo.mode !== 'focus') return;
-      pomo.focusMin = min;
-      pomo.remaining = min * 60;
-      pomoSave();
-      pomoRender();
-    }
-
-    async function pomoReset() {
-      const started = pomo.running || pomoSecondsLeft() < pomoTotal();
-      if (started && pomo.mode === 'focus') {
-        const ok = await showCustomConfirm('Reset timer', 'Sesi fokus yang sedang berjalan tidak akan dihitung ke waktu belajar. Lanjutkan?');
-        if (!ok) return;
-      }
-      pomo.running = false;
-      pomo.mode = 'focus';
-      pomo.remaining = pomo.focusMin * 60;
-      pomoSave();
-      pomoRender();
-    }
-
-    function pomoComplete() {
-      const wasFocus = pomo.mode === 'focus';
-      const mins = pomo.focusMin;
-      pomo.running = false;
-      pomo.mode = wasFocus ? 'break' : 'focus';
-      pomo.remaining = pomoTotal();
-      pomoSave();
-      pomoBeep();
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      if (wasFocus) {
-        addStudyMinutes(mins);
-        showToast(`Sesi fokus selesai! +${mins} menit. Istirahat dulu ☕`);
-      } else {
-        showToast('Istirahat selesai. Siap fokus lagi?');
-      }
-      pomoRender();
-    }
-
-    function pomoBeep() {
-      try {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AC(), osc = ctx.createOscillator(), gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-        osc.start(); osc.stop(ctx.currentTime + 0.6);
-      } catch (e) {}
-    }
-
-    // Catat menit belajar ke daily_log hari ini
-    function applyLocalStudy() {
-      let map = {};
-      try { map = JSON.parse(lsGet('studyLocal') || '{}'); } catch (e) {}
-      Object.keys(map).forEach(k => {
-        dailyLog[k] = Object.assign({ completed: 0, total: 0 }, dailyLog[k], { study_minutes: map[k] });
-      });
-    }
-
-    async function addStudyMinutes(mins) {
-      const date = getLocalDateString();
-      const cur = dailyLog[date] || {};
-      const daily = allGoals.filter(g => g.type === 'daily');
-      const row = {
-        user_id: currentUser.id, date,
-        completed: daily.filter(g => g.checked).length, total: daily.length,
-        study_minutes: (cur.study_minutes || 0) + mins
-      };
-      dailyLog[date] = Object.assign({}, cur, row);
-      renderHeatmap(); renderStats(); updatePomoToday();
-
-      const saveLocal = () => {
-        let map = {};
-        try { map = JSON.parse(lsGet('studyLocal') || '{}'); } catch (e) {}
-        map[date] = row.study_minutes;
-        lsSet('studyLocal', JSON.stringify(map));
-      };
-
-      if (!logHasStudy) {
-        saveLocal();
-        showToast('Menit belajar tersimpan di perangkat ini saja (kolom study_minutes belum ada).', true);
-        return;
-      }
-      lastLocalWriteAt = Date.now();
-      try {
-        const { error } = await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
-        if (error) throw error;
-      } catch (e) {
-        saveLocal();
-        showToast('Menit belajar gagal disimpan ke server, tersimpan di perangkat ini.', true);
-      }
-      lastLocalWriteAt = Date.now();
-    }
-
     const ICON_EDIT = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
     const ICON_DEL = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
 
@@ -1751,7 +1372,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
       set('homeStreak', document.getElementById('streakVal').textContent.replace('🔥', '').trim());
       set('homeDaily', document.getElementById('dailyPercent').textContent);
-      set('homeJlpt', document.getElementById('jlptVal').textContent.replace('🎌', '').trim());
     }
 
     function startTimers() {
@@ -1786,8 +1406,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         const yDaysLeft = Math.floor((endOfYear - now) / (1000 * 60 * 60 * 24));
         const yEl = document.getElementById("yearlyTimer");
         if (yEl) yEl.innerText = yDaysLeft > 0 ? `${yDaysLeft} Hari lagi` : `${h}:${m}:${s}`;
-
-        updateJlpt();
 
         updateSideQuestCountdowns();
         syncHome();
@@ -1923,13 +1541,12 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         evaluateStreakAtMidnight();
         fetchData();
         fetchHeatmap();
-        pomoTick();
       }
     });
 
     // Escape menutup modal teratas; Tab dikunci di dalam modal
     document.addEventListener('keydown', (e) => {
-      const modal = ['confirm-modal', 'jlpt-modal', 'archive-modal', 'goal-modal']
+      const modal = ['confirm-modal', 'archive-modal', 'goal-modal']
         .map(id => document.getElementById(id))
         .find(m => m && m.style.display === 'flex');
       if (!modal) return;
@@ -1937,7 +1554,6 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (e.key === 'Escape') {
         e.preventDefault();
         if (modal.id === 'confirm-modal') document.getElementById(noticeMode ? 'btn-confirm-yes' : 'btn-confirm-cancel').click();
-        else if (modal.id === 'jlpt-modal') closeJlptModal();
         else if (modal.id === 'archive-modal') closeArchiveModal();
         else closeModal();
         return;
