@@ -72,7 +72,7 @@ button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,c
 .intro .hero-title{text-align:left;font-size:clamp(2.4rem,8vw,3.2rem)}
 .hero-subtitle{margin:10px 0 0;color:var(--dim);max-width:34ch}
 .header-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.header-info .stat-card:last-child{grid-column:1/-1}
+.header-info .stat-card:last-child{grid-column:1/-1;text-align:center}
 .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .stat-label{font-size:.8rem;color:var(--dim);font-weight:500}
 .stat-value{margin-top:2px;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -101,11 +101,12 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 .hm-scroll{--hm:13px;overflow-x:auto;padding-bottom:6px}
 .hm-months{display:grid;grid-auto-flow:column;grid-auto-columns:var(--hm);gap:3px;width:max-content;height:16px;margin-bottom:4px;font-size:.7rem;line-height:16px;color:var(--dim)}
 .hm-months span{white-space:nowrap;overflow:visible}
+.hm-months,.heatmap{margin-left:auto;margin-right:auto}
 .heatmap{display:grid;grid-template-rows:repeat(7,var(--hm));grid-auto-flow:column;grid-auto-columns:var(--hm);gap:3px;width:max-content}
 .heatmap .hm-cell{cursor:pointer}
 .hm-cell{width:var(--hm);height:var(--hm);border-radius:3px;background:rgba(148,163,184,.1)}
 .hm-1{background:rgba(63,208,192,.28)} .hm-2{background:rgba(63,208,192,.5)} .hm-3{background:rgba(63,208,192,.75)} .hm-4{background:#3fd0c0}
-.hm-legend{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:8px;font-size:.75rem;color:var(--dim)}
+.hm-legend{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:8px;font-size:.75rem;color:var(--dim)}
 .hm-legend .hm-cell{display:block;width:11px;height:11px}
 
 .quest-list-container.drag-over{border-radius:14px;background:rgba(255,255,255,.02)}
