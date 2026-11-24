@@ -72,13 +72,14 @@ button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,c
 .intro .hero-title{text-align:left;font-size:clamp(2.4rem,8vw,3.2rem)}
 .hero-subtitle{margin:10px 0 0;color:var(--dim);max-width:34ch}
 .header-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.header-info .stat-card{text-align:center}
-.header-info .stat-card:last-child{grid-column:1/-1}
+.header-info .stat-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px 12px}
+.header-info .stat-card:last-child{grid-column:1/-1;padding:12px}
 .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-.stat-label{font-size:.94rem;color:var(--dim);font-weight:500}
-.stat-value{margin-top:2px;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat-label{font-size:.88rem;color:var(--dim);font-weight:600;letter-spacing:.02em}
+.stat-value{margin-top:0;font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 #bestVal{color:var(--monthly)}
-#freezeInfo,.stat-hint{font-size:.74rem;color:var(--dim);margin-top:2px}
+#freezeInfo,.stat-hint{font-size:.72rem;color:var(--dim)}
+#freezeInfo:not(:empty),.stat-hint{padding:3px 10px;border-radius:99px;background:rgba(148,163,184,.1)}
 .timer-critical{color:var(--danger)!important;animation:blink 1s infinite}
 .streak-zero{color:var(--dim)!important;filter:grayscale(1);opacity:.7}
 .streak-active{color:#facc15!important}
@@ -284,7 +285,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         </div>
         <div class="header-info">
           <div class="stat-card"><div class="stat-label">Streak saat ini</div><div class="stat-value" id="streakVal">🔥 0 Hari</div><div id="freezeInfo"></div></div>
-          <div class="stat-card"><div class="stat-label">Streak terbaik</div><div class="stat-value" id="bestVal">🏆 0 Hari</div></div>
+          <div class="stat-card"><div class="stat-label">Streak terbaik</div><div class="stat-value" id="bestVal">🏆 0 Hari</div><div class="stat-hint">rekor tertinggi</div></div>
           <div class="stat-card"><div class="stat-label">Reset harian</div><div class="stat-value" id="dailyTimer">00:00:00</div></div>
         </div>
         <section class="panel">
