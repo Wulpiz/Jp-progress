@@ -28,6 +28,45 @@ button,.quest-item,.stat-card,input{transition:background .2s,border-color .2s,c
 .google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;padding:0 24px;background:#fff;color:#0b1325;border:0;border-radius:12px;font-weight:700}
 .google-btn:hover{background:#e8edf6}
 
+/* Timer belajar */
+.pomo{text-align:center}
+.pomo-mode{font-size:.85rem;font-weight:700;color:var(--c)}
+.pomo-time{margin:2px 0 12px;font:800 3rem/1.15 var(--serif);font-variant-numeric:tabular-nums}
+.pomo-presets,.pomo-actions{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.pomo-btn{min-height:40px;padding:0 30px;border:0;border-radius:99px;background:var(--daily);color:#04122b;font-weight:800}
+.pomo-btn:hover{background:#7fb1ff}
+.pomo-today{font-size:.82rem;color:var(--dim)}
+.chip.active{border-color:var(--c);color:var(--c)}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+
+/* Statistik */
+.stat-rows{display:grid;gap:8px;margin-bottom:6px}
+.stat-row{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;color:var(--dim)}
+.stat-row b{color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
+.mini-title{margin:14px 0 8px;font-size:.8rem;font-weight:700;color:var(--dim)}
+.week-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:112px}
+.wb{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.wb-track{flex:1;width:100%;display:flex;align-items:flex-end;background:rgba(148,163,184,.08);border-radius:6px;overflow:hidden}
+.wb-bar{width:100%;background:var(--c);border-radius:6px 6px 0 0}
+.wb-d{font-size:.68rem;color:var(--dim)}
+.wb-m{min-height:1em;font-size:.64rem;color:var(--c)}
+.month-bars{display:grid;gap:6px}
+.mb{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:8px;font-size:.8rem;color:var(--dim)}
+.mb-track{height:8px;background:rgba(148,163,184,.12);border-radius:99px;overflow:hidden}
+.mb-fill{height:100%;background:var(--c);border-radius:99px}
+.mb b{text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+
+/* Arsip */
+.top-actions{display:flex;gap:8px}
+.modal-content.archive-content{max-width:520px;max-height:85dvh;display:flex;flex-direction:column}
+.archive-sub{margin:-8px 0 14px;font-size:.88rem;color:var(--dim)}
+.archive-list{overflow-y:auto;display:grid;gap:8px;align-content:start;margin-bottom:16px}
+.archive-year{margin:8px 0 0;font-size:.82rem;font-weight:800;color:var(--dim)}
+.archive-item{display:flex;align-items:center;gap:8px;padding:10px 4px 10px 12px;background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--c,var(--danger));border-radius:10px}
+.archive-main{flex:1;min-width:0}
+.archive-text{font-weight:500;overflow-wrap:anywhere}
+.archive-meta{margin-top:2px;font-size:.78rem;color:var(--dim)}
+
 /* Boot */
 @keyframes spin{to{transform:rotate(360deg)}}
 #boot-screen{margin:auto;display:flex;flex-direction:column;align-items:center;gap:16px;max-width:360px;padding:24px;text-align:center;color:var(--dim)}
@@ -129,7 +168,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 .empty-hint{padding:14px 0 18px;text-align:center;font-size:.9rem;color:var(--dim)}
 
 /* Modal */
-#goal-modal,#confirm-modal,#jlpt-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#goal-modal,#confirm-modal,#jlpt-modal,#archive-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .modal-content{width:100%;max-width:420px;padding:28px;background:#0d172c;border:1px solid var(--line-2);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 #modal-title,#confirm-title{margin:0 0 16px;font-size:1.2rem;font-weight:800}
 #confirm-message{margin:0 0 22px;color:var(--dim);line-height:1.6;white-space:pre-wrap}
@@ -159,7 +198,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 .cnt{margin-right:10px;font-size:.82rem;font-weight:500;color:var(--dim)}
 @media(min-width:1000px){
   .layout{grid-template-columns:360px minmax(0,1fr);gap:32px;padding-top:32px}
-  .side-panel{position:sticky;top:84px}
+  .side-panel{position:sticky;top:84px;max-height:calc(100dvh - 100px);overflow-y:auto;scrollbar-width:thin}
 }
 @media(max-width:640px){
   .topbar{padding-left:16px;padding-right:16px}
@@ -201,6 +240,15 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeJlptModal()">Batal</button>
       <button class="btn-modal btn-confirm" onclick="saveJlptDate()">Simpan</button>
+    </div>
+  </div></div>
+
+  <div id="archive-modal" role="dialog" aria-modal="true" aria-labelledby="archive-title"><div class="modal-content archive-content">
+    <h3 id="archive-title">Arsip goal gagal</h3>
+    <p class="archive-sub" id="archiveSub"></p>
+    <div class="archive-list" id="archiveList"></div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-cancel" id="btn-archive-close" onclick="closeArchiveModal()">Tutup</button>
     </div>
   </div></div>
 
@@ -248,7 +296,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
   <div class="container" id="main-dashboard">
     <header class="topbar">
       <button class="btn-back" onclick="backToHome()">‹ Beranda</button>
-      <button class="btn-ghost" onclick="logout()">Keluar</button>
+      <div class="top-actions"><button class="btn-ghost" onclick="openArchiveModal()">Arsip</button><button class="btn-ghost" onclick="logout()">Keluar</button></div>
     </header>
     <div class="layout">
       <aside class="side-panel">
@@ -266,6 +314,34 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
           <h2>Riwayat belajar</h2>
           <div class="hm-scroll" id="hmScroll"><div id="hmMonths" class="hm-months" aria-hidden="true"></div><div id="heatmap" class="heatmap"></div></div>
           <div class="hm-legend"><span>Sedikit</span><i class="hm-cell"></i><i class="hm-cell hm-1"></i><i class="hm-cell hm-2"></i><i class="hm-cell hm-3"></i><i class="hm-cell hm-4"></i><span>Penuh</span></div>
+        </section>
+      <section class="panel pomo">
+          <h2>Timer belajar</h2>
+          <div class="pomo-mode" id="pomoMode">Fokus</div>
+          <div class="pomo-time" id="pomoTime" role="timer">25:00</div>
+          <div class="pomo-presets" role="group" aria-label="Durasi fokus">
+            <button class="chip" data-min="15" onclick="pomoSetFocus(15)">15 mnt</button>
+            <button class="chip" data-min="25" onclick="pomoSetFocus(25)">25 mnt</button>
+            <button class="chip" data-min="50" onclick="pomoSetFocus(50)">50 mnt</button>
+          </div>
+          <div class="pomo-actions">
+            <button class="pomo-btn" id="pomoToggle" onclick="pomoToggle()">Mulai</button>
+            <button class="chip" onclick="pomoReset()">Reset</button>
+          </div>
+          <div class="pomo-today" id="pomoToday">Hari ini: 0 mnt</div>
+        </section>
+        <section class="panel" id="stats-panel">
+          <h2>Statistik</h2>
+          <div class="stat-rows">
+            <div class="stat-row"><span>Rata-rata selesai (7 hari)</span><b id="stWeek">–</b></div>
+            <div class="stat-row"><span>Rata-rata selesai (4 minggu)</span><b id="stMonthAvg">–</b></div>
+            <div class="stat-row"><span>Hari terbaik</span><b id="stBestDay">–</b></div>
+            <div class="stat-row"><span>Waktu belajar (7 hari)</span><b id="stStudy">–</b></div>
+          </div>
+          <div class="mini-title">7 hari terakhir (tinggi = % quest selesai)</div>
+          <div class="week-bars" id="weekBars"></div>
+          <div class="mini-title">Quest harian selesai per bulan</div>
+          <div class="month-bars" id="monthBars"></div>
         </section>
       </aside>
       <main class="quests">
@@ -329,6 +405,20 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     let noticeMode = false;
     let goalModalReturn = null;
     let jlptReturn = null;
+    let archiveReturn = null;
+    let logHasStudy = true;
+    let realtimeChannel = null;
+    let remoteTimer = null;
+    let isDragging = false;
+    let remoteDirty = false;
+    let lastLocalWriteAt = 0;
+    const remoteTables = new Set();
+    let pomo = { mode: 'focus', focusMin: 25, running: false, endsAt: 0, remaining: 25 * 60 };
+    let pomoTimer = null;
+    const POMO_BREAK_MIN = 5;
+    const BASE_TITLE = document.title;
+    const TYPE_LABEL = { daily: 'Harian', monthly: 'Bulanan', yearly: 'Tahunan', side: 'Side quest' };
+    const TYPE_COLOR = { daily: 'var(--daily)', monthly: 'var(--side)', yearly: 'var(--monthly)', side: 'var(--yearly)' };
     let lastProcessedDate = lsGet('lastProcessedDate') || '';
 
     const REMINDER_LIST = [
@@ -428,6 +518,8 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 
       startTimers();
       setupSortable();
+      initPomodoro();
+      setupRealtime();
       isInitialized = true;
     }
 
@@ -456,11 +548,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         profile = res.data;
       }
 
-      dbStreak = profile.streak || 0;
-      dbLastStreakDate = profile.last_streak_date || null;
-      dbBest = profile.best_streak || 0;
-      dbFreezeMonth = profile.freeze_used_month || null;
-      jlptDate = (profileHasJlpt && profile.jlpt_date) || lsGet('jlptDate') || DEFAULT_JLPT_DATE;
+      applyProfile(profile);
     }
 
     async function fetchOrCreateReminder() {
@@ -540,16 +628,27 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     // ===== HEATMAP =====
     async function fetchHeatmap() {
       try {
-        const from = new Date(); from.setDate(from.getDate() - 125);
-        const { data, error } = await clientApp.from('daily_log').select('date, completed, total')
-          .eq('user_id', currentUser.id).gte('date', getLocalDateString(from));
-        if (error) throw error;
+        const from = new Date(); from.setDate(from.getDate() - 200);
+        const fromKey = getLocalDateString(from);
+        logHasStudy = true;
+        let res = await clientApp.from('daily_log').select('date, completed, total, study_minutes')
+          .eq('user_id', currentUser.id).gte('date', fromKey);
+        if (res.error) {
+          // kolom study_minutes mungkin belum dibuat: coba tanpa kolom itu
+          res = await clientApp.from('daily_log').select('date, completed, total')
+            .eq('user_id', currentUser.id).gte('date', fromKey);
+          if (!res.error) logHasStudy = false;
+        }
+        if (res.error) throw res.error;
         dailyLog = {};
-        (data || []).forEach(r => dailyLog[r.date] = r);
+        (res.data || []).forEach(r => dailyLog[r.date] = r);
+        if (!logHasStudy) applyLocalStudy();
       } catch (e) {
         showToast('Riwayat belajar gagal dimuat.', true);
       }
       renderHeatmap();
+      renderStats();
+      updatePomoToday();
     }
 
     function renderHeatmap() {
@@ -595,7 +694,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       if (!daily.length) return;
       const row = { user_id: currentUser.id, date: getLocalDateString(),
                     completed: daily.filter(g => g.checked).length, total: daily.length };
-      dailyLog[row.date] = row; renderHeatmap();
+      dailyLog[row.date] = Object.assign({}, dailyLog[row.date], row); renderHeatmap(); renderStats();
       await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
     }
 
@@ -830,9 +929,9 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     }
 
     async function deleteGoal(id, text, isFailed = false) {
-      const title = isFailed ? "Quest Gagal Deteksi" : "Hapus Goal";
+      const title = isFailed ? "Arsipkan Quest Gagal" : "Hapus Goal";
       const message = isFailed
-        ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dihapus dari history. Jadikan kegagalan ini sebagai pelajaran untuk disiplin berikutnya!`
+        ? `Kamu gagal menyelesaikan quest ini:\n\n"${text}"\n\nQuest ini akan dipindahkan ke Arsip supaya bisa kamu tinjau lagi. Jadikan kegagalan ini pelajaran untuk disiplin berikutnya!`
         : `Apakah kamu yakin ingin menghapus goal ini?\n\n"${text}"`;
 
       const confirmed = await showCustomConfirm(title, message);
@@ -840,6 +939,16 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 
       const goal = allGoals.find(g => String(g.id) === String(id));
       const wasDaily = !!goal && goal.type === 'daily';
+
+      // Goal gagal: simpan ke arsip dulu. Kalau gagal, jangan hapus apa pun.
+      if (isFailed && goal) {
+        const archiveError = await archiveGoal(goal);
+        if (archiveError) {
+          const missing = /goal_archive/.test(archiveError.message || '');
+          showToast(missing ? 'Tabel goal_archive belum dibuat. Jalankan setup.sql terbaru dulu.' : 'Gagal mengarsipkan goal. Coba lagi.', true);
+          return;
+        }
+      }
 
       let error = null;
       beginWrite();
@@ -858,7 +967,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
 
       await fetchData({ wait: true });
       if (wasDaily) await syncStreakAfterDailyChange();
-      showToast('Goal dihapus');
+      showToast(isFailed ? 'Goal dipindahkan ke Arsip' : 'Goal dihapus');
     }
 
     function updateSideQuestCountdowns() {
@@ -937,9 +1046,10 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     // ===== PELACAK PENYIMPANAN =====
     // fetchData() menunggu selama ada penyimpanan yang belum selesai, supaya
     // centang optimis tidak tertimpa data lama dari server.
-    function beginWrite() { pendingWrites++; writeEpoch++; }
+    function beginWrite() { pendingWrites++; writeEpoch++; lastLocalWriteAt = Date.now(); }
     function endWrite() {
       pendingWrites = Math.max(0, pendingWrites - 1);
+      lastLocalWriteAt = Date.now();
       if (pendingWrites === 0 && fetchQueued) { fetchQueued = false; fetchData(); }
     }
     async function writesIdle() {
@@ -1022,7 +1132,12 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
           ghostClass: 'dragging',
           chosenClass: 'ready-to-drag',
           onChoose: () => { if (navigator.vibrate) navigator.vibrate(30); },
-          onEnd: (evt) => { if (evt.oldIndex !== evt.newIndex) saveOrder(container); }
+          onStart: () => { isDragging = true; },
+          onEnd: (evt) => {
+            isDragging = false;
+            if (evt.oldIndex !== evt.newIndex) saveOrder(container);
+            if (remoteDirty) { remoteDirty = false; scheduleRemote(); }
+          }
         });
       });
     }
@@ -1144,6 +1259,368 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
     }
 
     function retryBoot() { clientApp ? bootstrap() : location.reload(); }
+
+    function byId(id) { return document.getElementById(id); }
+    function fmtMin(m) {
+      m = Math.round(m || 0);
+      return m < 60 ? `${m} mnt` : `${Math.floor(m / 60)} j ${m % 60} mnt`;
+    }
+
+    // ===== PROFIL (dipakai saat boot dan sinkronisasi realtime) =====
+    function applyProfile(p) {
+      dbStreak = p.streak || 0;
+      dbLastStreakDate = p.last_streak_date || null;
+      dbBest = p.best_streak || 0;
+      dbFreezeMonth = p.freeze_used_month || null;
+      jlptDate = (profileHasJlpt && p.jlpt_date) || lsGet('jlptDate') || DEFAULT_JLPT_DATE;
+    }
+
+    async function refreshProfile() {
+      if (pendingWrites > 0) return;
+      try {
+        const cols = 'streak, last_streak_date, best_streak, freeze_used_month' + (profileHasJlpt ? ', jlpt_date' : '');
+        const { data, error } = await clientApp.from('user_profiles').select(cols).eq('user_id', currentUser.id).single();
+        if (error || !data) return;
+        applyProfile(data);
+        render();
+        updateJlpt();
+      } catch (e) {}
+    }
+
+    // ===== REALTIME: HP dan laptop selalu sama =====
+    function setupRealtime() {
+      if (realtimeChannel || !clientApp || typeof clientApp.channel !== 'function') return;
+      const on = (table) => () => onRemoteChange(table);
+      try {
+        realtimeChannel = clientApp.channel('jf-sync')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' }, on('goals'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, on('user_profiles'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_log' }, on('daily_log'))
+          .subscribe();
+      } catch (e) { console.warn('Realtime tidak aktif', e); }
+    }
+
+    function onRemoteChange(table) {
+      // Abaikan gema dari penyimpanan yang baru saja kita lakukan sendiri
+      if (Date.now() - lastLocalWriteAt < 1500) return;
+      remoteTables.add(table);
+      scheduleRemote();
+    }
+
+    function scheduleRemote() {
+      clearTimeout(remoteTimer);
+      remoteTimer = setTimeout(applyRemote, 400);
+    }
+
+    async function applyRemote() {
+      if (isDragging) { remoteDirty = true; return; }
+      const tables = Array.from(remoteTables);
+      remoteTables.clear();
+      if (tables.includes('goals')) await fetchData();
+      if (tables.includes('user_profiles')) await refreshProfile();
+      if (tables.includes('daily_log')) await fetchHeatmap();
+    }
+
+    // ===== ARSIP GOAL GAGAL =====
+    async function archiveGoal(goal) {
+      try {
+        const { error } = await clientApp.from('goal_archive').insert([{
+          user_id: currentUser.id, text: goal.text, type: goal.type,
+          deadline: goal.deadline || null, goal_created_at: goal.created_at || null
+        }]);
+        return error || null;
+      } catch (e) {
+        return e;
+      }
+    }
+
+    async function openArchiveModal() {
+      archiveReturn = document.activeElement;
+      byId('archive-modal').style.display = 'flex';
+      byId('archiveSub').textContent = '';
+      byId('archiveList').innerHTML = '<div class="empty-hint">Memuat…</div>';
+      setTimeout(() => byId('btn-archive-close').focus(), 100);
+      await loadArchive();
+    }
+
+    function closeArchiveModal() {
+      byId('archive-modal').style.display = 'none';
+      if (archiveReturn && archiveReturn.focus) archiveReturn.focus();
+    }
+
+    async function loadArchive() {
+      const list = byId('archiveList');
+      let res;
+      try {
+        res = await clientApp.from('goal_archive').select('id, text, type, deadline, archived_at')
+          .eq('user_id', currentUser.id).order('archived_at', { ascending: false }).limit(300);
+      } catch (e) { res = { error: e }; }
+
+      if (res.error) {
+        list.innerHTML = '<div class="empty-hint">Arsip belum bisa dimuat. Pastikan setup.sql terbaru sudah dijalankan dan koneksi internet aktif.</div>';
+        return;
+      }
+
+      const rows = res.data || [];
+      if (!rows.length) {
+        byId('archiveSub').textContent = '';
+        list.innerHTML = '<div class="empty-hint">Belum ada goal yang diarsipkan.</div>';
+        return;
+      }
+
+      byId('archiveSub').textContent = `${rows.length} goal gagal tersimpan. Pelajari polanya, lalu tulis target yang lebih realistis.`;
+      let html = '', year = null;
+      rows.forEach(r => {
+        const d = new Date(r.archived_at);
+        const y = d.getFullYear();
+        if (y !== year) {
+          year = y;
+          const n = rows.filter(x => new Date(x.archived_at).getFullYear() === y).length;
+          html += `<div class="archive-year">${y} · ${n} goal</div>`;
+        }
+        const target = /^\d{4}-\d{2}-\d{2}/.test(r.deadline || '') ? ` · target ${r.deadline.substring(0, 10)}` : '';
+        const when = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        html += `<div class="archive-item" style="--c:${TYPE_COLOR[r.type] || 'var(--danger)'}">` +
+          `<div class="archive-main"><div class="archive-text">${escapeHtml(r.text)}</div>` +
+          `<div class="archive-meta">${escapeHtml(TYPE_LABEL[r.type] || r.type || '')}${escapeHtml(target)} · diarsipkan ${when}</div></div>` +
+          `<button class="btn-delete" onclick="deleteArchived('${escapeHtml(String(r.id))}')" aria-label="Hapus permanen dari arsip" title="Hapus permanen">${ICON_DEL}</button></div>`;
+      });
+      list.innerHTML = html;
+    }
+
+    async function deleteArchived(id) {
+      const ok = await showCustomConfirm('Hapus dari arsip', 'Goal ini akan dihapus permanen dari arsip. Lanjutkan?');
+      if (!ok) return;
+      const { error } = await clientApp.from('goal_archive').delete().eq('id', id);
+      if (error) { showToast('Gagal menghapus dari arsip.', true); return; }
+      loadArchive();
+    }
+
+    // ===== STATISTIK =====
+    function renderStats() {
+      if (!byId('stWeek')) return;
+      const keys = Object.keys(dailyLog).sort();
+      const firstKey = keys.length ? keys[0] : null;
+      const dayKey = (off) => { const d = new Date(); d.setDate(d.getDate() - off); return getLocalDateString(d); };
+      const ratio = (k) => { const r = dailyLog[k]; return r && r.total ? r.completed / r.total : 0; };
+      // Hari yang dihitung: sejak catatan pertama; hari ini baru ikut kalau sudah ada progres
+      const counted = (off) => {
+        const k = dayKey(off);
+        if (!firstKey || k < firstKey) return false;
+        return off > 0 || ratio(k) > 0;
+      };
+      const avg = (days) => {
+        let sum = 0, n = 0;
+        for (let i = 0; i < days; i++) if (counted(i)) { sum += ratio(dayKey(i)); n++; }
+        return n ? Math.round((sum / n) * 100) + '%' : '–';
+      };
+      byId('stWeek').textContent = avg(7);
+      byId('stMonthAvg').textContent = avg(28);
+
+      // Hari terbaik (12 minggu terakhir, minimal 2 data per hari)
+      const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const agg = dayNames.map(() => ({ sum: 0, n: 0 }));
+      for (let i = 0; i < 84; i++) {
+        if (!counted(i)) continue;
+        const k = dayKey(i), wd = new Date(k + 'T00:00:00').getDay();
+        agg[wd].sum += ratio(k); agg[wd].n++;
+      }
+      let best = -1, bestAvg = 0;
+      agg.forEach((a, wd) => { if (a.n >= 2 && a.sum / a.n > bestAvg) { bestAvg = a.sum / a.n; best = wd; } });
+      byId('stBestDay').textContent = best >= 0 ? `${dayNames[best]} (${Math.round(bestAvg * 100)}%)` : '–';
+
+      // 7 hari terakhir: tinggi batang = % quest selesai, angka kecil = menit belajar
+      const short = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      let studyWeek = 0, bars = '';
+      for (let i = 6; i >= 0; i--) {
+        const k = dayKey(i), r = dailyLog[k] || {};
+        const m = r.study_minutes || 0;
+        studyWeek += m;
+        const pct = Math.round(ratio(k) * 100);
+        const wd = new Date(k + 'T00:00:00').getDay();
+        bars += `<div class="wb" title="${k}: ${pct}% selesai, ${m} mnt belajar"><div class="wb-track"><div class="wb-bar" style="height:${pct}%"></div></div>` +
+          `<span class="wb-d">${short[wd]}</span><span class="wb-m">${m ? m + 'm' : ''}</span></div>`;
+      }
+      byId('weekBars').innerHTML = bars;
+      byId('stStudy').textContent = fmtMin(studyWeek);
+
+      // Total quest harian selesai per bulan (6 bulan terakhir)
+      const now = new Date(), months = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        let total = 0;
+        Object.keys(dailyLog).forEach(k => { if (k.startsWith(key)) total += dailyLog[k].completed || 0; });
+        months.push({ label: MONTHS_ID[d.getMonth()], total });
+      }
+      const max = Math.max(1, ...months.map(m => m.total));
+      byId('monthBars').innerHTML = months.map(m =>
+        `<div class="mb"><span>${m.label}</span><div class="mb-track"><div class="mb-fill" style="width:${Math.round(m.total / max * 100)}%"></div></div><b>${m.total}</b></div>`
+      ).join('');
+    }
+
+    // ===== TIMER BELAJAR (POMODORO) =====
+    function pomoSave() { lsSet('jfPomo', JSON.stringify(pomo)); }
+    function pomoTotal() { return (pomo.mode === 'focus' ? pomo.focusMin : POMO_BREAK_MIN) * 60; }
+    function pomoSecondsLeft() { return pomo.running ? Math.max(0, Math.ceil((pomo.endsAt - Date.now()) / 1000)) : pomo.remaining; }
+    function pomoFmt(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+
+    function initPomodoro() {
+      if (pomoTimer) return;
+      try {
+        const s = JSON.parse(lsGet('jfPomo') || 'null');
+        if (s && typeof s.remaining === 'number') pomo = Object.assign(pomo, s);
+      } catch (e) {}
+      if ([15, 25, 50].indexOf(pomo.focusMin) < 0) pomo.focusMin = 25;
+      if (pomo.mode !== 'focus' && pomo.mode !== 'break') pomo.mode = 'focus';
+
+      if (pomo.running) {
+        if (Date.now() - pomo.endsAt > 2 * 3600 * 1000) {
+          // sesi lama yang tertinggal (app ditutup berjam-jam): jangan dihitung
+          pomo.running = false; pomo.mode = 'focus'; pomo.remaining = pomo.focusMin * 60; pomoSave();
+        } else if (pomoSecondsLeft() <= 0) {
+          pomoComplete();
+        }
+      }
+      pomoRender();
+      pomoTimer = setInterval(pomoTick, 500);
+    }
+
+    function pomoTick() {
+      if (!pomoTimer) return;
+      if (pomo.running && pomoSecondsLeft() <= 0) pomoComplete();
+      pomoRender();
+    }
+
+    function pomoRender() {
+      const timeEl = byId('pomoTime');
+      if (!timeEl) return;
+      const left = pomoSecondsLeft();
+      const label = pomo.mode === 'focus' ? 'Fokus' : 'Istirahat';
+      timeEl.textContent = pomoFmt(left);
+      byId('pomoMode').textContent = label;
+      byId('pomoToggle').textContent = pomo.running ? 'Jeda' : (left < pomoTotal() ? 'Lanjut' : 'Mulai');
+      document.querySelectorAll('.pomo-presets .chip').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.dataset.min) === pomo.focusMin);
+        btn.disabled = pomo.running || pomo.mode !== 'focus' || left < pomoTotal();
+      });
+      document.title = pomo.running ? `${pomoFmt(left)} · ${label}` : BASE_TITLE;
+    }
+
+    function updatePomoToday() {
+      const el = byId('pomoToday');
+      if (!el) return;
+      const r = dailyLog[getLocalDateString()] || {};
+      el.textContent = `Hari ini: ${fmtMin(r.study_minutes || 0)}`;
+    }
+
+    function pomoToggle() {
+      if (pomo.running) {
+        pomo.remaining = pomoSecondsLeft();
+        pomo.running = false;
+      } else {
+        if (pomo.remaining <= 0) pomo.remaining = pomoTotal();
+        pomo.endsAt = Date.now() + pomo.remaining * 1000;
+        pomo.running = true;
+      }
+      pomoSave();
+      pomoRender();
+    }
+
+    function pomoSetFocus(min) {
+      if (pomo.running || pomo.mode !== 'focus') return;
+      pomo.focusMin = min;
+      pomo.remaining = min * 60;
+      pomoSave();
+      pomoRender();
+    }
+
+    async function pomoReset() {
+      const started = pomo.running || pomoSecondsLeft() < pomoTotal();
+      if (started && pomo.mode === 'focus') {
+        const ok = await showCustomConfirm('Reset timer', 'Sesi fokus yang sedang berjalan tidak akan dihitung ke waktu belajar. Lanjutkan?');
+        if (!ok) return;
+      }
+      pomo.running = false;
+      pomo.mode = 'focus';
+      pomo.remaining = pomo.focusMin * 60;
+      pomoSave();
+      pomoRender();
+    }
+
+    function pomoComplete() {
+      const wasFocus = pomo.mode === 'focus';
+      const mins = pomo.focusMin;
+      pomo.running = false;
+      pomo.mode = wasFocus ? 'break' : 'focus';
+      pomo.remaining = pomoTotal();
+      pomoSave();
+      pomoBeep();
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      if (wasFocus) {
+        addStudyMinutes(mins);
+        showToast(`Sesi fokus selesai! +${mins} menit. Istirahat dulu ☕`);
+      } else {
+        showToast('Istirahat selesai. Siap fokus lagi?');
+      }
+      pomoRender();
+    }
+
+    function pomoBeep() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AC(), osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+        osc.start(); osc.stop(ctx.currentTime + 0.6);
+      } catch (e) {}
+    }
+
+    // Catat menit belajar ke daily_log hari ini
+    function applyLocalStudy() {
+      let map = {};
+      try { map = JSON.parse(lsGet('studyLocal') || '{}'); } catch (e) {}
+      Object.keys(map).forEach(k => {
+        dailyLog[k] = Object.assign({ completed: 0, total: 0 }, dailyLog[k], { study_minutes: map[k] });
+      });
+    }
+
+    async function addStudyMinutes(mins) {
+      const date = getLocalDateString();
+      const cur = dailyLog[date] || {};
+      const daily = allGoals.filter(g => g.type === 'daily');
+      const row = {
+        user_id: currentUser.id, date,
+        completed: daily.filter(g => g.checked).length, total: daily.length,
+        study_minutes: (cur.study_minutes || 0) + mins
+      };
+      dailyLog[date] = Object.assign({}, cur, row);
+      renderHeatmap(); renderStats(); updatePomoToday();
+
+      const saveLocal = () => {
+        let map = {};
+        try { map = JSON.parse(lsGet('studyLocal') || '{}'); } catch (e) {}
+        map[date] = row.study_minutes;
+        lsSet('studyLocal', JSON.stringify(map));
+      };
+
+      if (!logHasStudy) {
+        saveLocal();
+        showToast('Menit belajar tersimpan di perangkat ini saja (kolom study_minutes belum ada).', true);
+        return;
+      }
+      lastLocalWriteAt = Date.now();
+      try {
+        const { error } = await clientApp.from('daily_log').upsert(row, { onConflict: 'user_id,date' });
+        if (error) throw error;
+      } catch (e) {
+        saveLocal();
+        showToast('Menit belajar gagal disimpan ke server, tersimpan di perangkat ini.', true);
+      }
+      lastLocalWriteAt = Date.now();
+    }
 
     const ICON_EDIT = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
     const ICON_DEL = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
@@ -1360,7 +1837,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
       const message =
         `Tahun ${year} sudah berakhir, dan goal tahunan ini belum selesai:\n\n${list}\n\n` +
         `Tidak apa-apa. Gagal bukan berarti selesai, itu data tentang apa yang perlu kamu ubah. ` +
-        `Hapus yang sudah lewat, lalu tulis goal baru untuk tahun ini dan mulai lagi dari hari ini.`;
+        `Arsipkan yang sudah lewat (tombol hapus akan menyimpannya ke Arsip), lalu tulis goal baru untuk tahun ini dan mulai lagi dari hari ini.`;
 
       await showNotice(`🌸 Goal Tahunan ${year} Gagal`, message, 'Aku Mengerti');
 
@@ -1417,12 +1894,13 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         evaluateStreakAtMidnight();
         fetchData();
         fetchHeatmap();
+        pomoTick();
       }
     });
 
     // Escape menutup modal teratas; Tab dikunci di dalam modal
     document.addEventListener('keydown', (e) => {
-      const modal = ['confirm-modal', 'jlpt-modal', 'goal-modal']
+      const modal = ['confirm-modal', 'jlpt-modal', 'archive-modal', 'goal-modal']
         .map(id => document.getElementById(id))
         .find(m => m && m.style.display === 'flex');
       if (!modal) return;
@@ -1431,6 +1909,7 @@ h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--
         e.preventDefault();
         if (modal.id === 'confirm-modal') document.getElementById(noticeMode ? 'btn-confirm-yes' : 'btn-confirm-cancel').click();
         else if (modal.id === 'jlpt-modal') closeJlptModal();
+        else if (modal.id === 'archive-modal') closeArchiveModal();
         else closeModal();
         return;
       }

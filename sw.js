@@ -1,5 +1,5 @@
 // Naikkan VERSION setiap kali kamu mengubah file aplikasi, supaya cache lama dibuang.
-const VERSION = 'jf-v2';
+const VERSION = 'jf-v3';
 const CORE = [
   './', 'index.html', 'manifest.json',
   'supabase.js', 'sortable.min.js',
